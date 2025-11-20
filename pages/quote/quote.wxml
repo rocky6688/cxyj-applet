@@ -5,6 +5,11 @@
     <!-- 基础拆除类 -->
     <view class="category-section">
       <view class="category-header" bindtap="toggleCategory" data-category="demolition">
+        <view class="category-select" catchtap="noop">
+          <checkbox-group bindchange="onCategorySelectAllChange" data-category="demolition">
+            <checkbox value="demolition" checked="{{categorySelectAll.demolition}}">全选</checkbox>
+          </checkbox-group>
+        </view>
         <view class="category-title">基础拆除类</view>
         <view class="category-arrow {{expandedCategories.demolition ? 'expanded' : ''}}">▼</view>
       </view>
@@ -23,27 +28,27 @@
           </view>
           
           <!-- 面积输入（每平项目） -->
-          <input class="area-input" type="number" placeholder="面积" 
-                 value="{{selectedItems[item.id].area}}"
-                 bindinput="onAreaInput" data-item-id="{{item.id}}"
+          <input class="area-input" type="text" placeholder="面积" 
+                 value="{{selectedItems[item.id].areaText}}"
+                 bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
                  wx:if="{{item.unit === '每平' && selectedItems[item.id] && item.id !== 'garbage_transport'}}"/>
           
           <!-- 垃圾外运特殊输入（4方车，4平方起步） -->
-          <input class="area-input" type="number" placeholder="4方车起" 
-                 value="{{selectedItems[item.id].area}}"
-                 bindinput="onAreaInput" data-item-id="{{item.id}}"
+          <input class="area-input" type="text" placeholder="4方车起" 
+                 value="{{selectedItems[item.id].areaText}}"
+                 bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
                  wx:if="{{item.id === 'garbage_transport' && selectedItems[item.id]}}"/>
           
           <!-- 数量输入（个、米、套等项目） -->
           <input class="quantity-input" type="number" placeholder="数量" 
                  value="{{quantities[item.id]}}"
-                 bindinput="onQuantityInput" data-item-id="{{item.id}}"
+                 bindinput="onQuantityInput" bindfocus="onQuantityFocus" data-item-id="{{item.id}}"
                  wx:if="{{(item.unit === '个' || item.unit === '米' || item.unit === '套' || item.unit === '单扇') && selectedItems[item.id]}}"/>
           
           <!-- 手动价格输入（面议项目） -->
           <input class="manual-price-input" type="number" placeholder="输入金额" 
                  value="{{manualPrices[item.id]}}"
-                 bindinput="onManualPriceInput" data-item-id="{{item.id}}"
+                 bindinput="onManualPriceInput" bindfocus="onManualPriceFocus" data-item-id="{{item.id}}"
                  wx:if="{{item.price === 0 && item.id !== 'stairs_fee' && selectedItems[item.id]}}"/>
         </view>
       </view>
@@ -52,6 +57,11 @@
     <!-- 墙面类 -->
     <view class="category-section">
       <view class="category-header" bindtap="toggleCategory" data-category="wall">
+        <view class="category-select" catchtap="noop">
+          <checkbox-group bindchange="onCategorySelectAllChange" data-category="wall">
+            <checkbox value="wall" checked="{{categorySelectAll.wall}}">全选</checkbox>
+          </checkbox-group>
+        </view>
         <view class="category-title">墙面类</view>
         <view class="category-arrow {{expandedCategories.wall ? 'expanded' : ''}}">▼</view>
       </view>
@@ -68,9 +78,9 @@
             </view>
           </view>
           
-          <input class="area-input" type="number" placeholder="面积" 
-                 value="{{selectedItems[item.id].area}}"
-                 bindinput="onAreaInput" data-item-id="{{item.id}}"
+          <input class="area-input" type="text" placeholder="面积" 
+                 value="{{selectedItems[item.id].areaText}}"
+                 bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
                  wx:if="{{item.unit === '每平' && selectedItems[item.id]}}"/>
         </view>
       </view>
@@ -79,6 +89,11 @@
     <!-- 天花类 -->
     <view class="category-section">
       <view class="category-header" bindtap="toggleCategory" data-category="ceiling">
+        <view class="category-select" catchtap="noop">
+          <checkbox-group bindchange="onCategorySelectAllChange" data-category="ceiling">
+            <checkbox value="ceiling" checked="{{categorySelectAll.ceiling}}">全选</checkbox>
+          </checkbox-group>
+        </view>
         <view class="category-title">天花类</view>
         <view class="category-arrow {{expandedCategories.ceiling ? 'expanded' : ''}}">▼</view>
       </view>
@@ -95,9 +110,9 @@
             </view>
           </view>
           
-          <input class="area-input" type="number" placeholder="面积" 
-                 value="{{selectedItems[item.id].area}}"
-                 bindinput="onAreaInput" data-item-id="{{item.id}}"
+          <input class="area-input" type="text" placeholder="面积" 
+                 value="{{selectedItems[item.id].areaText}}"
+                 bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
                  wx:if="{{item.unit === '每平' && selectedItems[item.id]}}"/>
           
           <input class="quantity-input" type="number" placeholder="数量" 
@@ -111,6 +126,11 @@
     <!-- 地面类 -->
     <view class="category-section">
       <view class="category-header" bindtap="toggleCategory" data-category="floor">
+        <view class="category-select" catchtap="noop">
+          <checkbox-group bindchange="onCategorySelectAllChange" data-category="floor">
+            <checkbox value="floor" checked="{{categorySelectAll.floor}}">全选</checkbox>
+          </checkbox-group>
+        </view>
         <view class="category-title">地面类</view>
         <view class="category-arrow {{expandedCategories.floor ? 'expanded' : ''}}">▼</view>
       </view>
@@ -127,9 +147,9 @@
             </view>
           </view>
           
-          <input class="area-input" type="number" placeholder="面积" 
-                 value="{{selectedItems[item.id].area}}"
-                 bindinput="onAreaInput" data-item-id="{{item.id}}"
+          <input class="area-input" type="text" placeholder="面积" 
+                 value="{{selectedItems[item.id].areaText}}"
+                 bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
                  wx:if="{{item.unit === '每平' && selectedItems[item.id]}}"/>
         </view>
       </view>
@@ -138,6 +158,11 @@
     <!-- 综合类 -->
     <view class="category-section">
       <view class="category-header" bindtap="toggleCategory" data-category="comprehensive">
+        <view class="category-select" catchtap="noop">
+          <checkbox-group bindchange="onCategorySelectAllChange" data-category="comprehensive">
+            <checkbox value="comprehensive" checked="{{categorySelectAll.comprehensive}}">全选</checkbox>
+          </checkbox-group>
+        </view>
         <view class="category-title">综合类</view>
         <view class="category-arrow {{expandedCategories.comprehensive ? 'expanded' : ''}}">▼</view>
       </view>
@@ -156,24 +181,24 @@
             </view>
           </view>
           
-          <input class="area-input" type="number" placeholder="面积" 
-                 value="{{selectedItems[item.id].area}}"
-                 bindinput="onAreaInput" data-item-id="{{item.id}}"
+          <input class="area-input" type="text" placeholder="面积" 
+                 value="{{selectedItems[item.id].areaText}}"
+                 bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
                  wx:if="{{item.unit === '每平' && selectedItems[item.id]}}"/>
           
           <input class="quantity-input" type="number" placeholder="数量" 
                  value="{{quantities[item.id]}}"
-                 bindinput="onQuantityInput" data-item-id="{{item.id}}"
+                 bindinput="onQuantityInput" bindfocus="onQuantityFocus" data-item-id="{{item.id}}"
                  wx:if="{{(item.unit === '个' || item.unit === '套' || item.unit === '单扇') && selectedItems[item.id]}}"/>
           
           <input class="quantity-input" type="number" placeholder="米数" 
                  value="{{quantities[item.id]}}"
-                 bindinput="onQuantityInput" data-item-id="{{item.id}}"
+                 bindinput="onQuantityInput" bindfocus="onQuantityFocus" data-item-id="{{item.id}}"
                  wx:if="{{item.unit === '米' && selectedItems[item.id]}}"/>
           
           <input class="manual-price-input" type="number" placeholder="输入金额" 
                  value="{{manualPrices[item.id]}}"
-                 bindinput="onManualPriceInput" data-item-id="{{item.id}}"
+                 bindinput="onManualPriceInput" bindfocus="onManualPriceFocus" data-item-id="{{item.id}}"
                  wx:if="{{item.price === 0 && item.id !== 'stairs_fee' && selectedItems[item.id]}}"/>
         </view>
       </view>

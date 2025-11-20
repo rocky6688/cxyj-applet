@@ -3,11 +3,13 @@
   display: flex;
   flex-direction: column;
   background-color: #f8f8f8;
+  min-height: 0;
 }
 
 .quote-scroll {
   flex: 1;
   padding-bottom: 400rpx; /* 为总价区域留出足够空间 */
+  height: 100%;
 }
 
 .category-section {
@@ -146,6 +148,7 @@
   border-top: 2rpx solid #eee;
   box-shadow: 0 -4rpx 16rpx rgba(0,0,0,0.1);
   z-index: 1000;
+  pointer-events: none;
 }
 
 .total-item {
