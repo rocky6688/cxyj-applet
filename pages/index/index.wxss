@@ -24,6 +24,9 @@ button {
   background-color: #ff6b35;
   color: white;
   box-shadow: 0 10rpx 30rpx rgba(255, 107, 53, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .footer {

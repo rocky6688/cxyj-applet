@@ -30,6 +30,7 @@
 }
 
 .category-title {
+  color:#fff;
   font-size: 30rpx;
   font-weight: 600;
   letter-spacing: 1rpx;
@@ -165,4 +166,20 @@
   margin-top: 20rpx;
   padding-top: 20rpx;
   border-top: 2rpx solid #eee;
+}
+
+.final-actions {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.final-price {
+  color: #ff6b35;
+}
+
+.calc-btn {
+  background-color: #667eea;
+  color: #fff;
+  border-radius: 8rpx;
 }

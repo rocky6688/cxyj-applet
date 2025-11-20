@@ -1,5 +1,6 @@
 const { renovationData } = require('../../utils/data.js');
 const { calculateBaseTotal, calculatePercentageFees, calculateFinalTotal } = require('../../utils/calculate.js');
+const { STAIRS_FEE_RATE, PERCENT_FEE_RATE } = require('../../utils/constants.js');
 
 Page({
   data: {
@@ -94,14 +95,17 @@ Page({
   onQuantityInput(e) {
     const itemId = e.currentTarget.dataset.itemId;
     const quantity = parseFloat(e.detail.value) || 0;
-    
     let quantities = this.data.quantities;
+    let selectedItems = this.data.selectedItems;
     quantities[itemId] = quantity;
-    
+    if (quantity <= 0 && selectedItems[itemId]) {
+      delete selectedItems[itemId];
+    }
     this.setData({
-      quantities: quantities
+      quantities: quantities,
+      selectedItems: selectedItems
     });
-    
+    console.log('[onQuantityInput] itemId=', itemId, 'quantity=', quantity, 'selected has=', !!this.data.selectedItems[itemId]);
     this.updateTotals();
   },
 
@@ -123,13 +127,17 @@ Page({
   // 项目选择事件
   onItemSelect(e) {
     const item = e.currentTarget.dataset.item;
-    const checked = e.detail.value;
+    const val = e.detail.value;
+    const isChecked = Array.isArray(val)
+      ? (val.indexOf(item.id) >= 0 || val.length > 0)
+      : (typeof val === 'string' ? val.length > 0 : !!val);
+    console.log('[onItemSelect] id=', item.id, 'isChecked=', isChecked, 'raw=', val);
     
     let selectedItems = this.data.selectedItems;
     let quantities = this.data.quantities;
     let manualPrices = this.data.manualPrices;
     
-    if (checked) {
+    if (isChecked) {
       // 选中项目
       selectedItems[item.id] = {
         item: item,
@@ -180,32 +188,47 @@ Page({
 
   // 更新总价计算
   updateTotals() {
+    console.log('[updateTotals] start');
     const baseTotal = this.calculateCustomBaseTotal();
     
     // 计算各项费用
-    const designFee = baseTotal * 0.02; // 设计费 2%
-    const transportFee = baseTotal * 0.02; // 运输费 2%
-    const managementFee = baseTotal * 0.02; // 管理费 2%
+    const designFee = baseTotal * PERCENT_FEE_RATE;
+    const transportFee = baseTotal * PERCENT_FEE_RATE;
+    const managementFee = baseTotal * PERCENT_FEE_RATE;
     
     // 楼梯房上楼费只有在选中时才计算
-    const stairsFee = this.data.selectedItems['stairs_fee'] ? baseTotal * 0.02 : 0;
+    const stairsFee = this.data.selectedItems['stairs_fee'] ? baseTotal * STAIRS_FEE_RATE : 0;
     
     const fees = {
       designFee: designFee,
       transportFee: transportFee,
       managementFee: managementFee,
       stairsFee: stairsFee,
-      total: designFee + transportFee + managementFee + stairsFee
+      total: designFee + transportFee + managementFee + stairsFee,
+      designFeeText: designFee.toFixed(2),
+      transportFeeText: transportFee.toFixed(2),
+      managementFeeText: managementFee.toFixed(2),
+      stairsFeeText: stairsFee.toFixed(2)
     };
     
     const finalTotal = baseTotal + fees.total;
+    const baseTotalText = baseTotal.toFixed(2);
+    const finalTotalText = finalTotal.toFixed(2);
     
+    console.log('[updateTotals] baseTotal=', baseTotal);
+    console.log('[updateTotals] fees=', fees);
+    console.log('[updateTotals] finalTotal=', finalTotal);
     this.setData({
       baseTotal: baseTotal,
       fees: fees,
-      finalTotal: finalTotal
+      finalTotal: finalTotal,
+      baseTotalText: baseTotalText,
+      finalTotalText: finalTotalText
     });
   },
+
+  // 计算按钮点击
+  // 计算按钮点击（已移除按钮，不再使用）
 
   // 自定义基础总价计算（支持手动价格和数量）
   calculateCustomBaseTotal() {
@@ -213,6 +236,7 @@ Page({
     const selectedItems = this.data.selectedItems;
     const quantities = this.data.quantities;
     const manualPrices = this.data.manualPrices;
+    console.log('[calculateCustomBaseTotal] selected keys=', Object.keys(selectedItems || {}));
     
     Object.keys(selectedItems).forEach(itemId => {
       if (selectedItems[itemId]) {
@@ -251,6 +275,7 @@ Page({
         total += itemTotal;
       }
     });
+    console.log('[calculateCustomBaseTotal] total=', total);
     
     return total;
   }

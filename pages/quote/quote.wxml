@@ -10,7 +10,9 @@
       </view>
       <view class="items-list" wx:if="{{expandedCategories.demolition}}">
         <view class="item-row" wx:for="{{demolitionItems}}" wx:key="id">
-          <checkbox value="{{item.id}}" checked="{{selectedItems[item.id]}}" bindchange="onItemSelect" data-item="{{item}}"/>
+          <checkbox-group bindchange="onItemSelect" data-item="{{item}}">
+            <checkbox value="{{item.id}}" checked="{{!!selectedItems[item.id]}}"/>
+          </checkbox-group>
           <view class="item-info">
             <text class="item-name">{{item.name}}</text>
             <view class="item-price-section">
@@ -42,7 +44,7 @@
           <input class="manual-price-input" type="number" placeholder="输入金额" 
                  value="{{manualPrices[item.id]}}"
                  bindinput="onManualPriceInput" data-item-id="{{item.id}}"
-                 wx:if="{{item.price === 0 && selectedItems[item.id]}}"/>
+                 wx:if="{{item.price === 0 && item.id !== 'stairs_fee' && selectedItems[item.id]}}"/>
         </view>
       </view>
     </view>
@@ -55,7 +57,9 @@
       </view>
       <view class="items-list" wx:if="{{expandedCategories.wall}}">
         <view class="item-row" wx:for="{{wallItems}}" wx:key="id">
-          <checkbox value="{{item.id}}" checked="{{selectedItems[item.id]}}" bindchange="onItemSelect" data-item="{{item}}"/>
+          <checkbox-group bindchange="onItemSelect" data-item="{{item}}">
+            <checkbox value="{{item.id}}" checked="{{!!selectedItems[item.id]}}"/>
+          </checkbox-group>
           <view class="item-info">
             <text class="item-name">{{item.name}}</text>
             <view class="item-price-section">
@@ -80,7 +84,9 @@
       </view>
       <view class="items-list" wx:if="{{expandedCategories.ceiling}}">
         <view class="item-row" wx:for="{{ceilingItems}}" wx:key="id">
-          <checkbox value="{{item.id}}" checked="{{selectedItems[item.id]}}" bindchange="onItemSelect" data-item="{{item}}"/>
+          <checkbox-group bindchange="onItemSelect" data-item="{{item}}">
+            <checkbox value="{{item.id}}" checked="{{!!selectedItems[item.id]}}"/>
+          </checkbox-group>
           <view class="item-info">
             <text class="item-name">{{item.name}}</text>
             <view class="item-price-section">
@@ -110,7 +116,9 @@
       </view>
       <view class="items-list" wx:if="{{expandedCategories.floor}}">
         <view class="item-row" wx:for="{{floorItems}}" wx:key="id">
-          <checkbox value="{{item.id}}" checked="{{selectedItems[item.id]}}" bindchange="onItemSelect" data-item="{{item}}"/>
+          <checkbox-group bindchange="onItemSelect" data-item="{{item}}">
+            <checkbox value="{{item.id}}" checked="{{!!selectedItems[item.id]}}"/>
+          </checkbox-group>
           <view class="item-info">
             <text class="item-name">{{item.name}}</text>
             <view class="item-price-section">
@@ -135,11 +143,14 @@
       </view>
       <view class="items-list" wx:if="{{expandedCategories.comprehensive}}">
         <view class="item-row" wx:for="{{comprehensiveItems}}" wx:key="id">
-          <checkbox value="{{item.id}}" checked="{{selectedItems[item.id]}}" bindchange="onItemSelect" data-item="{{item}}"/>
+          <checkbox-group bindchange="onItemSelect" data-item="{{item}}">
+            <checkbox value="{{item.id}}" checked="{{!!selectedItems[item.id]}}"/>
+          </checkbox-group>
           <view class="item-info">
             <text class="item-name">{{item.name}}</text>
             <view class="item-price-section">
-              <text class="item-price" wx:if="{{item.price > 0}}">¥{{item.price}}</text>
+              <text class="item-price" wx:if="{{item.id === 'stairs_fee'}}">¥{{fees.stairsFeeText}}</text>
+              <text class="item-price" wx:elif="{{item.price > 0}}">¥{{item.price}}</text>
               <text class="item-price" wx:else>面议</text>
               <text class="item-unit">{{item.unit}}</text>
             </view>
@@ -163,7 +174,7 @@
           <input class="manual-price-input" type="number" placeholder="输入金额" 
                  value="{{manualPrices[item.id]}}"
                  bindinput="onManualPriceInput" data-item-id="{{item.id}}"
-                 wx:if="{{item.price === 0 && selectedItems[item.id]}}"/>
+                 wx:if="{{item.price === 0 && item.id !== 'stairs_fee' && selectedItems[item.id]}}"/>
         </view>
       </view>
     </view>
@@ -174,27 +185,27 @@
   <view class="total-section">
     <view class="total-item fee">
       <text>基础总价：</text>
-      <text>¥{{baseTotal.toFixed(2)}}</text>
+      <text>¥{{baseTotalText}}</text>
     </view>
     <view class="total-item fee">
       <text>设计费（2%）：</text>
-      <text>¥{{fees.designFee.toFixed(2)}}</text>
+      <text>¥{{fees.designFeeText}}</text>
     </view>
     <view class="total-item fee">
       <text>运输费（2%）：</text>
-      <text>¥{{fees.transportFee.toFixed(2)}}</text>
+      <text>¥{{fees.transportFeeText}}</text>
     </view>
     <view class="total-item fee">
       <text>管理费（2%）：</text>
-      <text>¥{{fees.managementFee.toFixed(2)}}</text>
+      <text>¥{{fees.managementFeeText}}</text>
     </view>
     <view class="total-item fee" wx:if="{{selectedItems['stairs_fee']}}">
       <text>楼梯房上楼费（2%）：</text>
-      <text>¥{{fees.stairsFee.toFixed(2)}}</text>
+      <text>¥{{fees.stairsFeeText}}</text>
     </view>
     <view class="total-item final">
       <text>总报价：</text>
-      <text>¥{{finalTotal.toFixed(2)}}</text>
+      <text class="final-price">¥{{finalTotalText}}</text>
     </view>
   </view>
 </view>
