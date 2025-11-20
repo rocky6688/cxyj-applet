@@ -121,6 +121,12 @@ Page({
       quantities: quantities,
       selectedItems: selectedItems
     });
+    const category = this.getCategoryByItemId(itemId);
+    if (category) {
+      const categorySelectAll = { ...this.data.categorySelectAll };
+      categorySelectAll[category] = this.computeCategoryAllSelected(category, this.data.selectedItems);
+      this.setData({ categorySelectAll });
+    }
     console.log('[onQuantityInput] itemId=', itemId, 'quantity=', quantity, 'selected has=', !!this.data.selectedItems[itemId]);
     this.updateTotals();
   },
@@ -181,6 +187,12 @@ Page({
       quantities: quantities,
       manualPrices: manualPrices
     });
+    const category = item.category;
+    if (category) {
+      const categorySelectAll = { ...this.data.categorySelectAll };
+      categorySelectAll[category] = this.computeCategoryAllSelected(category, this.data.selectedItems);
+      this.setData({ categorySelectAll });
+    }
     
     this.updateTotals();
   },
@@ -233,18 +245,19 @@ Page({
         selectedItems[itemId].areaText = num.toFixed(2);
         this.setData({ selectedItems });
       }
+      const category = this.getCategoryByItemId(itemId);
+      if (category) {
+        const categorySelectAll = { ...this.data.categorySelectAll };
+        categorySelectAll[category] = this.computeCategoryAllSelected(category, this.data.selectedItems);
+        this.setData({ categorySelectAll });
+      }
       this.updateTotals();
     }
   },
 
   // 输入框聚焦时清空显示值
   onAreaFocus(e) {
-    const itemId = e.currentTarget.dataset.itemId;
-    let selectedItems = this.data.selectedItems;
-    if (selectedItems[itemId]) {
-      selectedItems[itemId].areaText = '';
-      this.setData({ selectedItems });
-    }
+    // 保留原值，不清空
   },
   onQuantityFocus(e) {
     const itemId = e.currentTarget.dataset.itemId;
@@ -305,6 +318,23 @@ Page({
 
   // 阻止冒泡的空函数
   noop() {},
+
+  computeCategoryAllSelected(category, selectedItems) {
+    const items = (renovationData[category] && renovationData[category].items) || [];
+    return items.every(it => !!selectedItems[it.id]);
+  },
+
+  getCategoryByItemId(itemId) {
+    const cats = ['demolition','wall','ceiling','floor','comprehensive'];
+    for (let i = 0; i < cats.length; i++) {
+      const cat = cats[i];
+      const items = (renovationData[cat] && renovationData[cat].items) || [];
+      for (let j = 0; j < items.length; j++) {
+        if (items[j].id === itemId) return cat;
+      }
+    }
+    return '';
+  },
 
   // 更新总价计算
   updateTotals() {
