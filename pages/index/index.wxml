@@ -1,0 +1,8 @@
+<view class="container">
+  <view class="title">装修报价系统</view>
+  <button bindtap="goToQuote" type="primary">开始报价</button>
+</view>
+
+<view class="footer">
+  <text>专业装修报价，精准预算控制</text>
+</view>

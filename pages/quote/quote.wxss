@@ -1,0 +1,168 @@
+.quote-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f8f8;
+}
+
+.quote-scroll {
+  flex: 1;
+  padding-bottom: 400rpx; /* 为总价区域留出足够空间 */
+}
+
+.category-section {
+  margin-bottom: 20rpx;
+  background-color: white;
+  border-radius: 12rpx;
+  margin: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 25rpx 30rpx;
+  border-radius: 16rpx 16rpx 0 0;
+  box-shadow: 0 2rpx 8rpx rgba(74, 144, 226, 0.3);
+}
+
+.category-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+}
+
+.category-arrow {
+  font-size: 28rpx;
+  transition: transform 0.3s ease;
+}
+
+.category-arrow.expanded {
+  transform: rotate(180deg);
+}
+
+.items-list {
+  padding: 0 20rpx;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+  flex-wrap: wrap;
+}
+
+.item-row:last-child {
+  border-bottom: none;
+}
+
+.item-row:last-child {
+  border-bottom: none;
+}
+
+.item-checkbox {
+  margin-right: 20rpx;
+  transform: scale(1.2);
+}
+
+.item-info {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-right: 20rpx;
+}
+
+.item-name {
+  font-size: 30rpx;
+  color: #333;
+  flex: 1;
+}
+
+.item-price-section {
+  display: flex;
+  align-items: center;
+  margin-right: 20rpx;
+}
+
+.item-price {
+  font-size: 30rpx;
+  color: #ff6b35;
+  font-weight: bold;
+  margin-right: 10rpx;
+}
+
+.item-unit {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.area-input {
+  width: 120rpx;
+  height: 60rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 8rpx;
+  text-align: center;
+  font-size: 28rpx;
+  background-color: #f8f8f8;
+  margin-left: 20rpx;
+}
+
+.quantity-input {
+  width: 120rpx;
+  height: 60rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 8rpx;
+  text-align: center;
+  font-size: 28rpx;
+  background-color: #f8f8f8;
+  margin-left: 20rpx;
+}
+
+.manual-price-input {
+  width: 140rpx;
+  height: 60rpx;
+  border: 2rpx solid #ff6b35;
+  border-radius: 8rpx;
+  text-align: center;
+  font-size: 28rpx;
+  background-color: #fff5f0;
+  margin-left: 20rpx;
+  color: #ff6b35;
+}
+
+.total-section {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  padding: 30rpx;
+  border-top: 2rpx solid #eee;
+  box-shadow: 0 -4rpx 16rpx rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.total-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15rpx;
+  font-size: 28rpx;
+}
+
+.total-item.fee {
+  color: #666;
+}
+
+.total-item.final {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #ff6b35;
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid #eee;
+}

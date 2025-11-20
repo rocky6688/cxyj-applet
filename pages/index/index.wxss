@@ -1,0 +1,38 @@
+.container {
+  padding: 0 50rpx;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.title {
+  font-size: 48rpx;
+  color: white;
+  margin-bottom: 100rpx;
+  font-weight: bold;
+}
+
+button {
+  width: 300rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 32rpx;
+  border-radius: 40rpx;
+  background-color: #ff6b35;
+  color: white;
+  box-shadow: 0 10rpx 30rpx rgba(255, 107, 53, 0.3);
+}
+
+.footer {
+  position: absolute;
+  bottom: 50rpx;
+  text-align: center;
+}
+
+.footer text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 24rpx;
+}
