@@ -1,10 +1,48 @@
-const { request } = require('../../utils/request.js')
+const req = require('../../utils/request.js')
+const request = typeof req === 'function' ? req : req.request
 
 Page({
-  data: { id: '', tpl: { groups: [] }, newGroupName: '', newItemNames: {}, renameGroupMap: {}, renameItemMap: {}, expanded: {}, itemEdit: {} },
+  data: { id: '', tpl: { groups: [] }, newGroupName: '', newItemNames: {}, renameGroupMap: {}, renameItemMap: {}, expanded: {}, itemEdit: {}, units: ['每平','项','米','套','个'], unitMap: {}, priceMap: {}, renameGroupDialog: false, renameGroupId: '', renameGroupValue: '', itemRenameDialog: false, itemRenameId: '', itemRenameValue: '' },
   onLoad(query) { this.setData({ id: query.id }); this.fetchDetail() },
   fetchDetail() {
-    request({ url: `/api/templates/${this.data.id}/detail`, method: 'GET', success: (r) => { this.setData({ tpl: (r.data && r.data.data) || { groups: [] } }) } })
+    request({ url: `/api/templates/${this.data.id}/detail`, method: 'GET', success: (r) => {
+      const tpl = (r.data && r.data.data) || { groups: [] }
+      const groups = Array.isArray(tpl.groups) ? tpl.groups.map(g => ({
+        ...g,
+        items: Array.isArray(g.items) ? [...g.items].sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0)) : []
+      })) : []
+      const normalized = { ...tpl, groups }
+      const expanded = {}
+      const unitMap = {}
+      const priceMap = {}
+      ;(normalized.groups || []).forEach(g => {
+        expanded[g.id] = true
+        ;(g.items || []).forEach(it => {
+          unitMap[it.id] = it.item && it.item.unit ? it.item.unit : ''
+          priceMap[it.id] = typeof (it.item && it.item.price) === 'number' ? it.item.price : 0
+        })
+      })
+      this.setData({ tpl: normalized, expanded, unitMap, priceMap })
+    } })
+  },
+  openItemRenameDialog(e) {
+    const id = e.currentTarget.dataset.id
+    const tg = (this.data.tpl.groups || []).find(g => (g.items || []).some(i => i.id === id))
+    const it = tg ? (tg.items || []).find(i => i.id === id) : null
+    const currentName = it && it.item ? it.item.name : ''
+    this.setData({ itemRenameDialog: true, itemRenameId: id, itemRenameValue: currentName })
+  },
+  onItemRenameInputDialog(e) {
+    this.setData({ itemRenameValue: e.detail.value })
+  },
+  cancelItemRename() {
+    this.setData({ itemRenameDialog: false, itemRenameId: '', itemRenameValue: '' })
+  },
+  confirmItemRename() {
+    const id = this.data.itemRenameId
+    const name = this.data.itemRenameValue
+    if (!name) return wx.showToast({ title: '请输入新名称', icon: 'none' })
+    request({ url: `/api/templates/items/${id}`, method: 'PUT', data: { name }, success: () => { wx.showToast({ title: '已重命名', icon: 'success' }); this.setData({ itemRenameDialog: false, itemRenameId: '', itemRenameValue: '' }); this.fetchDetail() } })
   },
   toggleSection(e) {
     const id = e.currentTarget.dataset.id
@@ -12,6 +50,25 @@ Page({
     expanded[id] = !expanded[id]
     this.setData({ expanded })
   },
+  openGroupRenameDialog(e) {
+    const id = e.currentTarget.dataset.id
+    const g = (this.data.tpl.groups || []).find(x => x.id === id)
+    const currentName = g && g.group ? g.group.name : ''
+    this.setData({ renameGroupDialog: true, renameGroupId: id, renameGroupValue: currentName })
+  },
+  onRenameGroupInputDialog(e) {
+    this.setData({ renameGroupValue: e.detail.value })
+  },
+  cancelRenameGroup() {
+    this.setData({ renameGroupDialog: false, renameGroupId: '', renameGroupValue: '' })
+  },
+  confirmRenameGroup() {
+    const id = this.data.renameGroupId
+    const name = this.data.renameGroupValue
+    if (!name) return wx.showToast({ title: '请输入新名称', icon: 'none' })
+    request({ url: `/api/templates/groups/${id}`, method: 'PUT', data: { name }, success: () => { wx.showToast({ title: '已重命名', icon: 'success' }); this.setData({ renameGroupDialog: false, renameGroupId: '', renameGroupValue: '' }); this.fetchDetail() } })
+  },
+  noop() {},
   onGroupName(e) { this.setData({ newGroupName: e.detail.value }) },
   addGroup() {
     if (!this.data.newGroupName) return wx.showToast({ title: '请输入大类名', icon: 'none' })
@@ -60,6 +117,26 @@ Page({
     const itemEdit = { ...this.data.itemEdit }
     itemEdit[id] = !itemEdit[id]
     this.setData({ itemEdit })
+  },
+  onUnitChange(e) {
+    const id = e.currentTarget.dataset.id
+    const idx = e.detail.value
+    const unit = this.data.units[idx]
+    const unitMap = { ...this.data.unitMap, [id]: unit }
+    this.setData({ unitMap })
+  },
+  onPriceInput(e) {
+    const id = e.currentTarget.dataset.id
+    const val = e.detail.value
+    const price = Number(val || 0)
+    const priceMap = { ...this.data.priceMap, [id]: price }
+    this.setData({ priceMap })
+  },
+  saveMeta(e) {
+    const id = e.currentTarget.dataset.id
+    const unit = this.data.unitMap[id]
+    const price = this.data.priceMap[id]
+    request({ url: `/api/templates/items/${id}/meta`, method: 'PUT', data: { unit, price }, success: () => { wx.showToast({ title: '已保存', icon: 'success' }); this.fetchDetail() } })
   },
   moveGroupUp(e) {
     this.moveGroup(e.currentTarget.dataset.id, -1)

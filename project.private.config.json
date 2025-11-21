@@ -23,11 +23,18 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/template-quote/template-quote",
+          "pathName": "pages/template-quote/template-quote",
+          "query": "",
+          "scene": null,
+          "launchMode": "default"
+        },
+        {
           "name": "pages/admin-template-edit/admin-template-edit",
           "pathName": "pages/admin-template-edit/admin-template-edit",
           "query": "id=cmi8g0266004y8iwf6p9eljmg",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/admin/index",

@@ -11,14 +11,18 @@
 .tpl-section-title { color:#fff; font-size: 30rpx; font-weight: 600; letter-spacing: 1rpx }
 .tpl-section-body { padding: 0 20rpx 20rpx }
 .tpl-rename-row { display: flex; gap: 12rpx; align-items: center; margin: 12rpx 0 }
-.tpl-btn { background-color: #667eea; color: #fff; border-radius: 8rpx }
-.tpl-btn-warn { background-color: #ff4d4f; color: #fff; border-radius: 8rpx }
+.tpl-btn { background-color: #667eea; color: #fff; border-radius: 8rpx ;margin: 0;}
+.tpl-btn-warn { background-color: #ff4d4f; color: #fff; border-radius: 8rpx;margin: 0;}
 .tpl-items { padding: 0 0 }
 .tpl-item-row { display: flex; align-items: center; padding: 30rpx 0; border-bottom: 1rpx solid #f0f0f0; flex-wrap: wrap }
+.tpl-item-row { flex-direction: column; align-items: stretch }
 .tpl-item-row:last-child { border-bottom: none }
-.tpl-item-info { flex: 1; display: flex; justify-content: space-between; align-items: center; margin-right: 20rpx }
-.tpl-item-name { font-size: 30rpx; color: #333; flex: 1 }
-.tpl-item-actions { display: flex; gap: 8rpx; align-items: center }
+.tpl-item-info {display: flex; align-items: center; margin-bottom: 20rpx;}
+.tpl-item-name { font-size: 30rpx; color: #333; font-weight: bold;}
+.edit-icon { font-size: 32rpx; color: #667eea; padding: 8rpx 12rpx }
+.tpl-item-actions { display: flex; gap: 8rpx;justify-content: flex-end; }
+.tpl-item-meta { display: flex; align-items: center; gap: 12rpx;margin-bottom: 20rpx; }
+.tpl-picker { padding: 12rpx 16rpx; background: #f8f8f8; border: 1rpx solid #ddd; border-radius: 8rpx;min-width:126rpx;text-align: center;}
 .tpl-input-mini { border: 1rpx solid #ddd; border-radius: 8rpx; padding: 8rpx; width: 240rpx }
 .order { color: #999; margin-left: 12rpx }
 .group-actions { display: flex; gap: 12rpx; align-items: center; margin-bottom: 12rpx }
@@ -27,3 +31,10 @@
 .rename { display: flex; gap: 12rpx; align-items: center; margin: 12rpx 0 }
 .row-actions { display: flex; gap: 8rpx; align-items: center }
 .input-mini { border: 1rpx solid #ddd; border-radius: 8rpx; padding: 8rpx; width: 240rpx }
+.tpl-section-tools button{margin: 0 10rpx;}
+.group-edit-icon { color: #fff; margin-left: -25rpx }
+.dialog-mask { position: fixed; left: 0; right: 0; top: 0; bottom: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 999 }
+.dialog-card { width: 80%; background: #fff; border-radius: 12rpx; box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.12); padding: 24rpx }
+.dialog-title { font-size: 30rpx; color: #333; margin-bottom: 16rpx }
+.dialog-input { border: 1rpx solid #ddd; border-radius: 8rpx; padding: 16rpx; background: #f8f8f8; margin-bottom: 16rpx }
+.dialog-actions { display: flex; gap: 12rpx; justify-content: flex-end }

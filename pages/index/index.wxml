@@ -1,6 +1,7 @@
 <view class="container">
   <view class="title">装修报价系统</view>
   <button bindtap="goToQuote" type="primary">开始报价</button>
+  <button bindtap="goToTemplateList" type="primary">模板报价</button>
   <button class="wechat-btn" bindtap="wechatLogin">微信登录</button>
 </view>
 

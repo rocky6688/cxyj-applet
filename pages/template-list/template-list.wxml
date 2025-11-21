@@ -1,0 +1,12 @@
+<view class="tpl-list-page">
+  <view class="header">
+    <view class="title">模板列表</view>
+  </view>
+  <view class="tpl-list">
+    <block wx:for="{{templates}}" wx:key="id">
+      <view class="tpl-item" bindtap="choose" data-id="{{item.id}}">
+        <view class="tpl-name">{{item.name}}<text class="tpl-status">{{item.status}}</text><text wx:if="{{item.isDefault}}" class="tpl-default">默认</text></view>
+      </view>
+    </block>
+  </view>
+</view>

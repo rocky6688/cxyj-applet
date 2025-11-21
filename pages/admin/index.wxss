@@ -1,7 +1,7 @@
 .admin-page { padding: 24rpx }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24rpx }
 .title { font-size: 32rpx; font-weight: 600 }
-.create-btn { background-color: #07c160; color: #fff }
+.create-btn { background-color: #07c160; color: #fff; margin: 0rpx !important; width: auto !important; }
 .tpl-list { display: flex; flex-direction: column; gap: 20rpx }
 .create-row { display: flex; gap: 16rpx; align-items: center; margin-bottom: 24rpx }
 .input { border: 1rpx solid #ddd; border-radius: 8rpx; padding: 16rpx; flex: 1 }

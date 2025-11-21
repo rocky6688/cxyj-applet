@@ -134,4 +134,12 @@ export class TemplatesController {
     const res = await this.service.updateTemplateItemName(id, body.name)
     return { code: 0, message: 'ok', data: res }
   }
+
+  @Put('items/:id/meta')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN')
+  async updateItemMeta(@Param('id') id: string, @Body() body: { unit?: string; price?: number }) {
+    const res = await this.service.updateTemplateItemMeta(id, body.unit, body.price)
+    return { code: 0, message: 'ok', data: res }
+  }
 }

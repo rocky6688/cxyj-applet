@@ -1,7 +1,7 @@
 <view class="admin-page">
   <view class="header">
     <view class="title">模板管理</view>
-    <button class="create-btn" bindtap="createFromCurrent">从当前配置生成模板</button>
+    <button class="create-btn" bindtap="createFromCurrent">快速生成模板</button>
   </view>
   <view class="create-row">
     <input class="input" placeholder="输入模板名称（新增模板）" bindinput="onNewTplName" />

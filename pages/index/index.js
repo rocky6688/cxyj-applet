@@ -20,6 +20,9 @@ Page({
     wx.navigateTo({
       url: '/pages/quote/quote'
     })
+  },
+  goToTemplateList() {
+    wx.navigateTo({ url: '/pages/template-list/template-list' })
   }
   ,wechatLogin() {
     const { API_BASE_URL } = require('../../utils/config.js')

@@ -55,7 +55,7 @@ export class TemplatesService {
       where: { id },
       include: {
         groups: {
-          include: { group: true, items: { include: { item: true } } },
+          include: { group: true, items: { include: { item: true }, orderBy: { orderIndex: 'asc' } } },
           orderBy: { orderIndex: 'asc' },
         },
       },
@@ -124,6 +124,16 @@ export class TemplatesService {
     const ti = await this.prisma.templateItem.findUnique({ where: { id: templateItemId } })
     if (!ti) throw new Error('template item not found')
     const updated = await this.prisma.categoryItem.update({ where: { id: ti.itemId }, data: { name } })
+    return { ok: true, item: updated }
+  }
+
+  async updateTemplateItemMeta(templateItemId: string, unit?: string, price?: number) {
+    const ti = await this.prisma.templateItem.findUnique({ where: { id: templateItemId } })
+    if (!ti) throw new Error('template item not found')
+    const data: any = {}
+    if (typeof unit !== 'undefined') data.unit = unit
+    if (typeof price !== 'undefined') data.price = price
+    const updated = await this.prisma.categoryItem.update({ where: { id: ti.itemId }, data })
     return { ok: true, item: updated }
   }
 }

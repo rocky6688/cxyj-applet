@@ -5,7 +5,9 @@
     "pages/login/login",
     "pages/admin-login/admin-login",
     "pages/admin/index",
-    "pages/admin-template-edit/admin-template-edit"
+    "pages/admin-template-edit/admin-template-edit",
+    "pages/template-list/template-list",
+    "pages/template-quote/template-quote"
   ],
   "window": {
     "backgroundTextStyle": "light",

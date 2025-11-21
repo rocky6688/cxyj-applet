@@ -12,36 +12,42 @@
       <view class="tpl-section">
         <view class="tpl-section-header" bindtap="toggleSection" data-id="{{item.id}}">
           <view class="tpl-section-title">{{item.group.name}}</view>
+          <text class="edit-icon group-edit-icon" catchtap="openGroupRenameDialog" data-id="{{item.id}}">✎</text>
           <view class="tpl-section-tools">
-            <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="moveGroupUp">上移</button>
-            <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="moveGroupDown">下移</button>
-            <button class="tpl-btn-warn" size="mini" data-id="{{item.id}}" bindtap="removeGroup">删除大类</button>
+            <button class="tpl-btn" size="mini" data-id="{{item.id}}" catchtap="moveGroupUp">上移</button>
+            <button class="tpl-btn" size="mini" data-id="{{item.id}}" catchtap="moveGroupDown">下移</button>
+            <button class="tpl-btn-warn" size="mini" data-id="{{item.id}}" catchtap="removeGroup">删除大类</button>
           </view>
         </view>
 
         <view class="tpl-section-body" wx:if="{{expanded[item.id]}}">
           <view class="tpl-rename-row">
-            <input class="tpl-input" placeholder="重命名大类" data-id="{{item.id}}" bindinput="onRenameGroupInput" />
-            <button class="tpl-btn" data-id="{{item.id}}" bindtap="renameGroup">重命名</button>
             <input class="tpl-input" placeholder="新子类名称" data-tgid="{{item.id}}" bindinput="onItemName" />
             <button class="tpl-btn" data-tgid="{{item.id}}" bindtap="addItem">新增子类</button>
-            <button class="tpl-btn-warn" data-id="{{item.id}}" bindtap="removeGroup">删除大类</button>
           </view>
 
           <view class="tpl-items">
             <block wx:for="{{item.items}}" wx:key="id">
               <view class="tpl-item-row">
                 <view class="tpl-item-info">
-                  <text class="tpl-item-name">{{item.item.name}}</text>
+                  <text class="tpl-item-name" wx:if="{{!itemEdit[item.id]}}">{{item.item.name}}</text>
+                  <input class="tpl-input-mini" wx:if="{{itemEdit[item.id]}}" placeholder="重命名子类" data-id="{{item.id}}" bindinput="onRenameItemInput" />
+                  <text class="edit-icon" catchtap="openItemRenameDialog" data-id="{{item.id}}">✎</text>
+                </view>
+                        <view class="tpl-item-meta">
+                  <picker mode="selector" range="{{units}}" data-id="{{item.id}}" bindchange="onUnitChange">
+                    <view class="tpl-picker">{{unitMap[item.id] || '选择单位'}}</view>
+                  </picker>
+                  <input class="tpl-input-mini" type="number" placeholder="金额" value="{{priceMap[item.id]}}" bindinput="onPriceInput" data-id="{{item.id}}" />
+                  <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="saveMeta">保存金额单位</button>
                 </view>
                 <view class="tpl-item-actions">
-                  <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="toggleItemEdit">编辑</button>
-                  <input class="tpl-input-mini" wx:if="{{itemEdit[item.id]}}" placeholder="重命名子类" data-id="{{item.id}}" bindinput="onRenameItemInput" />
-                  <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="renameItem" wx:if="{{itemEdit[item.id]}}">保存</button>
-                  <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="moveItemUp">上移</button>
-                  <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="moveItemDown">下移</button>
-                  <button class="tpl-btn-warn" size="mini" data-id="{{item.id}}" bindtap="removeItem">删除</button>
+                  
+                  <button class="tpl-btn" size="mini" data-id="{{item.id}}" catchtap="moveItemUp">上移</button>
+                  <button class="tpl-btn" size="mini" data-id="{{item.id}}" catchtap="moveItemDown">下移</button>
+                  <button class="tpl-btn-warn" size="mini" data-id="{{item.id}}" catchtap="removeItem">删除</button>
                 </view>
+        
               </view>
             </block>
           </view>
@@ -49,4 +55,26 @@
       </view>
     </block>
   </scroll-view>
+
+  <view class="dialog-mask" wx:if="{{renameGroupDialog}}" catchtap="noop">
+    <view class="dialog-card">
+      <view class="dialog-title">重命名大类</view>
+      <input class="dialog-input" value="{{renameGroupValue}}" bindinput="onRenameGroupInputDialog" />
+      <view class="dialog-actions">
+        <button class="tpl-btn-warn" bindtap="cancelRenameGroup">取消</button>
+        <button class="tpl-btn" bindtap="confirmRenameGroup">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="dialog-mask" wx:if="{{itemRenameDialog}}" catchtap="noop">
+    <view class="dialog-card">
+      <view class="dialog-title">重命名子类</view>
+      <input class="dialog-input" value="{{itemRenameValue}}" bindinput="onItemRenameInputDialog" />
+      <view class="dialog-actions">
+        <button class="tpl-btn-warn" bindtap="cancelItemRename">取消</button>
+        <button class="tpl-btn" bindtap="confirmItemRename">保存</button>
+      </view>
+    </view>
+  </view>
 </view>
