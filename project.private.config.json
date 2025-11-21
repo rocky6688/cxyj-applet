@@ -23,22 +23,22 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/template-quote/template-quote",
-          "pathName": "pages/template-quote/template-quote",
-          "query": "",
+          "name": "pages/admin-template-edit/admin-template-edit",
+          "pathName": "pages/admin-template-edit/admin-template-edit",
+          "query": "id=cmi89a0yr0027cmmohef9ndfd",
           "scene": null,
           "launchMode": "default"
         },
         {
-          "name": "pages/admin-template-edit/admin-template-edit",
-          "pathName": "pages/admin-template-edit/admin-template-edit",
-          "query": "id=cmi8g0266004y8iwf6p9eljmg",
+          "name": "pages/admin/index",
+          "pathName": "pages/admin/index",
+          "query": "",
           "launchMode": "default",
           "scene": null
         },
         {
-          "name": "pages/admin/index",
-          "pathName": "pages/admin/index",
+          "name": "pages/template-quote/template-quote",
+          "pathName": "pages/template-quote/template-quote",
           "query": "",
           "launchMode": "default",
           "scene": null

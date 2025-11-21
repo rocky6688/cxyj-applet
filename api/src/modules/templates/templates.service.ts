@@ -127,12 +127,13 @@ export class TemplatesService {
     return { ok: true, item: updated }
   }
 
-  async updateTemplateItemMeta(templateItemId: string, unit?: string, price?: number) {
+  async updateTemplateItemMeta(templateItemId: string, unit?: string, price?: number, minQuantity?: number) {
     const ti = await this.prisma.templateItem.findUnique({ where: { id: templateItemId } })
     if (!ti) throw new Error('template item not found')
     const data: any = {}
     if (typeof unit !== 'undefined') data.unit = unit
     if (typeof price !== 'undefined') data.price = price
+    if (typeof minQuantity !== 'undefined') data.minQuantity = minQuantity && minQuantity > 0 ? minQuantity : 1
     const updated = await this.prisma.categoryItem.update({ where: { id: ti.itemId }, data })
     return { ok: true, item: updated }
   }

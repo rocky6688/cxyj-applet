@@ -147,6 +147,7 @@
   z-index: 1000;
   pointer-events: none;
 }
+.stairs-toggle { pointer-events: auto }
 
 .total-item {
   display: flex;

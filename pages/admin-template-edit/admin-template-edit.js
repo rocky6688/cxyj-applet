@@ -2,7 +2,7 @@ const req = require('../../utils/request.js')
 const request = typeof req === 'function' ? req : req.request
 
 Page({
-  data: { id: '', tpl: { groups: [] }, newGroupName: '', newItemNames: {}, renameGroupMap: {}, renameItemMap: {}, expanded: {}, itemEdit: {}, units: ['每平','项','米','套','个'], unitMap: {}, priceMap: {}, renameGroupDialog: false, renameGroupId: '', renameGroupValue: '', itemRenameDialog: false, itemRenameId: '', itemRenameValue: '' },
+  data: { id: '', tpl: { groups: [] }, newGroupName: '', newItemNames: {}, renameGroupMap: {}, renameItemMap: {}, expanded: {}, itemEdit: {}, units: ['每平','项','米','套','个','方车','面议'], unitMap: {}, priceMap: {}, minQtyMap: {}, renameGroupDialog: false, renameGroupId: '', renameGroupValue: '', itemRenameDialog: false, itemRenameId: '', itemRenameValue: '' },
   onLoad(query) { this.setData({ id: query.id }); this.fetchDetail() },
   fetchDetail() {
     request({ url: `/api/templates/${this.data.id}/detail`, method: 'GET', success: (r) => {
@@ -15,14 +15,16 @@ Page({
       const expanded = {}
       const unitMap = {}
       const priceMap = {}
+      const minQtyMap = {}
       ;(normalized.groups || []).forEach(g => {
         expanded[g.id] = true
         ;(g.items || []).forEach(it => {
           unitMap[it.id] = it.item && it.item.unit ? it.item.unit : ''
           priceMap[it.id] = typeof (it.item && it.item.price) === 'number' ? it.item.price : 0
+          minQtyMap[it.id] = typeof (it.item && it.item.minQuantity) === 'number' ? it.item.minQuantity : 1
         })
       })
-      this.setData({ tpl: normalized, expanded, unitMap, priceMap })
+      this.setData({ tpl: normalized, expanded, unitMap, priceMap, minQtyMap })
     } })
   },
   openItemRenameDialog(e) {
@@ -132,11 +134,26 @@ Page({
     const priceMap = { ...this.data.priceMap, [id]: price }
     this.setData({ priceMap })
   },
+  onMinQtyInput(e) {
+    const id = e.currentTarget.dataset.id
+    const raw = String(e.detail.value || '')
+    const cleaned = raw.replace(/[^0-9]/g, '')
+    const minQtyMap = { ...this.data.minQtyMap }
+    if (cleaned === '') {
+      minQtyMap[id] = ''
+    } else {
+      minQtyMap[id] = Number(cleaned)
+    }
+    this.setData({ minQtyMap })
+  },
   saveMeta(e) {
     const id = e.currentTarget.dataset.id
     const unit = this.data.unitMap[id]
     const price = this.data.priceMap[id]
-    request({ url: `/api/templates/items/${id}/meta`, method: 'PUT', data: { unit, price }, success: () => { wx.showToast({ title: '已保存', icon: 'success' }); this.fetchDetail() } })
+    const raw = this.data.minQtyMap[id]
+    const n = Number(raw)
+    const minQuantity = !isNaN(n) && n > 0 ? n : 1
+    request({ url: `/api/templates/items/${id}/meta`, method: 'PUT', data: { unit, price, minQuantity }, success: () => { wx.showToast({ title: '已保存', icon: 'success' }); this.fetchDetail() } })
   },
   moveGroupUp(e) {
     this.moveGroup(e.currentTarget.dataset.id, -1)

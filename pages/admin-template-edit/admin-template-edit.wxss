@@ -21,9 +21,11 @@
 .tpl-item-name { font-size: 30rpx; color: #333; font-weight: bold;}
 .edit-icon { font-size: 32rpx; color: #667eea; padding: 8rpx 12rpx }
 .tpl-item-actions { display: flex; gap: 8rpx;justify-content: flex-end; }
-.tpl-item-meta { display: flex; align-items: center; gap: 12rpx;margin-bottom: 20rpx; }
+.tpl-item-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 12rpx; margin-bottom: 20rpx }
+.tpl-item-meta-row { display: flex; align-items: center; gap: 12rpx }
 .tpl-picker { padding: 12rpx 16rpx; background: #f8f8f8; border: 1rpx solid #ddd; border-radius: 8rpx;min-width:126rpx;text-align: center;}
 .tpl-input-mini { border: 1rpx solid #ddd; border-radius: 8rpx; padding: 8rpx; width: 240rpx }
+.tpl-label { font-size: 26rpx; color: #666 }
 .order { color: #999; margin-left: 12rpx }
 .group-actions { display: flex; gap: 12rpx; align-items: center; margin-bottom: 12rpx }
 .items { display: flex; flex-direction: column; gap: 8rpx }

@@ -4,15 +4,14 @@ const { STAIRS_FEE_RATE, PERCENT_FEE_RATE } = require('../../utils/constants.js'
 
 Page({
   data: {
-    demolitionItems: [],
-    wallItems: [],
-    ceilingItems: [],
-    floorItems: [],
-    comprehensiveItems: [],
-    expandedCategories: { demolition: true, wall: true, ceiling: true, floor: true, comprehensive: true },
+    sections: [],
+    expandedSections: {},
+    sectionSelectAll: {},
     selectedItems: {},
     manualPrices: {},
     quantities: {},
+    prevQuantities: {},
+    stairsEnabled: false,
     baseTotal: 0,
     fees: { designFee: 0, transportFee: 0, managementFee: 0, stairsFee: 0 },
     finalTotal: 0,
@@ -22,7 +21,12 @@ Page({
   },
 
   onLoad(query) {
-    this.setData({ templateId: query && query.id ? query.id : '' })
+    const qid = query && query.id ? query.id : ''
+    let tid = qid
+    if (!tid) {
+      try { tid = wx.getStorageSync('current_template_id') || '' } catch (e) {}
+    }
+    this.setData({ templateId: tid })
     this.fetchTemplate()
   },
 
@@ -31,22 +35,19 @@ Page({
     const url = id ? `/api/templates/${id}/detail` : '/api/templates/default'
     request({ url, method: 'GET', success: (r) => {
       const tpl = (r.data && r.data.data) || { groups: [] }
-      const byCat = { demolition: [], wall: [], ceiling: [], floor: [], comprehensive: [] }
-      ;(tpl.groups || []).forEach(g => {
-        const cat = g && g.group && g.group.slug
-        const items = (g.items || []).map(it => {
+      const sections = (tpl.groups || []).map(g => ({
+        id: g.id,
+        name: (g.group && g.group.name) || '',
+        slug: (g.group && g.group.slug) || '',
+        items: (g.items || []).map(it => {
           const ii = it.item || {}
-          return { id: ii.id, name: ii.name, unit: ii.unit || '', price: typeof ii.price === 'number' ? ii.price : 0, category: cat, slug: ii.slug }
+          return { id: ii.id, name: ii.name, unit: ii.unit || '', price: typeof ii.price === 'number' ? ii.price : 0, slug: ii.slug, minQuantity: typeof ii.minQuantity === 'number' ? ii.minQuantity : 1 }
         })
-        if (byCat[cat]) byCat[cat] = byCat[cat].concat(items)
-      })
-      this.setData({
-        demolitionItems: byCat.demolition,
-        wallItems: byCat.wall,
-        ceilingItems: byCat.ceiling,
-        floorItems: byCat.floor,
-        comprehensiveItems: byCat.comprehensive
-      })
+      }))
+      const expandedSections = {}
+      const sectionSelectAll = {}
+      sections.forEach(s => { expandedSections[s.id] = true; sectionSelectAll[s.id] = true })
+      this.setData({ sections, expandedSections, sectionSelectAll })
       this.initializeDefaultSelection()
     } })
   },
@@ -55,33 +56,27 @@ Page({
     const selectedItems = {}
     const quantities = {}
     const manualPrices = {}
-    const cats = ['demolition','wall','ceiling','floor','comprehensive']
-    cats.forEach(category => {
-      const items = this.getItemsByCategory(category)
-      items.forEach(item => {
+    ;(this.data.sections || []).forEach(section => {
+      (section.items || []).forEach(item => {
         selectedItems[item.id] = { item, area: 1, areaText: '1.00', checked: true }
-        quantities[item.id] = 1
-        if (item.price === 0) manualPrices[item.id] = 0
+        quantities[item.id] = item.minQuantity || 1
+        if (item.price === 0 || item.unit === '面议') manualPrices[item.id] = 0
       })
     })
     this.setData({ selectedItems, quantities, manualPrices })
     this.updateTotals()
   },
 
-  getItemsByCategory(category) {
-    if (category === 'demolition') return this.data.demolitionItems || []
-    if (category === 'wall') return this.data.wallItems || []
-    if (category === 'ceiling') return this.data.ceilingItems || []
-    if (category === 'floor') return this.data.floorItems || []
-    if (category === 'comprehensive') return this.data.comprehensiveItems || []
-    return []
+  getItemsBySectionId(sectionId) {
+    const s = (this.data.sections || []).find(x => x.id === sectionId)
+    return (s && s.items) || []
   },
 
-  toggleCategory(e) {
-    const category = e.currentTarget.dataset.category
-    const expanded = { ...this.data.expandedCategories }
-    expanded[category] = !expanded[category]
-    this.setData({ expandedCategories: expanded })
+  toggleSection(e) {
+    const id = e.currentTarget.dataset.sectionId
+    const expanded = { ...this.data.expandedSections }
+    expanded[id] = !expanded[id]
+    this.setData({ expandedSections: expanded })
   },
 
   onQuantityInput(e) {
@@ -92,11 +87,11 @@ Page({
     quantities[itemId] = quantity
     if (quantity <= 0 && selectedItems[itemId]) delete selectedItems[itemId]
     this.setData({ quantities, selectedItems })
-    const category = this.getCategoryByItemId(itemId)
-    if (category) {
-      const categorySelectAll = { ...this.data.categorySelectAll }
-      categorySelectAll[category] = this.computeCategoryAllSelected(category, this.data.selectedItems)
-      this.setData({ categorySelectAll })
+    const sectionId = this.getSectionIdByItemId(itemId)
+    if (sectionId) {
+      const sectionSelectAll = { ...this.data.sectionSelectAll }
+      sectionSelectAll[sectionId] = this.computeSectionAllSelected(sectionId, this.data.selectedItems)
+      this.setData({ sectionSelectAll })
     }
     this.updateTotals()
   },
@@ -120,16 +115,16 @@ Page({
     if (isChecked) {
       selectedItems[item.id] = { item, area: 1, areaText: '1.00', checked: true }
       if (!quantities[item.id]) quantities[item.id] = 1
-      if (item.price === 0 && !manualPrices[item.id]) manualPrices[item.id] = 0
+      if ((item.price === 0 || item.unit === '面议') && !manualPrices[item.id]) manualPrices[item.id] = 0
     } else {
       delete selectedItems[item.id]
     }
     this.setData({ selectedItems, quantities, manualPrices })
-    const category = item.category
-    if (category) {
-      const categorySelectAll = { ...this.data.categorySelectAll }
-      categorySelectAll[category] = this.computeCategoryAllSelected(category, this.data.selectedItems)
-      this.setData({ categorySelectAll })
+    const sectionId = this.getSectionIdByItemId(item.id)
+    if (sectionId) {
+      const sectionSelectAll = { ...this.data.sectionSelectAll }
+      sectionSelectAll[sectionId] = this.computeSectionAllSelected(sectionId, this.data.selectedItems)
+      this.setData({ sectionSelectAll })
     }
     this.updateTotals()
   },
@@ -165,21 +160,21 @@ Page({
       const area = parseFloat(selectedItems[itemId].area)
       const num = isNaN(area) ? 0 : area
       if (num === 0) {
-        const category = selectedItems[itemId].item && selectedItems[itemId].item.category
+        const sectionId = this.getSectionIdByItemId(itemId)
         delete selectedItems[itemId]
-        const categorySelectAll = { ...this.data.categorySelectAll }
-        if (category) categorySelectAll[category] = false
-        this.setData({ selectedItems, categorySelectAll })
+        const sectionSelectAll = { ...this.data.sectionSelectAll }
+        if (sectionId) sectionSelectAll[sectionId] = false
+        this.setData({ selectedItems, sectionSelectAll })
       } else {
         selectedItems[itemId].area = num
         selectedItems[itemId].areaText = num.toFixed(2)
         this.setData({ selectedItems })
       }
-      const category = this.getCategoryByItemId(itemId)
-      if (category) {
-        const categorySelectAll = { ...this.data.categorySelectAll }
-        categorySelectAll[category] = this.computeCategoryAllSelected(category, this.data.selectedItems)
-        this.setData({ categorySelectAll })
+      const sectionId = this.getSectionIdByItemId(itemId)
+      if (sectionId) {
+        const sectionSelectAll = { ...this.data.sectionSelectAll }
+        sectionSelectAll[sectionId] = this.computeSectionAllSelected(sectionId, this.data.selectedItems)
+        this.setData({ sectionSelectAll })
       }
       this.updateTotals()
     }
@@ -189,8 +184,32 @@ Page({
   onQuantityFocus(e) {
     const itemId = e.currentTarget.dataset.itemId
     const quantities = { ...this.data.quantities }
+    const prevQuantities = { ...this.data.prevQuantities }
+    prevQuantities[itemId] = quantities[itemId]
     quantities[itemId] = ''
-    this.setData({ quantities })
+    this.setData({ quantities, prevQuantities })
+  },
+  onQuantityBlur(e) {
+    const itemId = e.currentTarget.dataset.itemId
+    const raw = String(e.detail.value || '')
+    const prev = this.data.prevQuantities[itemId]
+    const quantities = { ...this.data.quantities }
+    const sel = this.data.selectedItems[itemId]
+    const minQ = sel && sel.item && typeof sel.item.minQuantity === 'number' ? sel.item.minQuantity : 1
+    if (raw === '') {
+      quantities[itemId] = typeof prev === 'number' ? prev : (minQ || 1)
+    } else {
+      const num = parseFloat(raw)
+      if (isNaN(num) || num < minQ) {
+        quantities[itemId] = minQ
+      } else {
+        quantities[itemId] = num
+      }
+    }
+    const prevQuantities = { ...this.data.prevQuantities }
+    delete prevQuantities[itemId]
+    this.setData({ quantities, prevQuantities })
+    this.updateTotals()
   },
   onManualPriceFocus(e) {
     const itemId = e.currentTarget.dataset.itemId
@@ -199,44 +218,51 @@ Page({
     this.setData({ manualPrices })
   },
 
-  onCategorySelectAllChange(e) {
-    const category = e.currentTarget.dataset.category
+  onSectionSelectAllChange(e) {
+    const sectionId = e.currentTarget.dataset.sectionId
     const checked = Array.isArray(e.detail.value) && e.detail.value.length > 0
     const selectedItems = { ...this.data.selectedItems }
     const quantities = { ...this.data.quantities }
     const manualPrices = { ...this.data.manualPrices }
-    const items = this.getItemsByCategory(category)
+    const items = this.getItemsBySectionId(sectionId)
     if (checked) {
       items.forEach(item => {
         if (!selectedItems[item.id]) selectedItems[item.id] = { item, area: 1, areaText: '1.00', checked: true }
         if (item.unit === '米' || item.unit === '个' || item.unit === '套' || item.unit === '单扇') {
           if (!quantities[item.id]) quantities[item.id] = 1
         }
-        if (item.price === 0) {
+        if (item.price === 0 || item.unit === '面议') {
           if (!manualPrices[item.id]) manualPrices[item.id] = 0
         }
       })
     } else {
       items.forEach(item => { if (selectedItems[item.id]) delete selectedItems[item.id] })
     }
-    const categorySelectAll = { ...this.data.categorySelectAll, [category]: checked }
-    this.setData({ selectedItems, quantities, manualPrices, categorySelectAll })
+    const sectionSelectAll = { ...this.data.sectionSelectAll, [sectionId]: checked }
+    this.setData({ selectedItems, quantities, manualPrices, sectionSelectAll })
     this.updateTotals()
   },
 
   noop() {},
 
-  computeCategoryAllSelected(category, selectedItems) {
-    const items = this.getItemsByCategory(category)
+  onStairsRadioChange(e) {
+    const v = String(e.detail.value || '')
+    const stairsEnabled = v === 'on'
+    this.setData({ stairsEnabled })
+    this.updateTotals()
+  },
+
+  computeSectionAllSelected(sectionId, selectedItems) {
+    const items = this.getItemsBySectionId(sectionId)
     return items.every(it => !!selectedItems[it.id])
   },
 
-  getCategoryByItemId(itemId) {
-    const cats = ['demolition','wall','ceiling','floor','comprehensive']
-    for (let i = 0; i < cats.length; i++) {
-      const items = this.getItemsByCategory(cats[i])
+  getSectionIdByItemId(itemId) {
+    const secs = this.data.sections || []
+    for (let i = 0; i < secs.length; i++) {
+      const items = secs[i].items || []
       for (let j = 0; j < items.length; j++) {
-        if (items[j].id === itemId) return cats[i]
+        if (items[j].id === itemId) return secs[i].id
       }
     }
     return ''
@@ -247,7 +273,7 @@ Page({
     const designFee = baseTotal * PERCENT_FEE_RATE
     const transportFee = baseTotal * PERCENT_FEE_RATE
     const managementFee = baseTotal * PERCENT_FEE_RATE
-    const stairsFee = this.data.selectedItems['stairs_fee'] ? baseTotal * STAIRS_FEE_RATE : 0
+    const stairsFee = this.data.stairsEnabled ? baseTotal * STAIRS_FEE_RATE : 0
     const fees = {
       designFee,
       transportFee,
@@ -283,7 +309,7 @@ Page({
           const additionalPrice = 65
           if (area <= baseArea) itemTotal = basePrice
           else itemTotal = basePrice + ((area - baseArea) * additionalPrice)
-        } else if (item.price === 0) {
+        } else if (item.price === 0 || item.unit === '面议') {
           itemTotal = manualPrices[itemId] || 0
         } else if (item.unit === '每平') {
           itemTotal = item.price * area

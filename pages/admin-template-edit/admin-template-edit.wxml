@@ -34,12 +34,19 @@
                   <input class="tpl-input-mini" wx:if="{{itemEdit[item.id]}}" placeholder="重命名子类" data-id="{{item.id}}" bindinput="onRenameItemInput" />
                   <text class="edit-icon" catchtap="openItemRenameDialog" data-id="{{item.id}}">✎</text>
                 </view>
-                        <view class="tpl-item-meta">
-                  <picker mode="selector" range="{{units}}" data-id="{{item.id}}" bindchange="onUnitChange">
-                    <view class="tpl-picker">{{unitMap[item.id] || '选择单位'}}</view>
-                  </picker>
-                  <input class="tpl-input-mini" type="number" placeholder="金额" value="{{priceMap[item.id]}}" bindinput="onPriceInput" data-id="{{item.id}}" />
-                  <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="saveMeta">保存金额单位</button>
+                <view class="tpl-item-meta">
+                  <view class="tpl-item-meta-row">
+                    <picker mode="selector" range="{{units}}" data-id="{{item.id}}" bindchange="onUnitChange">
+                      <view class="tpl-picker">{{unitMap[item.id] || '选择单位'}}</view>
+                    </picker>
+                    <text class="tpl-label">金额</text>
+                    <input class="tpl-input-mini" type="number" placeholder="金额" value="{{priceMap[item.id]}}" bindinput="onPriceInput" data-id="{{item.id}}"/>
+                  </view>
+                  <view class="tpl-item-meta-row">
+                    <text class="tpl-label">最小数量</text>
+                    <input class="tpl-input-mini" type="number" placeholder="最小数量(默认1)" value="{{minQtyMap[item.id]}}" bindinput="onMinQtyInput" data-id="{{item.id}}" />
+                    <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="saveMeta">保存金额单位</button>
+                  </view>
                 </view>
                 <view class="tpl-item-actions">
                   

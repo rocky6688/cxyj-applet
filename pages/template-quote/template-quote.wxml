@@ -1,188 +1,60 @@
 <view class="quote-container">
   <scroll-view scroll-y class="quote-scroll">
-    <view class="category-section">
-      <view class="category-header" bindtap="toggleCategory" data-category="demolition">
-        <view class="category-select" catchtap="noop">
-          <checkbox-group bindchange="onCategorySelectAllChange" data-category="demolition">
-            <checkbox value="demolition" checked="{{categorySelectAll.demolition}}">全选</checkbox>
-          </checkbox-group>
-        </view>
-        <view class="category-title">基础拆除类</view>
-        <view class="category-arrow {{expandedCategories.demolition ? 'expanded' : ''}}">▼</view>
-      </view>
-      <view class="items-list" wx:if="{{expandedCategories.demolition}}">
-        <view class="item-row" wx:for="{{demolitionItems}}" wx:key="id">
-          <checkbox-group bindchange="onItemSelect" data-item="{{item}}">
-            <checkbox value="{{item.id}}" checked="{{!!selectedItems[item.id]}}"/>
-          </checkbox-group>
-          <view class="item-info">
-            <text class="item-name">{{item.name}}</text>
-            <view class="item-price-section">
-              <text class="item-price" wx:if="{{item.price > 0}}">¥{{item.price}}</text>
-              <text class="item-price" wx:else>面议</text>
-              <text class="item-unit">{{item.unit}}</text>
-            </view>
+    <block wx:for="{{sections}}" wx:key="id">
+      <view class="category-section">
+        <view class="category-header" bindtap="toggleSection" data-section-id="{{item.id}}">
+          <view class="category-select" catchtap="noop">
+            <checkbox-group bindchange="onSectionSelectAllChange" data-section-id="{{item.id}}">
+              <checkbox value="{{item.id}}" checked="{{sectionSelectAll[item.id]}}">全选</checkbox>
+            </checkbox-group>
           </view>
-          <input class="area-input" type="text" placeholder="面积" 
-                 value="{{selectedItems[item.id].areaText}}"
-                 bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
-                 wx:if="{{item.unit === '每平' && selectedItems[item.id] && item.id !== 'garbage_transport'}}"/>
-          <input class="area-input" type="text" placeholder="4方车起" 
-                 value="{{selectedItems[item.id].areaText}}"
-                 bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
-                 wx:if="{{item.slug === 'garbage_transport' && selectedItems[item.id]}}"/>
-          <input class="quantity-input" type="number" placeholder="数量" 
-                 value="{{quantities[item.id]}}"
-                 bindinput="onQuantityInput" bindfocus="onQuantityFocus" data-item-id="{{item.id}}"
-                 wx:if="{{(item.unit === '个' || item.unit === '米' || item.unit === '套' || item.unit === '单扇') && selectedItems[item.id]}}"/>
-          <input class="manual-price-input" type="number" placeholder="输入金额" 
-                 value="{{manualPrices[item.id]}}"
-                 bindinput="onManualPriceInput" bindfocus="onManualPriceFocus" data-item-id="{{item.id}}"
-                 wx:if="{{item.price === 0 && item.slug !== 'stairs_fee' && selectedItems[item.id]}}"/>
+          <view class="category-title">{{item.name}}</view>
+          <view class="category-arrow {{expandedSections[item.id] ? 'expanded' : ''}}">▼</view>
         </view>
-      </view>
-    </view>
-
-    <view class="category-section">
-      <view class="category-header" bindtap="toggleCategory" data-category="ceiling">
-        <view class="category-select" catchtap="noop">
-          <checkbox-group bindchange="onCategorySelectAllChange" data-category="ceiling">
-            <checkbox value="ceiling" checked="{{categorySelectAll.ceiling}}">全选</checkbox>
-          </checkbox-group>
-        </view>
-        <view class="category-title">天花类</view>
-        <view class="category-arrow {{expandedCategories.ceiling ? 'expanded' : ''}}">▼</view>
-      </view>
-      <view class="items-list" wx:if="{{expandedCategories.ceiling}}">
-        <view class="item-row" wx:for="{{ceilingItems}}" wx:key="id">
-          <checkbox-group bindchange="onItemSelect" data-item="{{item}}">
-            <checkbox value="{{item.id}}" checked="{{!!selectedItems[item.id]}}"/>
-          </checkbox-group>
-          <view class="item-info">
-            <text class="item-name">{{item.name}}</text>
-            <view class="item-price-section">
-              <text class="item-price">¥{{item.price}}</text>
-              <text class="item-unit">{{item.unit}}</text>
+        <view class="items-list" wx:if="{{expandedSections[item.id]}}">
+          <view class="item-row" wx:for="{{item.items}}" wx:key="id">
+            <checkbox-group bindchange="onItemSelect" data-item="{{item}}">
+              <checkbox value="{{item.id}}" checked="{{!!selectedItems[item.id]}}"/>
+            </checkbox-group>
+            <view class="item-info">
+              <text class="item-name">{{item.name}}</text>
+              <view class="item-price-section">
+                <text class="item-price" wx:if="{{item.slug === 'stairs_fee'}}">¥{{fees.stairsFeeText}}</text>
+                <text class="item-price" wx:elif="{{item.price > 0}}">¥{{item.price}}</text>
+                <text class="item-price" wx:else>面议</text>
+                <text class="item-unit">{{item.unit}}</text>
+              </view>
             </view>
+            <input class="area-input" type="text" placeholder="面积" 
+                   value="{{selectedItems[item.id].areaText}}"
+                   bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
+                   wx:if="{{item.unit === '每平' && selectedItems[item.id] && item.slug !== 'garbage_transport'}}"/>
+            <input class="area-input" type="text" placeholder="4方车起" 
+                   value="{{selectedItems[item.id].areaText}}"
+                   bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
+                   wx:if="{{item.slug === 'garbage_transport' && selectedItems[item.id]}}"/>
+            <input class="quantity-input" type="number" placeholder="数量" 
+                   value="{{quantities[item.id]}}"
+                   bindinput="onQuantityInput" bindfocus="onQuantityFocus" bindblur="onQuantityBlur" data-item-id="{{item.id}}"
+                   wx:if="{{(item.unit === '个' || item.unit === '米' || item.unit === '套' || item.unit === '单扇' || item.unit === '方车' || item.unit === '项') && selectedItems[item.id]}}"/>
+            <input class="manual-price-input" type="number" placeholder="输入金额" 
+                   value="{{manualPrices[item.id]}}"
+                   bindinput="onManualPriceInput" bindfocus="onManualPriceFocus" data-item-id="{{item.id}}"
+                   wx:if="{{(item.price === 0 || item.unit === '面议') && item.slug !== 'stairs_fee' && selectedItems[item.id]}}"/>
           </view>
-          <input class="area-input" type="text" placeholder="面积" 
-                 value="{{selectedItems[item.id].areaText}}"
-                 bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
-                 wx:if="{{item.unit === '每平' && selectedItems[item.id]}}"/>
-          <input class="quantity-input" type="number" placeholder="数量" 
-                 value="{{quantities[item.id]}}"
-                 bindinput="onQuantityInput" data-item-id="{{item.id}}"
-                 wx:if="{{item.unit === '米' && selectedItems[item.id]}}"/>
         </view>
       </view>
-    </view>
-
-    <view class="category-section">
-      <view class="category-header" bindtap="toggleCategory" data-category="floor">
-        <view class="category-select" catchtap="noop">
-          <checkbox-group bindchange="onCategorySelectAllChange" data-category="floor">
-            <checkbox value="floor" checked="{{categorySelectAll.floor}}">全选</checkbox>
-          </checkbox-group>
-        </view>
-        <view class="category-title">地面类</view>
-        <view class="category-arrow {{expandedCategories.floor ? 'expanded' : ''}}">▼</view>
-      </view>
-      <view class="items-list" wx:if="{{expandedCategories.floor}}">
-        <view class="item-row" wx:for="{{floorItems}}" wx:key="id">
-          <checkbox-group bindchange="onItemSelect" data-item="{{item}}">
-            <checkbox value="{{item.id}}" checked="{{!!selectedItems[item.id]}}"/>
-          </checkbox-group>
-          <view class="item-info">
-            <text class="item-name">{{item.name}}</text>
-            <view class="item-price-section">
-              <text class="item-price">¥{{item.price}}</text>
-              <text class="item-unit">{{item.unit}}</text>
-            </view>
-          </view>
-          <input class="area-input" type="text" placeholder="面积" 
-                 value="{{selectedItems[item.id].areaText}}"
-                 bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
-                 wx:if="{{item.unit === '每平' && selectedItems[item.id]}}"/>
-        </view>
-      </view>
-    </view>
-
-    <view class="category-section">
-      <view class="category-header" bindtap="toggleCategory" data-category="wall">
-        <view class="category-select" catchtap="noop">
-          <checkbox-group bindchange="onCategorySelectAllChange" data-category="wall">
-            <checkbox value="wall" checked="{{categorySelectAll.wall}}">全选</checkbox>
-          </checkbox-group>
-        </view>
-        <view class="category-title">墙面类</view>
-        <view class="category-arrow {{expandedCategories.wall ? 'expanded' : ''}}">▼</view>
-      </view>
-      <view class="items-list" wx:if="{{expandedCategories.wall}}">
-        <view class="item-row" wx:for="{{wallItems}}" wx:key="id">
-          <checkbox-group bindchange="onItemSelect" data-item="{{item}}">
-            <checkbox value="{{item.id}}" checked="{{!!selectedItems[item.id]}}"/>
-          </checkbox-group>
-          <view class="item-info">
-            <text class="item-name">{{item.name}}</text>
-            <view class="item-price-section">
-              <text class="item-price">¥{{item.price}}</text>
-              <text class="item-unit">{{item.unit}}</text>
-            </view>
-          </view>
-          <input class="area-input" type="text" placeholder="面积" 
-                 value="{{selectedItems[item.id].areaText}}"
-                 bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
-                 wx:if="{{item.unit === '每平' && selectedItems[item.id]}}"/>
-        </view>
-      </view>
-    </view>
-
-    <view class="category-section">
-      <view class="category-header" bindtap="toggleCategory" data-category="comprehensive">
-        <view class="category-select" catchtap="noop">
-          <checkbox-group bindchange="onCategorySelectAllChange" data-category="comprehensive">
-            <checkbox value="comprehensive" checked="{{categorySelectAll.comprehensive}}">全选</checkbox>
-          </checkbox-group>
-        </view>
-        <view class="category-title">综合类</view>
-        <view class="category-arrow {{expandedCategories.comprehensive ? 'expanded' : ''}}">▼</view>
-      </view>
-      <view class="items-list" wx:if="{{expandedCategories.comprehensive}}">
-        <view class="item-row" wx:for="{{comprehensiveItems}}" wx:key="id">
-          <checkbox-group bindchange="onItemSelect" data-item="{{item}}">
-            <checkbox value="{{item.id}}" checked="{{!!selectedItems[item.id]}}"/>
-          </checkbox-group>
-          <view class="item-info">
-            <text class="item-name">{{item.name}}</text>
-            <view class="item-price-section">
-              <text class="item-price" wx:if="{{item.slug === 'stairs_fee'}}">¥{{fees.stairsFeeText}}</text>
-              <text class="item-price" wx:elif="{{item.price > 0}}">¥{{item.price}}</text>
-              <text class="item-price" wx:else>面议</text>
-              <text class="item-unit">{{item.unit}}</text>
-            </view>
-          </view>
-          <input class="area-input" type="text" placeholder="面积" 
-                 value="{{selectedItems[item.id].areaText}}"
-                 bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
-                 wx:if="{{item.unit === '每平' && selectedItems[item.id]}}"/>
-          <input class="quantity-input" type="number" placeholder="数量" 
-                 value="{{quantities[item.id]}}"
-                 bindinput="onQuantityInput" bindfocus="onQuantityFocus" data-item-id="{{item.id}}"
-                 wx:if="{{(item.unit === '个' || item.unit === '套' || item.unit === '单扇') && selectedItems[item.id]}}"/>
-          <input class="quantity-input" type="number" placeholder="米数" 
-                 value="{{quantities[item.id]}}"
-                 bindinput="onQuantityInput" bindfocus="onQuantityFocus" data-item-id="{{item.id}}"
-                 wx:if="{{item.unit === '米' && selectedItems[item.id]}}"/>
-          <input class="manual-price-input" type="number" placeholder="输入金额" 
-                 value="{{manualPrices[item.id]}}"
-                 bindinput="onManualPriceInput" bindfocus="onManualPriceFocus" data-item-id="{{item.id}}"
-                 wx:if="{{item.price === 0 && item.slug !== 'stairs_fee' && selectedItems[item.id]}}"/>
-        </view>
-      </view>
-    </view>
+    </block>
   </scroll-view>
 
   <view class="total-section">
+    <view class="total-item fee stairs-toggle">
+      <text>楼梯房上楼费</text>
+      <radio-group bindchange="onStairsRadioChange">
+        <radio value="off" checked="{{!stairsEnabled}}" style="margin-right:20rpx">不计</radio>
+        <radio value="on" checked="{{stairsEnabled}}">计入</radio>
+      </radio-group>
+    </view>
     <view class="total-item fee">
       <text>基础总价：</text>
       <text>¥{{baseTotalText}}</text>
@@ -199,7 +71,7 @@
       <text>管理费（2%）：</text>
       <text>¥{{fees.managementFeeText}}</text>
     </view>
-    <view class="total-item fee" wx:if="{{selectedItems['stairs_fee']}}">
+    <view class="total-item fee" wx:if="{{stairsEnabled}}">
       <text>楼梯房上楼费（2%）：</text>
       <text>¥{{fees.stairsFeeText}}</text>
     </view>

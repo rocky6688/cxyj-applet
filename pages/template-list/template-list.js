@@ -12,6 +12,7 @@ Page({
   },
   choose(e) {
     const id = e.currentTarget.dataset.id
+    try { wx.setStorageSync('current_template_id', id) } catch (e) {}
     wx.navigateTo({ url: `/pages/template-quote/template-quote?id=${id}` })
   }
 })

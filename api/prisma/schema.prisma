@@ -58,6 +58,7 @@ model CategoryItem {
   description String?
   unit        String?
   price       Int      @default(0)
+  minQuantity Int      @default(1)
   orderIndex  Int      @default(0)
   isActive    Boolean  @default(true)
   createdBy   String
