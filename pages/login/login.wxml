@@ -1,0 +1,6 @@
+<view class="login-page">
+  <view class="login-card">
+    <view class="login-title">欢迎使用装修报价系统</view>
+    <button class="login-btn" open-type="getUserInfo" bindgetuserinfo="onGetUserInfo">微信一键登录</button>
+  </view>
+</view>

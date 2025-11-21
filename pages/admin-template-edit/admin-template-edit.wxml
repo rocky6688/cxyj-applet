@@ -1,0 +1,52 @@
+<view class="tpl-container">
+  <scroll-view scroll-y class="tpl-scroll">
+    <view class="tpl-header-bar">
+      <view class="tpl-name">模板：{{tpl.name}}<text wx:if="{{tpl.isDefault}}" class="tpl-default">默认</text></view>
+      <view class="tpl-create">
+        <input class="tpl-input" placeholder="新大类名称" bindinput="onGroupName" />
+        <button class="tpl-btn-primary" bindtap="addGroup">新增大类</button>
+      </view>
+    </view>
+
+    <block wx:for="{{tpl.groups}}" wx:key="id">
+      <view class="tpl-section">
+        <view class="tpl-section-header" bindtap="toggleSection" data-id="{{item.id}}">
+          <view class="tpl-section-title">{{item.group.name}}</view>
+          <view class="tpl-section-tools">
+            <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="moveGroupUp">上移</button>
+            <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="moveGroupDown">下移</button>
+            <button class="tpl-btn-warn" size="mini" data-id="{{item.id}}" bindtap="removeGroup">删除大类</button>
+          </view>
+        </view>
+
+        <view class="tpl-section-body" wx:if="{{expanded[item.id]}}">
+          <view class="tpl-rename-row">
+            <input class="tpl-input" placeholder="重命名大类" data-id="{{item.id}}" bindinput="onRenameGroupInput" />
+            <button class="tpl-btn" data-id="{{item.id}}" bindtap="renameGroup">重命名</button>
+            <input class="tpl-input" placeholder="新子类名称" data-tgid="{{item.id}}" bindinput="onItemName" />
+            <button class="tpl-btn" data-tgid="{{item.id}}" bindtap="addItem">新增子类</button>
+            <button class="tpl-btn-warn" data-id="{{item.id}}" bindtap="removeGroup">删除大类</button>
+          </view>
+
+          <view class="tpl-items">
+            <block wx:for="{{item.items}}" wx:key="id">
+              <view class="tpl-item-row">
+                <view class="tpl-item-info">
+                  <text class="tpl-item-name">{{item.item.name}}</text>
+                </view>
+                <view class="tpl-item-actions">
+                  <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="toggleItemEdit">编辑</button>
+                  <input class="tpl-input-mini" wx:if="{{itemEdit[item.id]}}" placeholder="重命名子类" data-id="{{item.id}}" bindinput="onRenameItemInput" />
+                  <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="renameItem" wx:if="{{itemEdit[item.id]}}">保存</button>
+                  <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="moveItemUp">上移</button>
+                  <button class="tpl-btn" size="mini" data-id="{{item.id}}" bindtap="moveItemDown">下移</button>
+                  <button class="tpl-btn-warn" size="mini" data-id="{{item.id}}" bindtap="removeItem">删除</button>
+                </view>
+              </view>
+            </block>
+          </view>
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+</view>

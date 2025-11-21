@@ -1,0 +1,29 @@
+.tpl-container { height: 100vh; display: flex; flex-direction: column; background-color: #f8f8f8; min-height: 0; overflow: hidden }
+.tpl-scroll { flex: none; height: calc(100vh - 0rpx) }
+.tpl-header-bar { margin: 20rpx; background-color: #fff; border-radius: 12rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1); padding: 20rpx }
+.tpl-name { font-size: 30rpx; margin-bottom: 16rpx }
+.tpl-default { color: #ff6b35; margin-left: 12rpx }
+.tpl-create { display: flex; gap: 16rpx; align-items: center }
+.tpl-input { border: 1rpx solid #ddd; border-radius: 8rpx; padding: 16rpx; flex: 1; background-color: #f8f8f8 }
+.tpl-btn-primary { background-color: #07c160; color: #fff; border-radius: 8rpx }
+.tpl-section { margin-bottom: 20rpx; background-color: white; border-radius: 12rpx; margin: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1) }
+.tpl-section-header { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25rpx 30rpx; border-radius: 16rpx 16rpx 0 0; box-shadow: 0 2rpx 8rpx rgba(74, 144, 226, 0.3) }
+.tpl-section-title { color:#fff; font-size: 30rpx; font-weight: 600; letter-spacing: 1rpx }
+.tpl-section-body { padding: 0 20rpx 20rpx }
+.tpl-rename-row { display: flex; gap: 12rpx; align-items: center; margin: 12rpx 0 }
+.tpl-btn { background-color: #667eea; color: #fff; border-radius: 8rpx }
+.tpl-btn-warn { background-color: #ff4d4f; color: #fff; border-radius: 8rpx }
+.tpl-items { padding: 0 0 }
+.tpl-item-row { display: flex; align-items: center; padding: 30rpx 0; border-bottom: 1rpx solid #f0f0f0; flex-wrap: wrap }
+.tpl-item-row:last-child { border-bottom: none }
+.tpl-item-info { flex: 1; display: flex; justify-content: space-between; align-items: center; margin-right: 20rpx }
+.tpl-item-name { font-size: 30rpx; color: #333; flex: 1 }
+.tpl-item-actions { display: flex; gap: 8rpx; align-items: center }
+.tpl-input-mini { border: 1rpx solid #ddd; border-radius: 8rpx; padding: 8rpx; width: 240rpx }
+.order { color: #999; margin-left: 12rpx }
+.group-actions { display: flex; gap: 12rpx; align-items: center; margin-bottom: 12rpx }
+.items { display: flex; flex-direction: column; gap: 8rpx }
+.item-row { display: flex; justify-content: space-between; align-items: center; padding: 12rpx; border: 1rpx solid #eee; border-radius: 8rpx }
+.rename { display: flex; gap: 12rpx; align-items: center; margin: 12rpx 0 }
+.row-actions { display: flex; gap: 8rpx; align-items: center }
+.input-mini { border: 1rpx solid #ddd; border-radius: 8rpx; padding: 8rpx; width: 240rpx }

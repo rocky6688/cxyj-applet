@@ -2,7 +2,7 @@
   "libVersion": "3.11.2",
   "projectname": "renovation-quote-system",
   "setting": {
-    "urlCheck": true,
+    "urlCheck": false,
     "coverView": false,
     "lazyloadPlaceholderEnable": false,
     "skylineRenderEnable": false,
@@ -18,5 +18,25 @@
     "checkInvalidKey": true,
     "ignoreDevUnusedFiles": true,
     "bigPackageSizeSupport": false
+  },
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "pages/admin-template-edit/admin-template-edit",
+          "pathName": "pages/admin-template-edit/admin-template-edit",
+          "query": "id=cmi8g0266004y8iwf6p9eljmg",
+          "scene": null,
+          "launchMode": "default"
+        },
+        {
+          "name": "pages/admin/index",
+          "pathName": "pages/admin/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        }
+      ]
+    }
   }
 }

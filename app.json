@@ -1,7 +1,11 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/quote/quote"
+    "pages/quote/quote",
+    "pages/login/login",
+    "pages/admin-login/admin-login",
+    "pages/admin/index",
+    "pages/admin-template-edit/admin-template-edit"
   ],
   "window": {
     "backgroundTextStyle": "light",
