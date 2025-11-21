@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  STAFF
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+enum TemplateStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  role         Role
+  status       Status   @default(ACTIVE)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model CategoryGroup {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  orderIndex  Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  items       CategoryItem[]
+}
+
+model CategoryItem {
+  id          String   @id @default(cuid())
+  groupId     String
+  name        String
+  slug        String   @unique
+  description String?
+  orderIndex  Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  group       CategoryGroup @relation(fields: [groupId], references: [id])
+}
+
+model Template {
+  id         String         @id @default(cuid())
+  name       String
+  isDefault  Boolean        @default(false)
+  status     TemplateStatus @default(DRAFT)
+  createdBy  String
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  groups     TemplateGroup[]
+}
+
+model TemplateGroup {
+  id         String    @id @default(cuid())
+  templateId String
+  groupId    String
+  orderIndex Int       @default(0)
+  template   Template  @relation(fields: [templateId], references: [id])
+  items      TemplateItem[]
+}
+
+model TemplateItem {
+  id               String        @id @default(cuid())
+  templateGroupId  String
+  itemId           String
+  orderIndex       Int           @default(0)
+  templateGroup    TemplateGroup @relation(fields: [templateGroupId], references: [id])
+}
