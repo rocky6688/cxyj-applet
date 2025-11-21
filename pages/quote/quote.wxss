@@ -4,12 +4,13 @@
   flex-direction: column;
   background-color: #f8f8f8;
   min-height: 0;
+  overflow: hidden;
 }
 
 .quote-scroll {
-  flex: 1;
-  padding-bottom: 400rpx; /* 为总价区域留出足够空间 */
-  height: 100%;
+  flex: none;
+  height: calc(100vh - 420rpx);
+  padding-bottom: 0;
 }
 
 .category-section {
