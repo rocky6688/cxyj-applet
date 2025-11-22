@@ -1,0 +1,11 @@
+[
+{"_id":"cmi88h34y0000xjkj7d68l25b","id":"cmi88h34y0000xjkj7d68l25b","name":"????","slug":"default-group","description":null,"orderIndex":0,"isActive":1,"createdBy":"admin","createdAt":"2025-11-21 02:20:55.714","updatedAt":"2025-11-21 02:20:55.714"},
+{"_id":"cmi89a0l80000cmmoc250sopb","id":"cmi89a0l80000cmmoc250sopb","name":"基础拆除类","slug":"demolition","description":null,"orderIndex":0,"isActive":1,"createdBy":"system","createdAt":"2025-11-21 02:43:25.437","updatedAt":"2025-11-21 03:10:26.762"},
+{"_id":"cmi89a0n5000fcmmof3h1g1jl","id":"cmi89a0n5000fcmmof3h1g1jl","name":"墙面类2","slug":"wall","description":null,"orderIndex":1,"isActive":1,"createdBy":"system","createdAt":"2025-11-21 02:43:25.505","updatedAt":"2025-11-21 07:31:59.420"},
+{"_id":"cmi89a0oc000ocmmoygks9qyr","id":"cmi89a0oc000ocmmoygks9qyr","name":"天花类","slug":"ceiling","description":null,"orderIndex":2,"isActive":1,"createdBy":"system","createdAt":"2025-11-21 02:43:25.549","updatedAt":"2025-11-21 03:10:26.911"},
+{"_id":"cmi89a0qu000vcmmohnxz7eg1","id":"cmi89a0qu000vcmmohnxz7eg1","name":"地面类","slug":"floor","description":null,"orderIndex":3,"isActive":1,"createdBy":"system","createdAt":"2025-11-21 02:43:25.638","updatedAt":"2025-11-21 03:10:26.941"},
+{"_id":"cmi89a0rz0010cmmon28maksn","id":"cmi89a0rz0010cmmon28maksn","name":"综合类","slug":"comprehensive","description":null,"orderIndex":4,"isActive":1,"createdBy":"system","createdAt":"2025-11-21 02:43:25.679","updatedAt":"2025-11-21 03:10:26.968"},
+{"_id":"cmi8g0hdd007f8iwfoscw2m7c","id":"cmi8g0hdd007f8iwfoscw2m7c","name":"11","slug":"grp_1763704317934","description":null,"orderIndex":0,"isActive":1,"createdBy":"admin","createdAt":"2025-11-21 05:51:57.936","updatedAt":"2025-11-21 05:51:57.936"},
+{"_id":"cmi8idk5w00009fvpbpj5crca","id":"cmi8idk5w00009fvpbpj5crca","name":"1","slug":"grp_1763708287314","description":null,"orderIndex":0,"isActive":1,"createdBy":"admin","createdAt":"2025-11-21 06:58:07.316","updatedAt":"2025-11-21 06:58:07.316"},
+{"_id":"cmi8jtddj00079fvpggw0skys","id":"cmi8jtddj00079fvpggw0skys","name":"牛逼类","slug":"grp_1763710704625","description":null,"orderIndex":0,"isActive":1,"createdBy":"admin","createdAt":"2025-11-21 07:38:24.626","updatedAt":"2025-11-21 07:38:24.626"}
+]

@@ -1,0 +1,4 @@
+[
+{"_id":"cmi88ayeu000013pa9cmejjtc","id":"cmi88ayeu000013pa9cmejjtc","username":"admin","passwordHash":"$argon2id$v=19$m=65536,t=3,p=4$CPKcmnLbQCTBjCdvbTQSjw$adUqnD8yU0AnMt28sol/XEMNAM1V9iO5kIWzzvHrB+Y","role":"ADMIN","status":"ACTIVE","createdAt":"2025-11-21 02:16:09.654","updatedAt":"2025-11-21 02:16:09.654","avatarUrl":null,"nickName":null,"wechatOpenId":null},
+{"_id":"cmi8ash8x0000lfkfi95zulxt","id":"cmi8ash8x0000lfkfi95zulxt","username":"dev_user","passwordHash":"$argon2id$v=19$m=65536,t=3,p=4$+MtUOgcfOwM+KumZ9cwnpg$IZCup8pGm5t9vqzODLY390L2B3P6F3NQ7Zi1RQV2Tl0","role":"USER","status":"ACTIVE","createdAt":"2025-11-21 03:25:46.450","updatedAt":"2025-11-21 03:25:46.450","avatarUrl":null,"nickName":null,"wechatOpenId":null}
+]

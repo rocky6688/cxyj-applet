@@ -1,0 +1,3 @@
+[
+{"_id":"7edcd1cb-af64-4fcd-bd14-c585f8ccb617","id":"7edcd1cb-af64-4fcd-bd14-c585f8ccb617","checksum":"41ea68f88159f8237d443f221b36ed45fea44a61cf849b63636a931eba5a9948","finished_at":"2025-11-21 02:01:32.462","migration_name":"20251121020132_","logs":null,"rolled_back_at":null,"started_at":"2025-11-21 02:01:32.060","applied_steps_count":1}
+]
