@@ -2,6 +2,6 @@
   "name": "adminCheck",
   "version": "1.0.0",
   "dependencies": {
-    "wx-server-sdk": "^2.10.2"
+    "wx-server-sdk": "latest"
   }
 }

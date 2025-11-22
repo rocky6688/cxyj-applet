@@ -1,49 +1,35 @@
 {
-  "libVersion": "3.11.2",
-  "projectname": "renovation-quote-system",
-  "setting": {
-    "urlCheck": false,
-    "coverView": false,
-    "lazyloadPlaceholderEnable": false,
-    "skylineRenderEnable": false,
-    "preloadBackgroundData": false,
-    "autoAudits": false,
-    "useApiHook": true,
-    "useApiHostProcess": true,
-    "showShadowRootInWxmlPanel": false,
-    "useStaticServer": false,
-    "useLanDebug": false,
-    "showES6CompileOption": false,
-    "compileHotReLoad": true,
-    "checkInvalidKey": true,
-    "ignoreDevUnusedFiles": true,
-    "bigPackageSizeSupport": false
-  },
-  "condition": {
-    "miniprogram": {
-      "list": [
-        {
-          "name": "pages/admin-template-edit/admin-template-edit",
-          "pathName": "pages/admin-template-edit/admin-template-edit",
-          "query": "id=cmi89a0yr0027cmmohef9ndfd",
-          "scene": null,
-          "launchMode": "default"
-        },
-        {
-          "name": "pages/admin/index",
-          "pathName": "pages/admin/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "pages/template-quote/template-quote",
-          "pathName": "pages/template-quote/template-quote",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
+    "libVersion": "3.11.2",
+    "projectname": "renovation-quote-system",
+    "setting": {
+        "urlCheck": false,
+        "coverView": false,
+        "lazyloadPlaceholderEnable": false,
+        "skylineRenderEnable": false,
+        "preloadBackgroundData": false,
+        "autoAudits": false,
+        "useApiHook": true,
+        "useApiHostProcess": true,
+        "showShadowRootInWxmlPanel": false,
+        "useStaticServer": false,
+        "useLanDebug": false,
+        "showES6CompileOption": false,
+        "compileHotReLoad": true,
+        "checkInvalidKey": true,
+        "ignoreDevUnusedFiles": true,
+        "bigPackageSizeSupport": false
+    },
+    "condition": {
+        "miniprogram": {
+            "list": [
+                {
+                    "name": "pages/admin-template-edit/admin-template-edit",
+                    "pathName": "pages/admin-template-edit/admin-template-edit",
+                    "query": "id=cmi8g0266004y8iwf6p9eljmg",
+                    "scene": null,
+                    "launchMode": "default"
+                }
+            ]
         }
-      ]
     }
-  }
 }
