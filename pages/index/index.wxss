@@ -29,6 +29,10 @@ button {
   justify-content: center;
 }
 
+.btn {
+  margin-top: 30rpx;
+}
+
 .wechat-btn {
   margin-top: 30rpx;
   background-color: #07c160;

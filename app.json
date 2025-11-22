@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/my/my",
     "pages/quote/quote",
     "pages/login/login",
     "pages/admin-login/admin-login",
@@ -14,6 +15,16 @@
     "navigationBarBackgroundColor": "#fff",
     "navigationBarTitleText": "装修报价系统",
     "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#666",
+    "selectedColor": "#07c160",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页" },
+      { "pagePath": "pages/my/my", "text": "我的" }
+    ]
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

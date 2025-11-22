@@ -1,0 +1,43 @@
+<view class="my-page">
+  <view class="my-header">
+    <view class="brand">装修报价</view>
+    <view class="slogan">高效 · 精准 · 专业</view>
+  </view>
+
+  <!-- 未登录状态 -->
+  <block wx:if="{{!loggedIn}}">
+    <view class="card">
+      <view class="title">微信登录</view>
+      <view class="subtitle">请先完善头像与昵称后再登录</view>
+
+      <view class="avatar-wrap">
+        <image class="avatar-main" src="{{avatarUrl || defaultAvatar}}" mode="aspectFill"></image>
+        <button class="avatar-edit" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">更换头像</button>
+      </view>
+
+      <view class="form-item">
+        <view class="label">昵称</view>
+        <view class="input-row">
+          <input class="input flex" placeholder="请输入昵称" bindinput="onNicknameInput" value="{{nickname}}" />
+          <button class="ghost-btn" bindtap="fillWechatNickname">使用微信昵称</button>
+        </view>
+      </view>
+
+      <button class="primary-btn" bindtap="onWechatLoginTap" disabled="{{!avatarUrl || !nickname}}">同意并登录</button>
+      <view class="privacy-tip">登录即表示同意相关服务协议与隐私政策</view>
+    </view>
+  </block>
+
+  <!-- 已登录状态 -->
+  <block wx:else>
+    <view class="profile-card">
+      <view class="profile-top">
+        <image class="profile-avatar" src="{{user.avatarUrl || defaultAvatar}}" mode="aspectFill"></image>
+        <view class="profile-name">{{user.nickName || '匿名用户'}}</view>
+      </view>
+      <view class="profile-actions">
+        <button class="logout-btn" bindtap="logout">退出登录</button>
+      </view>
+    </view>
+  </block>
+</view>

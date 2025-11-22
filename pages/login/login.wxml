@@ -1,6 +1,13 @@
 <view class="login-page">
   <view class="login-card">
     <view class="login-title">欢迎使用装修报价系统</view>
-    <button class="login-btn" open-type="getUserInfo" bindgetuserinfo="onGetUserInfo">微信一键登录</button>
+    <block wx:if="{{hasPending}}">
+      <view class="login-tip">已获取头像和昵称，请确认登录</view>
+      <button class="login-btn" bindtap="doLogin">确认登录</button>
+    </block>
+    <block wx:else>
+      <view class="login-tip">请先前往“我的”页面主动选择头像并填写昵称</view>
+      <button class="login-btn" bindtap="goToMy">去“我的”页面</button>
+    </block>
   </view>
 </view>
