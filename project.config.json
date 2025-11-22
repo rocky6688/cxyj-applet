@@ -27,11 +27,13 @@
     }
   },
   "compileType": "miniprogram",
+  "cloudfunctionRoot": "cloudfunctions",
   "simulatorPluginLibVersion": {},
   "packOptions": {
     "ignore": [],
     "include": []
   },
   "editorSetting": {},
-  "libVersion": "3.11.2"
+  "libVersion": "3.11.2",
+  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/"
 }

@@ -5,26 +5,25 @@ Page({
   onUserInput(e) { this.setData({ username: e.detail.value }) },
   onPassInput(e) { this.setData({ password: e.detail.value }) },
   adminLogin() {
-    if (!this.data.username || !this.data.password) {
-      wx.showToast({ title: '请输入账号密码', icon: 'none' })
-      return
-    }
-    wx.request({
-      url: `${API_BASE_URL}/api/auth/login`,
-      method: 'POST',
+    wx.cloud.callFunction({
+      name: 'adminCheck',
+      config: { env: 'cloud1-9g499hgm7cefa098' },
       data: { username: this.data.username, password: this.data.password },
-      success: (r) => {
-        const data = r.data && r.data.data ? r.data.data : {}
-        if (data.access_token) {
-          wx.setStorageSync('access_token', data.access_token)
-          wx.setStorageSync('refresh_token', data.refresh_token)
-          wx.showToast({ title: '登录成功', icon: 'success' })
+      success: (res) => {
+        const result = res && res.result ? res.result : {}
+        if (result && result.isAdmin && result.user) {
+          wx.setStorageSync('current_user', result.user)
+          wx.showToast({ title: '管理员登录成功', icon: 'success' })
           wx.redirectTo({ url: '/pages/admin/index' })
         } else {
-          wx.showToast({ title: '登录失败', icon: 'none' })
+          const msg = (result && (result.error || result.reason)) || '非管理员或未登录'
+          wx.showToast({ title: msg, icon: 'none' })
         }
       },
-      fail: () => wx.showToast({ title: '网络错误', icon: 'none' })
+      fail: (err) => {
+        const msg = (err && err.errMsg) || '云函数调用失败'
+        wx.showToast({ title: msg, icon: 'none' })
+      }
     })
   }
 })
