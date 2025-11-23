@@ -43,7 +43,7 @@ Page({
     if (!nickname) { wx.showToast({ title: '请输入昵称', icon: 'none' }); return }
     try { wx.showLoading({ title: '保存中...', mask: true }) } catch (e) {}
     this.ensureCloudAvatar(avatarUrl || '')
-      .then((finalUrl) => wx.cloud.callFunction({ name: 'userLogin', data: { nickName: nickname, avatarUrl: finalUrl } }))
+      .then((finalUrl) => wx.cloud.callFunction({ name: 'userLogin', data: { action: 'profileUpdate', nickName: nickname, avatarUrl: finalUrl } }))
       .then((res) => {
         const data = (res && res.result) || {}
         if (data && data.user) {

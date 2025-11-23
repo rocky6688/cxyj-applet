@@ -23,14 +23,17 @@ exports.main = async (event, context) => {
   let user = null
   const found = await users.where({ wechatOpenId: OPENID }).get()
   if (found && found.data && found.data.length > 0) {
-    // 命中旧用户：按传入信息进行更新补齐
     user = found.data[0]
     const updateData = {}
-    const nickName = event.nickName
-    const avatarUrl = event.avatarUrl
-    if (nickName && nickName !== user.nickName) updateData.nickName = nickName
-    if (avatarUrl && avatarUrl !== user.avatarUrl) updateData.avatarUrl = avatarUrl
-    if (!user.username && nickName) updateData.username = nickName
+    const byProfileEdit = !!(event && (event.action === 'profileUpdate' || event.forceUpdate === true))
+    if (byProfileEdit) {
+      const nickName = event.nickName
+      const avatarUrl = event.avatarUrl
+      const username = event.username
+      if (nickName && nickName !== user.nickName) updateData.nickName = nickName
+      if (avatarUrl && avatarUrl !== user.avatarUrl) updateData.avatarUrl = avatarUrl
+      if (username && username !== user.username) updateData.username = username
+    }
     if (!user.wechatOpenId) updateData.wechatOpenId = OPENID
     if (Object.keys(updateData).length > 0) {
       updateData.updatedAt = nowStr
@@ -39,11 +42,12 @@ exports.main = async (event, context) => {
       user = fresh.data
     }
   } else {
-    const nickName = event.nickName || `user_${Date.now()}`
+    const nickName = event.nickName || '微信用户'
     const avatarUrl = event.avatarUrl || null
+    const username = event.username || nickName
     const addRes = await users.add({
       data: {
-        username: nickName,
+        username,
         passwordHash: null,
         role: 'USER',
         status: 'ACTIVE',

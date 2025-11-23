@@ -1,3 +1,5 @@
+const { DBQUERY_FUNCTION } = require('../../utils/config.js')
+
 Page({
   data: {
     loggedIn: false,
@@ -5,10 +7,13 @@ Page({
     avatarUrl: '',
     nickname: '',
     // 使用内联透明 PNG 作为占位，避免 404 与域名白名单问题
-    defaultAvatar: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAF+AKlzJZArwAAAABJRU5ErkJggg==',
+    defaultAvatar: '/static/images/def_avatar.png',
     // 防止频繁调用 getUserProfile
     hasFetchedProfile: false,
-    lastProfileTs: 0
+    lastProfileTs: 0,
+    staffStoreName: '',
+    isManagerOfStaffStore: false,
+    roleLabel: ''
   },
 
   /**
@@ -19,11 +24,43 @@ Page({
     try {
       const user = wx.getStorageSync('current_user')
       if (user && (user.id || user._id)) {
-        this.setData({ loggedIn: true, user, avatarUrl: user.avatarUrl || this.data.avatarUrl, nickname: user.nickName || this.data.nickname })
+        const roleMap = { ADMIN: '管理员', STAFF: '员工', USER: '用户' }
+        const roleLabel = roleMap[user.role] || ''
+        this.setData({ loggedIn: true, user, avatarUrl: user.avatarUrl || this.data.avatarUrl, nickname: user.nickName || this.data.nickname, roleLabel })
+        const uid = user.id || user._id
+        this.fetchStaffStore(uid)
       } else {
-        this.setData({ loggedIn: false, user: {} })
+        this.setData({ loggedIn: false, user: {}, staffStoreName: '', isManagerOfStaffStore: false, roleLabel: '' })
       }
     } catch (e) { this.setData({ loggedIn: false }) }
+  },
+  fetchStaffStore(userId) {
+    if (!userId) return
+    let staffStoreId = ''
+    wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'storeMembers', where: [{ field: 'userId', op: 'eq', value: userId }, { field: 'role', op: 'eq', value: 'STAFF' }], limit: 1 } })
+      .then((res) => {
+        const r = res && res.result ? res.result : {}
+        const m = (r && r.data && r.data[0]) || null
+        staffStoreId = (m && m.storeId) || ''
+        if (staffStoreId) return staffStoreId
+        return wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'storeMembers', where: [{ field: 'userId', op: 'eq', value: userId }], limit: 1 } })
+          .then((res2) => { const rr = res2 && res2.result ? res2.result : {}; const any = (rr && rr.data && rr.data[0]) || null; staffStoreId = (any && any.storeId) || ''; return staffStoreId })
+      })
+      .then((sid) => {
+        if (!sid) { this.setData({ staffStoreName: '', isManagerOfStaffStore: false }); return }
+        return wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'stores', where: [{ field: 'id', op: 'eq', value: sid }], limit: 1 } })
+          .then((res3) => {
+            const r3 = res3 && res3.result ? res3.result : {}
+            let s = (r3 && r3.data && r3.data[0]) || null
+            if (!s) {
+              return wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'stores', where: [{ field: '_id', op: 'eq', value: sid }], limit: 1 } })
+                .then((res4) => { const r4 = res4 && res4.result ? res4.result : {}; s = (r4 && r4.data && r4.data[0]) || null })
+            }
+            this.setData({ staffStoreName: (s && s.name) || '' })
+            return wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'storeMembers', where: [{ field: 'userId', op: 'eq', value: userId }, { field: 'role', op: 'eq', value: 'MANAGER' }, { field: 'storeId', op: 'eq', value: sid }], limit: 1 } })
+              .then((res5) => { const r5 = res5 && res5.result ? res5.result : {}; const mgr = (r5 && r5.data && r5.data[0]) || null; this.setData({ isManagerOfStaffStore: !!mgr }) })
+          })
+      })
   },
 
   /**
@@ -101,11 +138,8 @@ Page({
    * 说明：需 avatarUrl 和 nickname 均已存在方可跳转
    */
   onWechatLoginTap() {
-    const { avatarUrl, nickname } = this.data
-    if (!avatarUrl) { wx.showToast({ title: '请先选择头像', icon: 'none' }); return }
     try { wx.showLoading({ title: '登录中...', mask: true }) } catch (e) {}
-    this.ensureCloudAvatar(avatarUrl)
-      .then((finalUrl) => wx.cloud.callFunction({ name: 'userLogin', data: { nickName: (nickname || '微信用户'), avatarUrl: finalUrl } }))
+    wx.cloud.callFunction({ name: 'userLogin', data: {} })
       .then((res) => {
         const data = (res && res.result) || {}
         if (data && data.user) {
@@ -130,7 +164,7 @@ Page({
    */
   logout() {
     try { wx.removeStorageSync('current_user') } catch (e) {}
-    this.setData({ loggedIn: false, user: {} })
+    this.setData({ loggedIn: false, user: {}, staffStoreName: '', isManagerOfStaffStore: false, roleLabel: '' })
     wx.showToast({ title: '已退出', icon: 'none' })
   },
   onOneTapLogin() {
@@ -138,13 +172,6 @@ Page({
       wx.getUserProfile({
         desc: '用于登录',
         success: (res) => {
-          const info = (res && res.userInfo) || {}
-          const nn = info.nickName || this.data.nickname || '微信用户'
-          // 保留用户已选择的头像优先级，不覆盖本地选择
-          const avSelected = this.data.avatarUrl
-          const avWx = info.avatarUrl || ''
-          const finalAv = avSelected ? avSelected : avWx
-          this.setData({ nickname: nn, avatarUrl: finalAv })
           this.onWechatLoginTap()
         },
         fail: () => { wx.showToast({ title: '授权失败，请重试', icon: 'none' }) }

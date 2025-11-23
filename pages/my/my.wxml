@@ -3,7 +3,6 @@
     <view class="brand">橙心友家</view>
     <view class="slogan">让装修管理更简单</view>
   </view>
-
   <!-- 未登录状态 -->
   <block wx:if="{{!loggedIn}}">
     <view class="card">
@@ -13,20 +12,22 @@
           <image class="avatar-main" src="{{avatarUrl || defaultAvatar}}" mode="aspectFill"></image>
         </button>
       </view>
-
-      
-
       <button class="primary-btn" bindtap="onOneTapLogin">一键微信登录</button>
       <view class="privacy-tip">登录即表示同意相关服务协议与隐私政策</view>
     </view>
   </block>
-
   <!-- 已登录状态 -->
   <block wx:else>
     <view class="profile-card">
       <view class="profile-top">
         <image class="profile-avatar" src="{{user.avatarUrl || defaultAvatar}}" mode="aspectFill"></image>
         <view class="profile-name">{{user.nickName || '匿名用户'}}</view>
+        <view class="profile-role-wrap">
+          <view class="profile-role">{{roleLabel}}</view>
+          <view wx:if="{{staffStoreName}}" class="profile-sub">
+            所属门店：{{staffStoreName}}{{isManagerOfStaffStore ? '（店长）' : ''}}
+          </view>
+        </view>
       </view>
     </view>
     <view class="menu-list">
