@@ -1,23 +1,28 @@
 <view class="admin-page">
   <view class="header">
-    <view class="title">模板管理</view>
-    <button class="create-btn" bindtap="createFromCurrent">快速生成模板</button>
+    <view class="title">后台管理</view>
   </view>
-  <view class="create-row">
-    <input class="input" placeholder="输入模板名称（新增模板）" bindinput="onNewTplName" />
-    <button class="btn" bindtap="createTemplate">新增模板</button>
-  </view>
-  <view class="tpl-list">
-    <block wx:for="{{templates}}" wx:key="id">
-      <view class="tpl-item">
-        <view class="tpl-name">{{item.name}} <text class="tpl-status">{{item.status}}</text> <text wx:if="{{item.isDefault}}" class="tpl-default">默认</text></view>
-        <view class="tpl-actions">
-          <button size="mini" bindtap="edit" data-id="{{item.id}}">编辑</button>
-          <button size="mini" bindtap="setDefault" data-id="{{item.id}}">设为默认</button>
-          <button size="mini" bindtap="publish" data-id="{{item.id}}">发布</button>
-          <button size="mini" type="warn" bindtap="remove" data-id="{{item.id}}">删除</button>
-        </view>
+  <view class="menu-list">
+    <view class="menu-item" bindtap="goToUserManage">
+      <view class="menu-left">
+        <text class="menu-title">人员管理</text>
+        <text class="menu-sub">管理员工账号与权限</text>
       </view>
-    </block>
+      <text class="chevron">›</text>
+    </view>
+    <view class="menu-item" bindtap="goToStoreManage">
+      <view class="menu-left">
+        <text class="menu-title">门店管理</text>
+        <text class="menu-sub">维护门店信息与状态</text>
+      </view>
+      <text class="chevron">›</text>
+    </view>
+    <view class="menu-item" bindtap="goToTemplateManage">
+      <view class="menu-left">
+        <text class="menu-title">模板管理</text>
+        <text class="menu-sub">创建与发布报价模板</text>
+      </view>
+      <text class="chevron">›</text>
+    </view>
   </view>
 </view>

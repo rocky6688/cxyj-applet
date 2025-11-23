@@ -1,6 +1,9 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/admin-user/admin-user",
+    "pages/admin-store/admin-store",
+    "pages/admin-templates/admin-templates",
     "pages/my/my",
     "pages/quote/quote",
     "pages/login/login",
