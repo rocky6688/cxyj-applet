@@ -1,4 +1,77 @@
 <view class="page">
   <view class="title">数据查看</view>
-  <view class="card">此页面用于查看统计数据，后续完善。</view>
+
+  <block wx:if="{{role === 'ADMIN'}}">
+    <view class="store-bar">
+      <picker mode="selector" range="{{storeNames}}" value="{{storeIndex}}" bindchange="onStoreChange">
+        <view class="picker-inner">当前门店：{{storeNames[storeIndex] || '请选择门店'}} </view>
+      </picker>
+    </view>
+
+    <view class="date-bar">
+      <picker mode="selector" range="{{dateOptions}}" value="{{dateIndex}}" bindchange="onDateOptionChange">
+        <view class="picker-inner">时间区间：{{dateOptions[dateIndex]}}</view>
+      </picker>
+      <button class="primary" size="mini" bindtap="exportExcel">导出Excel</button>
+      <view wx:if="{{dateOptions[dateIndex] === '自定义'}}" class="date-range">
+        <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+          <view class="picker-inner">开始：{{startDate}}</view>
+        </picker>
+        <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
+          <view class="picker-inner">结束：{{endDate}}</view>
+        </picker>
+      </view>
+    </view>
+
+    <view class="metrics">
+      <view class="metric">
+        <view class="metric-label">新增</view>
+        <view class="metric-value">{{metrics.created}}</view>
+      </view>
+      <view class="metric">
+        <view class="metric-label">量房</view>
+        <view class="metric-value">{{metrics.measured}}</view>
+      </view>
+      <view class="metric">
+        <view class="metric-label">进店</view>
+        <view class="metric-value">{{metrics.inStore}}</view>
+      </view>
+      <view class="metric">
+        <view class="metric-label">签约</view>
+        <view class="metric-value">{{metrics.signed}}</view>
+      </view>
+    </view>
+
+    <canvas canvas-id="metricsChart" class="chart"></canvas>
+
+    <view class="card">
+      <view class="section-title">按业务员统计</view>
+      <view class="staff-grid">
+        <view class="staff-row staff-header">
+          <view class="c1">业务员</view>
+          <view class="c2">新增</view>
+          <view class="c2">量房</view>
+          <view class="c2">进店</view>
+          <view class="c2">签约</view>
+        </view>
+        <block wx:for="{{staffStats}}" wx:key="name">
+          <view class="staff-row">
+            <view class="c1">{{item.name}}</view>
+            <view class="c2">{{item.created}}</view>
+            <view class="c2">{{item.measured}}</view>
+            <view class="c2">{{item.inStore}}</view>
+            <view class="c2">{{item.signed}}</view>
+          </view>
+        </block>
+        <view wx:if="{{staffStats.length === 0}}" class="empty">
+          <view class="empty-text">暂无数据</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="card">仅管理员可查看</view>
+  </block>
+
 </view>
