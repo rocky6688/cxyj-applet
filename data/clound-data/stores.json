@@ -1,0 +1,2 @@
+{"_id":"store001","id":"store001","name":"旗舰店","code":"S001","address":"上海市浦东新区XX路88号","phone":"021-88888888","status":"ACTIVE","createdAt":"2025-11-23 10:00:00.000","updatedAt":"2025-11-23 10:00:00.000"}
+{"_id":"store002","id":"store002","name":"分店A","code":"S002","address":"上海市黄浦区YY路66号","phone":"021-66666666","status":"ACTIVE","createdAt":"2025-11-23 10:00:00.000","updatedAt":"2025-11-23 10:00:00.000"}

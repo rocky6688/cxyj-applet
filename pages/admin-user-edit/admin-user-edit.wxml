@@ -1,0 +1,25 @@
+<view class="page">
+  <view class="title">{{pageTitle}}</view>
+  <view class="form">
+    <view class="form-item">
+      <view class="label">人员名称</view>
+      <input class="input" placeholder="请输入人员名称" maxlength="30" value="{{username}}" bindinput="onUserInput" disabled="{{!!docId}}" />
+    </view>
+
+    <view class="form-item">
+      <view class="label">角色</view>
+      <picker class="picker" mode="selector" range="{{roleOptionsCn}}" value="{{roleIndex}}" bindchange="onRoleChange">
+        <view class="picker-inner">{{roleOptionsCn[roleIndex]}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="label">状态</view>
+      <picker class="picker" mode="selector" range="{{statusOptionsCn}}" value="{{statusIndex}}" bindchange="onStatusChange">
+        <view class="picker-inner">{{statusOptionsCn[statusIndex]}}</view>
+      </picker>
+    </view>
+
+    <button class="primary" bindtap="submit">保存</button>
+  </view>
+</view>
