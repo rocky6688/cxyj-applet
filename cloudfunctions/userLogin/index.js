@@ -58,5 +58,6 @@ exports.main = async (event, context) => {
     user = newDoc.data
   }
 
-  return { ok: true, user }
+  const token = `${OPENID}_${Date.now()}_${Math.random().toString(36).slice(2,8)}`
+  return { ok: true, user, token, expiresIn: 86400 }
 }

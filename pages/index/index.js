@@ -5,7 +5,8 @@ Page({
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     canIUseGetUserProfile: false,
-    canIUseOpenData: wx.canIUse('open-data.type.userAvatarUrl') && wx.canIUse('open-data.type.userNickName')
+    canIUseOpenData: wx.canIUse('open-data.type.userAvatarUrl') && wx.canIUse('open-data.type.userNickName'),
+    loggedAsAdmin: false
   },
   
   onLoad() {
@@ -14,6 +15,12 @@ Page({
         canIUseGetUserProfile: true
       })
     }
+  },
+  onShow() {
+    try {
+      const u = wx.getStorageSync('current_user')
+      this.setData({ loggedAsAdmin: !!(u && (u.role === 'ADMIN')) })
+    } catch (e) { this.setData({ loggedAsAdmin: false }) }
   },
   
   goToQuote() {

@@ -1,27 +1,28 @@
-.my-page { padding: 24rpx; background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 40%); min-height: 100vh; box-sizing: border-box }
+.my-page { padding: 32rpx; background: linear-gradient(135deg, #fff7f0 0%, #ffe8d9 50%, #ffffff 100%); min-height: 100vh; box-sizing: border-box }
 
 /* 顶部品牌区域 */
 .my-header { padding: 40rpx 24rpx 24rpx; text-align: center }
-.brand { font-size: 36rpx; font-weight: 700; color: #111 }
-.slogan { color: #7a7a7a; margin-top: 12rpx }
+.brand { font-size: 44rpx; font-weight: 800; color: #ff6b35 }
+.slogan { color: #8a8a8a; margin-top: 12rpx }
 
 /* 未登录卡片 */
-.card { background: #fff; border-radius: 16rpx; box-shadow: 0 12rpx 32rpx rgba(0,0,0,0.06); padding: 28rpx }
+.card { background: #fff; border-radius: 20rpx; box-shadow: 0 16rpx 40rpx rgba(255,107,53,0.15); padding: 32rpx }
 .title { font-size: 34rpx; font-weight: 600 }
 .subtitle { color: #888; margin-top: 8rpx; margin-bottom: 20rpx }
 
-.avatar-wrap { display: flex; align-items: center; gap: 20rpx; margin-bottom: 20rpx }
+.avatar-wrap { display: flex; align-items: center; gap: 20rpx; margin-bottom: 20rpx;flex-direction: column; }
+.avatar-btn { padding: 0; border: none; background: transparent; line-height: 0 }
 .avatar-main { width: 112rpx; height: 112rpx; border-radius: 50%; background: #f5f5f5; border: 2rpx solid #eee }
-.avatar-edit { background-color: #07c160; color: #fff; border-radius: 999rpx; padding: 16rpx 28rpx }
+.avatar-edit { background-color: #ff6b35; color: #fff; border-radius: 999rpx; padding: 16rpx 28rpx }
 
 .form-item { margin-bottom: 20rpx }
 .label { font-size: 26rpx; color: #666; margin-bottom: 8rpx }
-.input-row { display: flex; gap: 12rpx; align-items: center }
+.input-row { display: flex; gap: 12rpx; align-items: center;flex-direction: column; }
 .flex { flex: 1 }
-.input { border: 1rpx solid #ddd; border-radius: 12rpx; padding: 16rpx; background: #fafafa }
-.ghost-btn { background: #fff; border: 1rpx solid #07c160; color: #07c160; border-radius: 999rpx; padding: 12rpx 20rpx }
+.input { border: 1rpx solid #ffe0cc; border-radius: 14rpx; padding: 16rpx; background: #fffaf6 }
+.ghost-btn { background: #fff; border: 1rpx solid #ff6b35; color: #ff6b35; border-radius: 999rpx; padding: 12rpx 20rpx }
 
-.primary-btn { background-color: #07c160; color: #fff; border-radius: 12rpx; padding: 18rpx; font-size: 30rpx }
+.primary-btn { background-color: #ff6b35; color: #fff; border-radius: 14rpx; padding: 20rpx; font-size: 30rpx }
 .privacy-tip { color: #9a9a9a; font-size: 24rpx; text-align: center; margin-top: 12rpx }
 
 /* 已登录卡片 */
@@ -29,5 +30,8 @@
 .profile-top { display: flex; align-items: center; gap: 16rpx; margin-bottom: 16rpx }
 .profile-avatar { width: 96rpx; height: 96rpx; border-radius: 50%; background: #f5f5f5 }
 .profile-name { font-size: 30rpx; font-weight: 600 }
-.profile-actions { display: flex; justify-content: flex-end }
-.logout-btn { background-color: #ff4d4f; color: #fff; border-radius: 12rpx; padding: 18rpx }
+.menu-list { display: flex; flex-direction: column; gap: 16rpx; margin-top: 16rpx }
+.menu-item { display: flex; align-items: center; justify-content: space-between; background: #fff; border-radius: 16rpx; box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.06); padding: 24rpx }
+.menu-title { font-size: 30rpx; color: #222 }
+.menu-title.danger { color: #ff4d4f }
+.chevron { font-size: 36rpx; color: #c0c4cc }

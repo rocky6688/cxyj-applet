@@ -22,7 +22,7 @@
           <block wx:for="{{users}}" wx:key="_id">
             <label class="manager-item">
               <checkbox value="{{item.uid}}" checked="{{managerSelectedMap[item.uid]}}" />
-              <text>{{item.username}}（{{item.role}}）</text>
+              <text>{{item.nickName || item.username}}（{{item.roleLabel}}）</text>
             </label>
           </block>
         </checkbox-group>

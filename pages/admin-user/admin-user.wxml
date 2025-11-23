@@ -7,7 +7,7 @@
     <block wx:for="{{users}}" wx:key="_id">
       <view class="item">
         <view class="item-header">
-          <text class="item-title">{{item.username}}</text>
+          <text class="item-title">{{item.nickName || item.username}}</text>
           <text class="item-sub">角色：{{item.roleLabel}}｜状态：{{item.statusLabel}}</text>
         </view>
         <view class="item-actions">

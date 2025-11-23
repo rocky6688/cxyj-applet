@@ -1,29 +1,22 @@
 <view class="my-page">
   <view class="my-header">
-    <view class="brand">装修报价</view>
-    <view class="slogan">高效 · 精准 · 专业</view>
+    <view class="brand">橙心友家</view>
+    <view class="slogan">让装修管理更简单</view>
   </view>
 
   <!-- 未登录状态 -->
   <block wx:if="{{!loggedIn}}">
     <view class="card">
       <view class="title">微信登录</view>
-      <view class="subtitle">请先完善头像与昵称后再登录</view>
-
       <view class="avatar-wrap">
-        <image class="avatar-main" src="{{avatarUrl || defaultAvatar}}" mode="aspectFill"></image>
-        <button class="avatar-edit" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">更换头像</button>
+        <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+          <image class="avatar-main" src="{{avatarUrl || defaultAvatar}}" mode="aspectFill"></image>
+        </button>
       </view>
 
-      <view class="form-item">
-        <view class="label">昵称</view>
-        <view class="input-row">
-          <input class="input flex" placeholder="请输入昵称" bindinput="onNicknameInput" value="{{nickname}}" />
-          <button class="ghost-btn" bindtap="fillWechatNickname">使用微信昵称</button>
-        </view>
-      </view>
+      
 
-      <button class="primary-btn" bindtap="onWechatLoginTap" disabled="{{!avatarUrl || !nickname}}">同意并登录</button>
+      <button class="primary-btn" bindtap="onOneTapLogin">一键微信登录</button>
       <view class="privacy-tip">登录即表示同意相关服务协议与隐私政策</view>
     </view>
   </block>
@@ -35,8 +28,27 @@
         <image class="profile-avatar" src="{{user.avatarUrl || defaultAvatar}}" mode="aspectFill"></image>
         <view class="profile-name">{{user.nickName || '匿名用户'}}</view>
       </view>
-      <view class="profile-actions">
-        <button class="logout-btn" bindtap="logout">退出登录</button>
+    </view>
+    <view class="menu-list">
+      <view class="menu-item" wx:if="{{user.role === 'ADMIN' || user.role === 'MANAGER'}}" bindtap="goToAdmin">
+        <view class="menu-title">后台管理</view>
+        <text class="chevron">›</text>
+      </view>
+      <view class="menu-item" bindtap="goToProfileEdit">
+        <view class="menu-title">个人资料设置</view>
+        <text class="chevron">›</text>
+      </view>
+      <view class="menu-item" bindtap="goToCustomerEntry">
+        <view class="menu-title">客户录入管理</view>
+        <text class="chevron">›</text>
+      </view>
+      <view class="menu-item" bindtap="goToDataView">
+        <view class="menu-title">数据查看</view>
+        <text class="chevron">›</text>
+      </view>
+      <view class="menu-item" bindtap="logout">
+        <view class="menu-title danger">退出登录</view>
+        <text class="chevron">›</text>
       </view>
     </view>
   </block>

@@ -1,0 +1,3 @@
+.page { padding: 32rpx; background-color: #f7f8fa; min-height: 100vh }
+.title { font-size: 36rpx; font-weight: 700; margin-bottom: 20rpx; color: #1f2d3d }
+.card { background: #fff; border-radius: 20rpx; box-shadow: 0 16rpx 40rpx rgba(255,107,53,0.15); padding: 24rpx; color: #606266 }

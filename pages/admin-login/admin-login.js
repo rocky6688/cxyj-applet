@@ -12,7 +12,9 @@ Page({
       success: (res) => {
         const result = res && res.result ? res.result : {}
         if (result && result.isAdmin && result.user) {
+          try { wx.removeStorageSync('current_user'); wx.removeStorageSync('access_token') } catch (e) {}
           wx.setStorageSync('current_user', result.user)
+          try { wx.setStorageSync('login_type', 'admin') } catch (e) {}
           wx.showToast({ title: '管理员登录成功', icon: 'success' })
           wx.redirectTo({ url: '/pages/admin/index' })
         } else {

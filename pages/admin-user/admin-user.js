@@ -4,13 +4,13 @@ Page({
   data: { users: [] },
   onShow() { this.fetchUsers() },
   fetchUsers() {
-    wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'users', field: { _id: true, id: true, username: true, role: true, status: true }, orderBy: [{ field: 'updatedAt', order: 'desc' }], limit: 200 } })
+    wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'users', field: { _id: true, id: true, username: true, nickName: true, role: true, status: true }, orderBy: [{ field: 'updatedAt', order: 'desc' }], limit: 200 } })
       .then((res) => {
         const r = res && res.result ? res.result : {}
         const list = (r && r.data) || []
         const roleMap = { ADMIN: '管理员', STAFF: '员工', USER: '用户' }
         const statusMap = { ACTIVE: '启用', INACTIVE: '停用' }
-        const mapped = list.map((u) => ({ ...u, roleLabel: roleMap[u.role] || u.role, statusLabel: statusMap[u.status] || u.status }))
+        const mapped = list.map((u) => ({ ...u, roleLabel: roleMap[u.role] || u.role, statusLabel: statusMap[u.status] || u.status, displayName: u.nickName || u.username || '微信用户' }))
         this.setData({ users: mapped })
       })
   },

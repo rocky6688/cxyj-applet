@@ -13,5 +13,5 @@
     </view>
   </view>
 
-  <view class="admin-entry" bindtap="goToAdminLogin">后台登录</view>
+  <view class="admin-entry" wx:if="{{!loggedAsAdmin}}" bindtap="goToAdminLogin">后台登录</view>
 </view>

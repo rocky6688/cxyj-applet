@@ -18,8 +18,8 @@ Page({
   onShow() {
     try {
       const user = wx.getStorageSync('current_user')
-      if (user && user.id) {
-        this.setData({ loggedIn: true, user })
+      if (user && (user.id || user._id)) {
+        this.setData({ loggedIn: true, user, avatarUrl: user.avatarUrl || this.data.avatarUrl, nickname: user.nickName || this.data.nickname })
       } else {
         this.setData({ loggedIn: false, user: {} })
       }
@@ -83,33 +83,46 @@ Page({
   fillWechatNickname() { this.onNicknameFocus() },
 
   /**
+   * 兼容：open-type="getUserInfo" 事件回调，填充微信昵称与头像
+   */
+  onGetUserInfo(e) {
+    const info = (e && e.detail && e.detail.userInfo) || {}
+    const nn = info.nickName || ''
+    const av = info.avatarUrl || ''
+    const data = { nickname: nn || this.data.nickname }
+    if (!this.data.avatarUrl && av) data.avatarUrl = av
+    data.hasFetchedProfile = true
+    this.setData(data)
+    if (!nn) wx.showToast({ title: '未授权或未获取到昵称', icon: 'none' })
+  },
+
+  /**
    * 点击微信登录：将头像与昵称存入 storage 并跳转至登录页
    * 说明：需 avatarUrl 和 nickname 均已存在方可跳转
    */
   onWechatLoginTap() {
     const { avatarUrl, nickname } = this.data
-    if (!avatarUrl || !nickname) { wx.showToast({ title: '请先选择头像并填写昵称', icon: 'none' }); return }
-    // 直接调用云函数完成登录，并停留/刷新到“我的”页
-    wx.cloud.callFunction({
-      name: 'userLogin',
-      data: { nickName: nickname, avatarUrl },
-      success: (res) => {
+    if (!avatarUrl) { wx.showToast({ title: '请先选择头像', icon: 'none' }); return }
+    try { wx.showLoading({ title: '登录中...', mask: true }) } catch (e) {}
+    this.ensureCloudAvatar(avatarUrl)
+      .then((finalUrl) => wx.cloud.callFunction({ name: 'userLogin', data: { nickName: (nickname || '微信用户'), avatarUrl: finalUrl } }))
+      .then((res) => {
         const data = (res && res.result) || {}
         if (data && data.user) {
           try { wx.setStorageSync('current_user', data.user) } catch (e) {}
+          if (data.token) { try { wx.setStorageSync('access_token', data.token) } catch (e) {} }
           this.setData({ loggedIn: true, user: data.user })
           wx.showToast({ title: '登录成功', icon: 'success' })
-          // 通过切换 Tab 触发刷新（当前即“我的”页，也可不跳）
           wx.switchTab({ url: '/pages/my/my' })
         } else {
           wx.showToast({ title: '登录失败', icon: 'none' })
         }
-      },
-      fail: (err) => {
-        const msg = (err && err.errMsg) || '云函数调用失败'
+      })
+      .catch((err) => {
+        const msg = (err && (err.errMsg || err.message)) || '登录失败'
         wx.showToast({ title: msg, icon: 'none' })
-      }
-    })
+      })
+      .finally(() => { try { wx.hideLoading() } catch (e) {} })
   },
 
   /**
@@ -119,5 +132,53 @@ Page({
     try { wx.removeStorageSync('current_user') } catch (e) {}
     this.setData({ loggedIn: false, user: {} })
     wx.showToast({ title: '已退出', icon: 'none' })
+  },
+  onOneTapLogin() {
+    if (wx.getUserProfile) {
+      wx.getUserProfile({
+        desc: '用于登录',
+        success: (res) => {
+          const info = (res && res.userInfo) || {}
+          const nn = info.nickName || this.data.nickname || '微信用户'
+          // 保留用户已选择的头像优先级，不覆盖本地选择
+          const avSelected = this.data.avatarUrl
+          const avWx = info.avatarUrl || ''
+          const finalAv = avSelected ? avSelected : avWx
+          this.setData({ nickname: nn, avatarUrl: finalAv })
+          this.onWechatLoginTap()
+        },
+        fail: () => { wx.showToast({ title: '授权失败，请重试', icon: 'none' }) }
+      })
+    } else {
+      this.onWechatLoginTap()
+    }
+  },
+  goToCustomerEntry() { wx.navigateTo({ url: '/pages/customer-entry/customer-entry' }) },
+  goToDataView() { wx.navigateTo({ url: '/pages/data-view/data-view' }) }
+  ,goToProfileEdit() { wx.navigateTo({ url: '/pages/profile-edit/profile-edit' }) }
+  ,goToAdmin() { wx.navigateTo({ url: '/pages/admin/index' }) }
+  ,ensureCloudAvatar(localOrUrl) {
+    const url = String(localOrUrl || '')
+    const isHttp = /^https?:\/\//.test(url)
+    const isCloud = /^cloud:\/\//.test(url)
+    const isLocal = /^wxfile:\/\//.test(url) || (!isHttp && !isCloud)
+    const ts = Date.now()
+    const rand = Math.random().toString(36).slice(2,8)
+    const cloudPath = `avatar/${ts}_${rand}.png`
+    if (isCloud) return Promise.resolve(url)
+    if (isHttp) {
+      return new Promise((resolve, reject) => {
+        wx.downloadFile({ url, success: (r) => {
+          const fp = r && r.tempFilePath
+          if (!fp) return reject(new Error('下载头像失败'))
+          wx.cloud.uploadFile({ cloudPath, filePath: fp })
+            .then((res) => { const fid = (res && res.fileID) ? res.fileID : cloudPath; this.setData({ avatarUrl: fid }); resolve(fid) })
+            .catch(reject)
+        }, fail: (e) => reject(e) })
+      })
+    }
+    // 本地临时文件
+    return wx.cloud.uploadFile({ cloudPath, filePath: url })
+      .then((res) => { const fid = res && res.fileID ? res.fileID : cloudPath; this.setData({ avatarUrl: fid }); return fid })
   }
 })

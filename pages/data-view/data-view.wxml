@@ -1,0 +1,4 @@
+<view class="page">
+  <view class="title">数据查看</view>
+  <view class="card">此页面用于查看统计数据，后续完善。</view>
+</view>

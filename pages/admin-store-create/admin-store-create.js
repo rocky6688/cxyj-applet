@@ -53,11 +53,12 @@ Page({
   onStatusChange(e) { const i = Number(e.detail.value); this.setData({ statusIndex: i }) },
   toggleManagerPanel() { this.setData({ showManagerPanel: !this.data.showManagerPanel }) },
   fetchUsers() {
-    wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'users', field: { _id: true, id: true, username: true, role: true }, limit: 200 } })
+    wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'users', field: { _id: true, id: true, username: true, nickName: true, role: true }, limit: 200 } })
       .then((res) => {
         const r = res && res.result ? res.result : {}
         const list = (r && r.data) || []
-        const mapped = list.map((it) => ({ ...it, uid: it.id || it._id }))
+        const roleMap = { ADMIN: '管理员', STAFF: '员工', USER: '用户', MANAGER: '经理' }
+        const mapped = list.map((it) => ({ ...it, uid: it.id || it._id, roleLabel: roleMap[it.role] || it.role }))
         this.setData({ users: mapped })
       })
   },

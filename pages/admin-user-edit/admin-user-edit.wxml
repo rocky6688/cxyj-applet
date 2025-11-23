@@ -2,12 +2,12 @@
   <view class="title">{{pageTitle}}</view>
   <view class="form">
     <view class="form-item">
-      <view class="label">人员名称</view>
-      <input class="input" placeholder="请输入人员名称" maxlength="30" value="{{username}}" bindinput="onUserInput" disabled="{{!!docId}}" />
+      <view class="label">昵称</view>
+      <input class="input" placeholder="请输入昵称" maxlength="30" value="{{nickName}}" bindinput="onNickInput" />
     </view>
 
     <view class="form-item">
-      <view class="label">角色</view>
+      <view class="label">权限</view>
       <picker class="picker" mode="selector" range="{{roleOptionsCn}}" value="{{roleIndex}}" bindchange="onRoleChange">
         <view class="picker-inner">{{roleOptionsCn[roleIndex]}}</view>
       </picker>
