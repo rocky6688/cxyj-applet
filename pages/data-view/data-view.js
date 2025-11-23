@@ -123,22 +123,32 @@ Page({
     const labels = ['新增','量房','进店','签约']
     const values = [metrics.created, metrics.measured, metrics.inStore, metrics.signed]
     const max = Math.max(1, ...values)
-    const w = 300
-    const h = 180
-    const left = 20
-    const bw = 40
-    const gap = 20
+    const w = 320
+    const h = 200
+    const left = 24
+    const right = 24
+    const bottom = 24
+    const top = 24
+    const usableW = w - left - right
+    const segment = usableW / 4
+    const baseY = h - bottom
+    const barW = Math.max(20, Math.floor(segment * 0.5))
     ctx.setFillStyle('#ffffff')
-    ctx.fillRect(0, 0, w + 40, h + 40)
+    ctx.fillRect(0, 0, w, h)
     for (let i = 0; i < values.length; i++) {
-      const x = left + i * (bw + gap)
-      const barH = Math.round((values[i] / max) * (h - 20))
+      const cx = left + segment * i + segment / 2
+      const barH = Math.round((values[i] / max) * (h - top - bottom))
+      const x = Math.round(cx - barW / 2)
+      const y = Math.round(baseY - barH)
       ctx.setFillStyle('#ff6b35')
-      ctx.fillRect(x, h - barH, bw, barH)
+      ctx.fillRect(x, y, barW, barH)
+      ctx.setTextAlign('center')
+      ctx.setFillStyle('#ff6b35')
+      ctx.setFontSize(12)
+      ctx.fillText(String(values[i]), cx, y - 6)
       ctx.setFillStyle('#606266')
       ctx.setFontSize(10)
-      ctx.fillText(labels[i], x, h + 12)
-      ctx.fillText(String(values[i]), x, h - barH - 6)
+      ctx.fillText(labels[i], cx, baseY + 14)
     }
     ctx.draw()
   },

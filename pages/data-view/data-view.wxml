@@ -12,7 +12,6 @@
       <picker mode="selector" range="{{dateOptions}}" value="{{dateIndex}}" bindchange="onDateOptionChange">
         <view class="picker-inner">时间区间：{{dateOptions[dateIndex]}}</view>
       </picker>
-      <button class="primary" size="mini" bindtap="exportExcel">导出Excel</button>
       <view wx:if="{{dateOptions[dateIndex] === '自定义'}}" class="date-range">
         <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
           <view class="picker-inner">开始：{{startDate}}</view>
@@ -21,6 +20,7 @@
           <view class="picker-inner">结束：{{endDate}}</view>
         </picker>
       </view>
+      <button class="primary" size="mini" bindtap="exportExcel">导出Excel</button>
     </view>
 
     <view class="metrics">
