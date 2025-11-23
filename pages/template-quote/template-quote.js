@@ -41,7 +41,8 @@ Page({
         slug: (g.group && g.group.slug) || '',
         items: (g.items || []).map(it => {
           const ii = it.item || {}
-          return { id: ii.id, name: ii.name, unit: ii.unit || '', price: typeof ii.price === 'number' ? ii.price : 0, slug: ii.slug, minQuantity: typeof ii.minQuantity === 'number' ? ii.minQuantity : 1 }
+          const itemId = it.id || ii.id || ii._id
+          return { id: itemId, name: ii.name, unit: ii.unit || '', price: typeof ii.price === 'number' ? ii.price : 0, slug: ii.slug, minQuantity: typeof ii.minQuantity === 'number' ? ii.minQuantity : 1 }
         })
       }))
       const expandedSections = {}

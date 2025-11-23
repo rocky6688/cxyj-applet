@@ -33,6 +33,7 @@ exports.main = async (event, context) => {
       case 'delete': return await handleDelete(event)
       case 'reorder': return await handleReorder(event)
       case 'templateDetail': return await handleTemplateDetail(event)
+      case 'cloneFromDefault': return await cloneFromDefault(event)
       case 'renameGroup': return await renameGroup(event)
       case 'renameItem': return await renameItem(event)
       case 'addGroup': return await addGroup(event)
@@ -142,16 +143,33 @@ async function handleReorder(event) {
 async function handleTemplateDetail(event) {
   const { templateId } = event || {}
   if (!templateId) return { error: true, status: 400, message: 'templateId required' }
-  const tplRes = await db.collection('templates').doc(templateId).get()
-  const tpl = tplRes.data || {}
-  const tgRes = await db.collection('template_groups').where({ templateId }).orderBy('orderIndex', 'asc').get()
+
+  let tpl = null
+  let docId = null
+  // 1) 兼容两种 ID：文档 _id 与业务字段 id
+  try {
+    const tplRes = await db.collection('templates').doc(templateId).get()
+    tpl = tplRes.data || null
+    docId = tplRes._id || (tpl && tpl._id) || null
+  } catch (e) {
+    // docId 不存在时，尝试通过字段 id 查找
+    const byBiz = await db.collection('templates').where({ id: templateId }).limit(1).get()
+    tpl = (byBiz.data && byBiz.data[0]) || null
+    docId = tpl && tpl._id
+  }
+  if (!tpl) return { error: true, status: 404, message: 'template not found' }
+
+  // 2) 组查询：同时兼容存储为 _id 或业务 id 的历史数据
+  const _ = db.command
+  const ids = docId && docId !== templateId ? [templateId, docId] : [templateId]
+  const tgRes = await db.collection('template_groups').where({ templateId: _.in(ids) }).orderBy('orderIndex', 'asc').get()
   const tgList = tgRes.data || []
   const groups = []
   for (const tg of tgList) {
     const baseGroupRes = await db.collection('category_groups').doc(tg.groupId).get()
     const baseGroup = baseGroupRes.data || null
     const showGroup = { ...(baseGroup || {}), name: (tg.name || (baseGroup && baseGroup.name)) }
-    const tiRes = await db.collection('template_items').where({ templateGroupId: tg.id }).orderBy('orderIndex', 'asc').get()
+    const tiRes = await db.collection('template_items').where({ templateGroupId: (tg._id || tg.id) }).orderBy('orderIndex', 'asc').get()
     const tiList = tiRes.data || []
     const items = []
     for (const ti of tiList) {
@@ -164,11 +182,41 @@ async function handleTemplateDetail(event) {
         price: (typeof ti.price !== 'undefined' ? ti.price : (baseItem && baseItem.price)),
         minQuantity: (typeof ti.minQuantity !== 'undefined' ? ti.minQuantity : (baseItem && baseItem.minQuantity))
       }
-      items.push({ id: ti.id, orderIndex: ti.orderIndex, item: showItem })
+      items.push({ id: (ti._id || ti.id), orderIndex: ti.orderIndex, item: showItem })
     }
-    groups.push({ id: tg.id, orderIndex: tg.orderIndex, group: showGroup, items })
+    groups.push({ id: (tg._id || tg.id), orderIndex: tg.orderIndex, group: showGroup, items })
   }
-  return { status: 200, data: { id: tpl.id, name: tpl.name, isDefault: tpl.isDefault, groups } }
+  return { status: 200, data: { id: (tpl.id || tpl._id), name: tpl.name, isDefault: tpl.isDefault, groups } }
+}
+
+async function cloneFromDefault(event) {
+  const { name } = event || {}
+  const _ = db.command
+  const defRes = await db.collection('templates').where({ isDefault: true }).limit(1).get()
+  const defTpl = (defRes.data && defRes.data[0]) || null
+  if (!defTpl) return { error: true, status: 404, message: 'default template not found' }
+  const now = new Date().toISOString()
+  const bizId = `tpl_${Date.now()}`
+  const newRes = await db.collection('templates').add({ data: { id: bizId, name: name || '新模板', status: 'DRAFT', isDefault: false, createdAt: now, updatedAt: now } })
+  const newTplId = newRes._id
+  const ids = defTpl._id && defTpl.id && defTpl._id !== defTpl.id ? [defTpl.id, defTpl._id] : [defTpl.id || defTpl._id]
+  const grpRes = await db.collection('template_groups').where({ templateId: _.in(ids) }).orderBy('orderIndex', 'asc').get()
+  const groups = grpRes.data || []
+  for (const g of groups) {
+    const newGroup = await db.collection('template_groups').add({ data: { templateId: bizId, groupId: g.groupId, orderIndex: g.orderIndex, name: g.name } })
+    const newGroupId = newGroup._id
+    const itemsRes = await db.collection('template_items').where({ templateGroupId: _.in([g._id || g.id]) }).orderBy('orderIndex', 'asc').get()
+    const items = itemsRes.data || []
+    for (const it of items) {
+      const data = { templateGroupId: newGroupId, itemId: it.itemId, orderIndex: it.orderIndex }
+      if (typeof it.name !== 'undefined') data.name = it.name
+      if (typeof it.unit !== 'undefined') data.unit = it.unit
+      if (typeof it.price !== 'undefined') data.price = it.price
+      if (typeof it.minQuantity !== 'undefined') data.minQuantity = it.minQuantity
+      await db.collection('template_items').add({ data })
+    }
+  }
+  return { status: 200, data: { id: newTplId, bizId } }
 }
 
 /**
