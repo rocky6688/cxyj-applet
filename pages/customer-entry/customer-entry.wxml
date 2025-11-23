@@ -1,4 +1,99 @@
 <view class="page">
   <view class="title">客户录入管理</view>
-  <view class="card">此页面用于录入客户信息，后续完善。</view>
+
+  <view class="store-bar">
+    <view class="store-left">
+      <view wx:if="{{role === 'STAFF'}}" class="store-info">所属门店：{{storeName || '未设置'}} </view>
+      <view wx:if="{{role === 'ADMIN'}}" class="store-picker">
+        <picker mode="selector" range="{{storeNames}}" value="{{storeIndex}}" bindchange="onStoreChange">
+          <view class="picker-inner">当前门店：{{storeNames[storeIndex] || '请选择门店'}} </view>
+        </picker>
+      </view>
+    </view>
+    <button class="primary" bindtap="openCreate">新增录入</button>
+  </view>
+
+  <view class="filter-bar">
+    <picker class="filter-picker" mode="selector" range="{{decorationTimeFilterOptions}}" value="{{decorationTimeFilterIndex}}" bindchange="onDecorationTimeFilterChange">
+      <view class="filter-inner">装修时间：{{decorationTimeFilterOptions[decorationTimeFilterIndex]}}</view>
+    </picker>
+    <picker class="filter-picker" mode="selector" range="{{houseTypeFilterOptions}}" value="{{houseTypeFilterIndex}}" bindchange="onHouseTypeFilterChange">
+      <view class="filter-inner">居室：{{houseTypeFilterOptions[houseTypeFilterIndex]}}</view>
+    </picker>
+    <picker class="filter-picker" mode="selector" range="{{renovationTypeFilterOptions}}" value="{{renovationTypeFilterIndex}}" bindchange="onRenovationTypeFilterChange">
+      <view class="filter-inner">装修类型：{{renovationTypeFilterOptions[renovationTypeFilterIndex]}}</view>
+    </picker>
+    <picker class="filter-picker" mode="selector" range="{{followStatusFilterOptions}}" value="{{followStatusFilterIndex}}" bindchange="onFollowStatusFilterChange">
+      <view class="filter-inner">跟进反馈：{{followStatusFilterOptions[followStatusFilterIndex]}}</view>
+    </picker>
+    <picker class="filter-picker" mode="selector" range="{{sortOptions}}" value="{{sortIndex}}" bindchange="onSortChange">
+      <view class="filter-inner">排序：{{sortOptions[sortIndex]}}</view>
+    </picker>
+  </view>
+
+  <view class="list">
+    <view wx:if="{{!isLoading && entries.length === 0}}" class="empty">
+      <view class="empty-text">暂无数据</view>
+    </view>
+    <block wx:for="{{entries}}" wx:key="_id">
+      <view class="item">
+        <view class="item-header">
+          <text class="item-title">{{item.community}}｜{{item.name}}｜{{item.contact}}</text>
+          <text class="item-sub">装修时间：{{item.decorationTime}}｜居室：{{item.houseType}}｜类型：{{item.renovationType}}</text>
+          <text wx:if="{{role === 'ADMIN' || isManagerForCurrentStore}}" class="item-sub">录入人：{{item.createdByName || '未知'}}</text>
+        </view>
+        <view class="item-actions">
+          <button size="mini" bindtap="startEdit" data-id="{{item._id}}">编辑</button>
+          <button size="mini" type="warn" bindtap="removeEntry" data-id="{{item._id}}">删除</button>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view class="dialog-mask" wx:if="{{showForm}}" catchtap="noop">
+    <view class="dialog-card" catchtap="noop">
+      <view class="dialog-title">{{editingId ? '编辑录入' : '新增录入'}}（{{storeName}}）</view>
+      <scroll-view scroll-y class="dialog-scroll">
+        <view class="dialog-label">小区</view>
+        <input class="dialog-input" placeholder="小区" value="{{form.community}}" bindinput="onCommunityInput" />
+
+        <view class="dialog-label">姓名</view>
+        <input class="dialog-input" placeholder="姓名" value="{{form.name}}" bindinput="onNameInput" />
+
+        <view class="dialog-label">联系方式</view>
+        <input class="dialog-input" placeholder="联系方式" value="{{form.contact}}" bindinput="onContactInput" />
+
+        <view class="dialog-label">装修时间</view>
+        <picker mode="selector" range="{{decorationTimeOptions}}" value="{{decorationTimeIndex}}" bindchange="onDecorationTimeChange">
+          <view class="dialog-picker">装修时间：{{decorationTimeOptions[decorationTimeIndex] || '请选择'}} </view>
+        </picker>
+
+        <view class="dialog-label">居室</view>
+        <picker mode="selector" range="{{houseTypeOptions}}" value="{{houseTypeIndex}}" bindchange="onHouseTypeChange">
+          <view class="dialog-picker">居室：{{houseTypeOptions[houseTypeIndex] || '请选择'}} </view>
+        </picker>
+
+        <view class="dialog-label">装修类型</view>
+        <picker mode="selector" range="{{renovationTypeOptions}}" value="{{renovationTypeIndex}}" bindchange="onRenovationTypeChange">
+          <view class="dialog-picker">装修类型：{{renovationTypeOptions[renovationTypeIndex] || '请选择'}} </view>
+        </picker>
+
+        <view class="dialog-label">业主情况</view>
+        <textarea class="dialog-textarea" placeholder="业主情况" value="{{form.ownerStatus}}" bindinput="onOwnerStatusInput" />
+
+        <view class="dialog-label">跟进反馈</view>
+        <picker mode="selector" range="{{followStatusOptions}}" value="{{followStatusIndex}}" bindchange="onFollowStatusChange">
+          <view class="dialog-picker">跟进反馈：{{followStatusOptions[followStatusIndex] || '请选择'}} </view>
+        </picker>
+
+        <view class="dialog-label">填写的内容反馈</view>
+        <textarea class="dialog-textarea" placeholder="填写的内容反馈" value="{{form.followContent}}" bindinput="onFollowContentInput" />
+
+        <view class="dialog-actions">
+          <button class="btn-warn" bindtap="closeForm">取消</button>
+          <button class="btn" bindtap="submit">保存</button>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
 </view>

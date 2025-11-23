@@ -1,3 +1,30 @@
 .page { padding: 32rpx; background-color: #f7f8fa; min-height: 100vh }
 .title { font-size: 36rpx; font-weight: 700; margin-bottom: 20rpx; color: #1f2d3d }
-.card { background: #fff; border-radius: 20rpx; box-shadow: 0 16rpx 40rpx rgba(255,107,53,0.15); padding: 24rpx; color: #606266 }
+.store-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16rpx }
+.store-left { display: flex; align-items: center; gap: 16rpx }
+.store-info { font-size: 28rpx; color: #606266 }
+.store-picker .picker-inner { font-size: 26rpx; color: #606266; border: 1rpx solid #ffe0cc; border-radius: 12rpx; padding: 12rpx; background: #fffaf6 }
+.actions { margin: 12rpx 0 }
+.primary { background-color: #ff6b35; color: #fff }
+.filter-bar { display: flex; flex-wrap: wrap; gap: 12rpx; margin: 12rpx 0 }
+.filter-picker .filter-inner { font-size: 24rpx; color: #606266; border: 1rpx solid #eaeaea; border-radius: 12rpx; padding: 10rpx 12rpx; background: #fff }
+.list { display: flex; flex-direction: column; gap: 16rpx }
+.empty { padding: 60rpx 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #909399 }
+.empty-img { width: 360rpx }
+.empty-text { margin-top: 16rpx; font-size: 26rpx }
+.item { background: #fff; border-radius: 16rpx; box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.06); padding: 20rpx }
+.item-header { display: flex; flex-direction: column; gap: 8rpx }
+.item-title { font-size: 30rpx; color: #222 }
+.item-sub { font-size: 24rpx; color: #909399 }
+.item-actions { display: flex; gap: 12rpx; margin-top: 12rpx }
+.dialog-mask { position: fixed; left: 0; right: 0; top: 0; bottom: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 999 }
+.dialog-card { width: 86%; max-width: 700rpx; background: #fff; border-radius: 20rpx; box-shadow: 0 16rpx 40rpx rgba(255,107,53,0.15); padding: 24rpx }
+.dialog-title { font-size: 30rpx; color: #333; margin-bottom: 12rpx }
+.dialog-scroll { height: 900rpx }
+.dialog-label { font-size: 26rpx; color: #666; margin: 6rpx 0 }
+.dialog-input { border: 1rpx solid #e5e5e5; border-radius: 12rpx; padding: 16rpx; background: #fafafa; margin-bottom: 12rpx }
+.dialog-picker { font-size: 26rpx; color: #606266; border: 1rpx solid #e5e5e5; border-radius: 12rpx; padding: 16rpx; background: #fff; margin-bottom: 12rpx }
+.dialog-textarea { min-height: 160rpx; border: 1rpx solid #e5e5e5; border-radius: 12rpx; padding: 16rpx; background: #fafafa; margin-bottom: 12rpx }
+.dialog-actions { display: flex; gap: 12rpx; justify-content: flex-end }
+.btn { background-color: #ff6b35; color: #fff }
+.btn-warn { background-color: #f56c6c; color: #fff }
