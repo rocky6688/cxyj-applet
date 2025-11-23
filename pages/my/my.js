@@ -7,7 +7,7 @@ Page({
     avatarUrl: '',
     nickname: '',
     // 使用内联透明 PNG 作为占位，避免 404 与域名白名单问题
-    defaultAvatar: '/static/images/def_avatar.png',
+    defaultAvatar: 'cloud://cloud1-9g499hgm7cefa098.636c-cloud1-9g499hgm7cefa098-1387601215/image/def_avatar.png',
     // 防止频繁调用 getUserProfile
     hasFetchedProfile: false,
     lastProfileTs: 0,
