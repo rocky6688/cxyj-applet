@@ -1,4 +1,6 @@
 /**app.wxss**/
+/* 全局按钮样式重置：统一移除外边距，避免各页面按钮出现间距不一致 */
+button { margin: 0 !important; }
 .container {
   height: 100%;
   display: flex;

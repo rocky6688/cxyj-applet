@@ -10,7 +10,7 @@
         </picker>
       </view>
     </view>
-    <button class="primary" bindtap="openCreate">新增录入</button>
+    <button class="primary" bindtap="openCreate" size="mini">新增录入</button>
   </view>
 
   <view class="filter-bar">

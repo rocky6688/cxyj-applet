@@ -5,7 +5,7 @@
 .store-info { font-size: 28rpx; color: #606266 }
 .store-picker .picker-inner { font-size: 26rpx; color: #606266; border: 1rpx solid #ffe0cc; border-radius: 12rpx; padding: 12rpx; background: #fffaf6 }
 .actions { margin: 12rpx 0 }
-.primary { background-color: #ff6b35; color: #fff }
+.primary { background-color: #ff6b35; color: #fff;margin: 0; }
 .filter-bar { display: flex; flex-wrap: wrap; gap: 12rpx; margin: 12rpx 0 }
 .filter-picker .filter-inner { font-size: 24rpx; color: #606266; border: 1rpx solid #eaeaea; border-radius: 12rpx; padding: 10rpx 12rpx; background: #fff }
 .list { display: flex; flex-direction: column; gap: 16rpx }
