@@ -6,6 +6,27 @@
 .store-picker .picker-inner { font-size: 26rpx; color: #606266; border: 1rpx solid #ffe0cc; border-radius: 12rpx; padding: 12rpx; background: #fffaf6 }
 .actions { margin: 12rpx 0 }
 .primary { background-color: #ff6b35; color: #fff;margin: 0; }
+
+/* 主题统一：按钮与弹窗（主色 #ff6b35） */
+.primary-btn { background-color: #ff6b35; color: #fff; border-radius: 16rpx; box-shadow: 0 8rpx 18rpx rgba(255,107,53,0.25); padding: 18rpx 32rpx; font-size: 30rpx; }
+.ghost-btn { background-color: #ffffff; color: #ff6b35; border: 2rpx solid #ff6b35; border-radius: 16rpx; padding: 18rpx 32rpx; font-size: 30rpx; }
+
+.edit-btn { background-color: #ff6b35; color: #fff; border-radius: 12rpx; padding: 0 28rpx; box-shadow: 0 6rpx 14rpx rgba(255,107,53,0.25); }
+.delete-btn { background-color: #ffffff; color: #ff6b35; border: 2rpx solid #ff6b35; border-radius: 12rpx; padding: 0 28rpx; }
+
+.dialog-mask { position: fixed; left: 0; right: 0; top: 0; bottom: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; z-index: 999; }
+.dialog-card { width: 86%; max-height: 80vh; background: #ffffff; border-radius: 20rpx; box-shadow: 0 12rpx 28rpx rgba(255,107,53,0.18); overflow: hidden; }
+.dialog-title { padding: 24rpx 28rpx; background: #fff3ee; color: #ff6b35; font-weight: 600; border-bottom: 2rpx solid #ffe2d6; }
+/* .dialog-scroll { padding: 24rpx; } */
+.dialog-label { color: #7a7a7a; margin: 16rpx 0 8rpx; }
+.dialog-input, .dialog-textarea { border: 2rpx solid #ffd2c2; border-radius: 12rpx; padding: 16rpx 20rpx; background: #fffdfb; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 20rpx; margin-top: 24rpx; }
+
+.confirm-mask { position: fixed; left: 0; right: 0; top: 0; bottom: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.confirm-card { width: 80%; background: #ffffff; border-radius: 18rpx; box-shadow: 0 12rpx 28rpx rgba(255,107,53,0.22); overflow: hidden; }
+.confirm-title { padding: 24rpx 28rpx; background: #fff3ee; color: #ff6b35; font-weight: 600; border-bottom: 2rpx solid #ffe2d6; }
+.confirm-msg { padding: 24rpx 28rpx; color: #4a4a4a; }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 20rpx; padding: 0 28rpx 24rpx; }
 .filter-bar { display: flex; flex-wrap: wrap; gap: 12rpx; margin: 12rpx 0 }
 .filter-picker .filter-inner { font-size: 24rpx; color: #606266; border: 1rpx solid #eaeaea; border-radius: 12rpx; padding: 10rpx 12rpx; background: #fff }
 .list { display: flex; flex-direction: column; gap: 16rpx }
@@ -16,7 +37,7 @@
 .item-header { display: flex; flex-direction: column; gap: 8rpx }
 .item-title { font-size: 30rpx; color: #222 }
 .item-sub { font-size: 24rpx; color: #909399 }
-.item-actions { display: flex; gap: 12rpx; margin-top: 12rpx }
+.item-actions { display: flex; width: 100%;gap: 12rpx; margin-top: 12rpx ;}
 .dialog-mask { position: fixed; left: 0; right: 0; top: 0; bottom: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 999 }
 .dialog-card { width: 86%; max-width: 700rpx; background: #fff; border-radius: 20rpx; box-shadow: 0 16rpx 40rpx rgba(255,107,53,0.15); padding: 24rpx }
 .dialog-title { font-size: 30rpx; color: #333; margin-bottom: 12rpx }

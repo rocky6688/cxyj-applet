@@ -76,6 +76,10 @@ Page({
         this.resetAndFetch()
       })
   },
+  /**
+   * 管理员初始化门店列表（保留当前选择）🧭
+   * 说明：返回列表页时，保持用户之前选择的门店，不重置为第一个
+   */
   initAdminStores() {
     wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'stores', orderBy: [{ field: 'updatedAt', order: 'desc' }], limit: 200 } })
       .then((res) => {
@@ -83,13 +87,24 @@ Page({
         const list = (r && r.data) || []
         const ids = list.map((s) => s.id || s._id)
         const names = list.map((s) => s.name)
-        this.setData({ storeIds: ids, storeNames: names, storeIndex: 0, storeId: ids[0] || '', storeName: names[0] || '' })
+        // 保留之前选中的 storeId（如果仍在列表中）
+        const prevId = this.data.storeId || ''
+        const keepIndex = prevId ? ids.indexOf(prevId) : -1
+        const useIndex = keepIndex >= 0 ? keepIndex : 0
+        this.setData({
+          storeIds: ids,
+          storeNames: names,
+          storeIndex: useIndex,
+          storeId: ids[useIndex] || '',
+          storeName: names[useIndex] || ''
+        })
         this.resetAndFetch()
       })
   },
   onStoreChange(e) {
     const i = Number(e.detail.value)
     const sid = this.data.storeIds[i]
+    // 记录用户选择，便于返回页时保持一致
     this.setData({ storeIndex: i, storeId: sid, storeName: this.data.storeNames[i] })
     this.resetAndFetch()
   },
@@ -200,6 +215,16 @@ Page({
       wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { action: 'add', collection: 'customerEntries', data: { id, createdAt: nowStr, createdBy: creatorId, createdByName: creatorName, ...payload } } })
         .then(() => { wx.showToast({ title: '已新增', icon: 'success' }); this.setData({ showForm: false }); this.fetchEntries() })
     }
+  },
+  /**
+   * 列表项点击跳转详情页 🧭
+   * 参数：e:any，包含当前项的 `data-id`
+   * 行为：根据文档 `_id` 跳转到详情页并在详情页拉取数据
+   */
+  goToDetail(e) {
+    const id = (e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.id) || ''
+    if (!id) { wx.showToast({ title: '未找到记录ID', icon: 'none' }); return }
+    wx.navigateTo({ url: `/pages/customer-entry-detail/customer-entry-detail?id=${id}` })
   },
   noop() {}
 })

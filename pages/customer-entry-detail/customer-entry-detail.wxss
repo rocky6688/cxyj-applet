@@ -1,0 +1,14 @@
+/* 详情页主题样式（主色 #ff6b35） */
+.detail-page { padding: 20rpx; background: linear-gradient(180deg, #fff7f2 0%, #fff1ea 100%); min-height: 100vh; }
+.loading, .error { padding: 24rpx; color: #666; }
+.detail-card { background: #fff; border-radius: 18rpx; box-shadow: 0 12rpx 28rpx rgba(255,107,53,0.18); overflow: hidden; }
+.detail-header { padding: 24rpx 28rpx; background: #fff3ee; border-bottom: 2rpx solid #ffe2d6; }
+.detail-title { color: #ff6b35; font-weight: 600; }
+.detail-sub { color: #7a7a7a; display: block; margin-top: 8rpx; }
+.detail-section { padding: 20rpx 24rpx; }
+.row { display: flex; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx dashed #ffe2d6; }
+.row:last-child { border-bottom: none; }
+.label { color: #4a4a4a; }
+.value { color: #2b2b2b; }
+.detail-actions { display: flex; justify-content: flex-end; gap: 20rpx; padding: 0 24rpx 24rpx; }
+.primary-btn { background-color: #ff6b35; color: #fff; border-radius: 16rpx; box-shadow: 0 8rpx 18rpx rgba(255,107,53,0.25); padding: 18rpx 32rpx; font-size: 30rpx; }

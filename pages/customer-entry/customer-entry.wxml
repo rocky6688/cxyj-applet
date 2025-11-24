@@ -36,21 +36,21 @@
       <view class="empty-text">暂无数据</view>
     </view>
     <block wx:for="{{entries}}" wx:key="_id">
-      <view class="item">
+      <view class="item" data-id="{{item._id}}" bindtap="goToDetail">
         <view class="item-header">
           <text class="item-title">{{item.community}}｜{{item.name}}｜{{item.contact}}</text>
           <text class="item-sub">装修时间：{{item.decorationTime}}｜居室：{{item.houseType}}｜类型：{{item.renovationType}}</text>
           <text wx:if="{{role === 'ADMIN' || isManagerForCurrentStore}}" class="item-sub">录入人：{{item.createdByName || '未知'}}</text>
         </view>
         <view class="item-actions">
-          <button size="mini" bindtap="startEdit" data-id="{{item._id}}">编辑</button>
-          <button size="mini" type="warn" bindtap="removeEntry" data-id="{{item._id}}">删除</button>
+          <button size="mini" class="edit-btn" catchtap="startEdit" data-id="{{item._id}}">编辑</button>
+          <button size="mini" class="delete-btn" catchtap="removeEntry" data-id="{{item._id}}">删除</button>
         </view>
       </view>
     </block>
   </view>
 
-  <view class="dialog-mask" wx:if="{{showForm}}" catchtap="noop">
+  <view class="dialog-mask" wx:if="{{showForm}}" bindtap="closeForm">
     <view class="dialog-card" catchtap="noop">
       <view class="dialog-title">{{editingId ? '编辑录入' : '新增录入'}}（{{storeName}}）</view>
       <scroll-view scroll-y class="dialog-scroll">
@@ -90,8 +90,8 @@
         <textarea class="dialog-textarea" placeholder="填写的内容反馈" value="{{form.followContent}}" bindinput="onFollowContentInput" />
 
         <view class="dialog-actions">
-          <button class="btn-warn" bindtap="closeForm">取消</button>
-          <button class="btn" bindtap="submit">保存</button>
+          <button class="ghost-btn" bindtap="closeForm">取消</button>
+          <button class="primary-btn" bindtap="submit">保存</button>
         </view>
       </scroll-view>
     </view>

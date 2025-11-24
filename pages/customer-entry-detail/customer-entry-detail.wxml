@@ -1,0 +1,25 @@
+<view class="detail-page">
+  <view wx:if="{{loading}}" class="loading">正在加载...</view>
+  <view wx:elif="{{error}}" class="error">{{error}}</view>
+  <view wx:else class="detail-card">
+    <view class="detail-header">
+      <text class="detail-title">{{item.community}}｜{{item.name}}｜{{item.contact}}</text>
+      <text class="detail-sub">门店：{{item.storeName}}</text>
+    </view>
+
+    <view class="detail-section">
+      <view class="row"><text class="label">装修时间</text><text class="value">{{item.decorationTime}}</text></view>
+      <view class="row"><text class="label">居室</text><text class="value">{{item.houseType}}</text></view>
+      <view class="row"><text class="label">装修类型</text><text class="value">{{item.renovationType}}</text></view>
+      <view class="row"><text class="label">业主情况</text><text class="value">{{item.ownerStatus || '—'}}</text></view>
+      <view class="row"><text class="label">跟进反馈</text><text class="value">{{item.followStatus}}</text></view>
+      <view class="row"><text class="label">内容反馈</text><text class="value">{{item.followContent || '—'}}</text></view>
+      <view class="row"><text class="label">录入人</text><text class="value">{{item.createdByName || '未知'}}</text></view>
+      <view class="row"><text class="label">更新时间</text><text class="value">{{item.updatedAt}}</text></view>
+    </view>
+
+    <view class="detail-actions">
+      <button class="primary-btn" bindtap="backToList">返回列表</button>
+    </view>
+  </view>
+</view>
