@@ -11,7 +11,7 @@ exports.main = async (event, context) => {
       const byName = await users.where({ username: event.username }).get()
       if (byName && byName.data && byName.data.length > 0) {
         const candidate = byName.data[0]
-        if (candidate.role === 'ADMIN' && event.password === 'admin123') {
+        if (candidate.role === 'ADMIN' && event.password === 'admin1234') {
           return { isAdmin: true, user: candidate, openid: OPENID, exists: true }
         }
         return { isAdmin: false, user: null, openid: OPENID, exists: false, reason: '用户名或密码错误' }
