@@ -45,6 +45,7 @@
         <view class="item-actions">
           <button size="mini" class="edit-btn" catchtap="startEdit" data-id="{{item._id}}">编辑</button>
           <button size="mini" class="delete-btn" catchtap="removeEntry" data-id="{{item._id}}">删除</button>
+          <button size="mini" class="phone-btn" catchtap="callPhone" data-phone="{{item.contact}}">联系客户</button>
         </view>
       </view>
     </block>

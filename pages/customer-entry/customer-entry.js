@@ -226,5 +226,30 @@ Page({
     if (!id) { wx.showToast({ title: '未找到记录ID', icon: 'none' }); return }
     wx.navigateTo({ url: `/pages/customer-entry-detail/customer-entry-detail?id=${id}` })
   },
+  /**
+   * 拨打联系电话（支持多个号码选择）☎️
+   * 入参：e:any，从 data-phone 读取原始联系方式字符串
+   * 行为：
+   * - 解析出手机/座机号码（按数字序列提取，支持多个）
+   * - 若存在多个号码，弹出操作菜单供选择
+   * - 选择后调用 wx.makePhoneCall 拨打
+   */
+  callPhone(e) {
+    const raw = (e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.phone) || ''
+    const s = String(raw || '')
+    // 提取可能的电话号码（去除非数字，支持 7-13 位，含区号）
+    const candidates = []
+    const normalized = s.replace(/[^0-9]/g, ' ')
+    normalized.split(' ').forEach((seg) => {
+      const n = seg.trim()
+      if (n && n.length >= 7 && n.length <= 13) candidates.push(n)
+    })
+    if (!candidates.length) { wx.showToast({ title: '无效的联系方式', icon: 'none' }); return }
+    const makeCall = (num) => wx.makePhoneCall({ phoneNumber: num })
+    if (candidates.length === 1) { makeCall(candidates[0]); return }
+    wx.showActionSheet({ itemList: candidates, success: (r) => {
+      if (typeof r.tapIndex === 'number') makeCall(candidates[r.tapIndex])
+    } })
+  },
   noop() {}
 })

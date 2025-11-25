@@ -37,7 +37,8 @@
 .item-header { display: flex; flex-direction: column; gap: 8rpx }
 .item-title { font-size: 30rpx; color: #222 }
 .item-sub { font-size: 24rpx; color: #909399 }
-.item-actions { display: flex; width: 100%;gap: 12rpx; margin-top: 12rpx ;}
+.item-actions { display: flex; width: 100%;gap: 12rpx; margin-top: 12rpx;position: relative;}
+.phone-btn { margin-left: auto;color:#ff6b35;border: 1px solid #ff6b35;position: absolute;right: 0;z-index: 999;}
 .dialog-mask { position: fixed; left: 0; right: 0; top: 0; bottom: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 999 }
 .dialog-card { width: 86%; max-width: 700rpx; background: #fff; border-radius: 20rpx; box-shadow: 0 16rpx 40rpx rgba(255,107,53,0.15); padding: 24rpx }
 .dialog-title { font-size: 30rpx; color: #333; margin-bottom: 12rpx }
