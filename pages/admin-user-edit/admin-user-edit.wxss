@@ -4,5 +4,6 @@
 .form-item { display: flex; flex-direction: column; gap: 8rpx }
 .label { font-size: 26rpx; color: #666 }
 .input { border: 1rpx solid #e5e5e5; border-radius: 12rpx; padding: 16rpx; background: #fafafa }
+.primary-btn{width: 100%;display: flex;align-items: center;justify-content: center;}
 .primary { background-color: #07c160; color: #fff }
 .picker-inner { font-size: 26rpx; color: #606266; border: 1rpx solid #e5e5e5; border-radius: 12rpx; padding: 16rpx; background: #fff }

@@ -20,13 +20,15 @@
       </picker>
     </view>
 
-    <view class="form-item" wx:if="{{isStaff}}">
+    <view class="form-item" wx:if="{{isStoreLinked}}">
       <view class="label">所属门店</view>
       <picker class="picker" mode="selector" range="{{storeNames}}" value="{{storeIndex}}" bindchange="onStoreChange">
         <view class="picker-inner">{{storeNames[storeIndex] || '请选择门店'}}</view>
       </picker>
     </view>
+    <view class="primary-btn">
+      <button class="primary" bindtap="submit">保存</button>
+    </view>
 
-    <button class="primary" bindtap="submit">保存</button>
   </view>
 </view>
