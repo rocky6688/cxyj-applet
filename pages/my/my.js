@@ -6,8 +6,9 @@ Page({
     user: {},
     avatarUrl: '',
     nickname: '',
-    // 使用内联透明 PNG 作为占位，避免 404 与域名白名单问题
-    defaultAvatar: 'cloud://cloud1-9g499hgm7cefa098.636c-cloud1-9g499hgm7cefa098-1387601215/image/def_avatar.png',
+    // 默认头像：显示用 HTTPS 下载地址，保存用云 FileID
+    defaultAvatar: 'https://636c-cloud1-9g499hgm7cefa098-1387601215.tcb.qcloud.la/image/def_avatar.png?sign=171921f04185d03cf65fc02903fd454c&t=1764090807',
+    defaultAvatarFileId: 'cloud://cloud1-9g499hgm7cefa098.636c-cloud1-9g499hgm7cefa098-1387601215/image/def_avatar.png',
     // 防止频繁调用 getUserProfile
     hasFetchedProfile: false,
     lastProfileTs: 0,
@@ -184,15 +185,38 @@ Page({
   goToDataView() { wx.navigateTo({ url: '/pages/data-view/data-view' }) }
   ,goToProfileEdit() { wx.navigateTo({ url: '/pages/profile-edit/profile-edit' }) }
   ,goToAdmin() { wx.navigateTo({ url: '/pages/admin/index' }) }
+  /**
+   * 确保头像可用并上传到云存储（如需）
+   * 入参：localOrUrl:any 可为 http、cloud、wxfile、本地选择的临时路径或 data URI/静态资源
+   * 规则：
+   * - cloud://、data URI、静态资源路径（../../static/... 或 /static/...）：直接返回，不上传
+   * - http(s)：下载后上传到云并返回 fileID
+   * - 本地临时文件（wxfile://）：直接上传到云并返回 fileID
+   */
+  /**
+   * 确保头像可用并上传到云存储（如需）
+   * 入参：localOrUrl:any 可为 http、cloud、wxfile、本地选择的临时路径或 data URI/静态资源
+   * 规则：
+   * - 默认头像（HTTPS 或云 FileID）：统一返回默认头像的 HTTPS 地址，不上传
+   * - cloud://、data URI、静态资源路径（../../static/... 或 /static/...）：直接返回，不上传
+   * - http(s)：下载后上传到云并返回 fileID
+   * - 本地临时文件（wxfile://）：直接上传到云并返回 fileID
+   */
   ,ensureCloudAvatar(localOrUrl) {
     const url = String(localOrUrl || '')
     const isHttp = /^https?:\/\//.test(url)
     const isCloud = /^cloud:\/\//.test(url)
-    const isLocal = /^wxfile:\/\//.test(url) || (!isHttp && !isCloud)
+    const isLocal = /^wxfile:\/\//.test(url)
+    const isStaticAsset = /^(\.\.\/|\/)/.test(url) || /^data:image\//.test(url)
+    const isDefaultHttp = url === this.data.defaultAvatar
+    const isDefaultCloud = url === this.data.defaultAvatarFileId
     const ts = Date.now()
     const rand = Math.random().toString(36).slice(2,8)
     const cloudPath = `avatar/${ts}_${rand}.png`
-    if (isCloud) return Promise.resolve(url)
+    // 默认头像：统一保持为 HTTPS 地址
+    if (!url) return Promise.resolve(this.data.defaultAvatar)
+    if (isDefaultHttp || isDefaultCloud) return Promise.resolve(this.data.defaultAvatar)
+    if (isCloud || isStaticAsset) return Promise.resolve(url)
     if (isHttp) {
       return new Promise((resolve, reject) => {
         wx.downloadFile({ url, success: (r) => {
