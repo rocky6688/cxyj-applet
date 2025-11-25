@@ -36,11 +36,59 @@ Page({
         const canViewDataView = user.role === 'ADMIN' || user.role === 'MANAGER'
         this.setData({ loggedIn: true, user, avatarUrl: user.avatarUrl || this.data.avatarUrl, nickname: user.nickName || this.data.nickname, roleLabel, canViewDataView })
         const uid = user.id || user._id
-        this.fetchStaffStore(uid)
+        // 进入页面即刷新用户权限，避免后台调整后前端仍旧旧数据
+        this.refreshUserFromServer(uid)
+          .catch(() => {})
+          .finally(() => { this.fetchStaffStore(uid) })
       } else {
         this.setData({ loggedIn: false, user: {}, staffStoreName: '', isManagerOfStaffStore: false, roleLabel: '', canViewDataView: false })
       }
     } catch (e) { this.setData({ loggedIn: false }) }
+  },
+  /**
+   * 刷新用户信息（获取最新权限）🔄
+   * 入参：userId:any
+   * 行为：
+   * - 从云端 `users` 集合拉取最新用户信息
+   * - 若状态变化或角色变化，自动退出登录并提示需要重新登录
+   * - 若仅资料更新（如昵称头像），同步到本地与页面
+   */
+  refreshUserFromServer(userId) {
+    if (!userId) return Promise.resolve()
+    return wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'users', where: [{ field: 'id', op: 'eq', value: userId }], limit: 1 } })
+      .then((res) => {
+        const r = res && res.result ? res.result : {}
+        let serverUser = (r && r.data && r.data[0]) || null
+        const localUser = this.data.user || {}
+        if (!serverUser) {
+          // 尝试按 _id 兜底查询，避免字段差异导致误登出
+          return wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'users', where: [{ field: '_id', op: 'eq', value: userId }], limit: 1 } })
+            .then((res2) => {
+              const rr = res2 && res2.result ? res2.result : {}
+              serverUser = (rr && rr.data && rr.data[0]) || null
+              return { serverUser, localUser }
+            })
+        }
+        return { serverUser, localUser }
+      })
+      .then((ctx) => {
+        const serverUser = (ctx && ctx.serverUser) || null
+        const localUser = (ctx && ctx.localUser) || {}
+        if (!serverUser) { return }
+        const roleChanged = String(serverUser.role || '') !== String(localUser.role || '')
+        const statusChanged = String(serverUser.status || '') !== String(localUser.status || '')
+        const forceLogoutFlag = !!serverUser.forceLogout
+        if (forceLogoutFlag || statusChanged || roleChanged) {
+          this.logout()
+          wx.showToast({ title: '权限已更新，请重新登录', icon: 'none' })
+          return
+        }
+        try { wx.setStorageSync('current_user', serverUser) } catch (e) {}
+        const roleMap = { ADMIN: '管理员', STAFF: '员工', USER: '用户', MANAGER: '店长', DESIGNER: '设计师' }
+        const roleLabel = roleMap[serverUser.role] || ''
+        const canViewDataView = serverUser.role === 'ADMIN' || serverUser.role === 'MANAGER'
+        this.setData({ user: serverUser, roleLabel, canViewDataView, avatarUrl: serverUser.avatarUrl || this.data.avatarUrl, nickname: serverUser.nickName || this.data.nickname })
+      })
   },
   fetchStaffStore(userId) {
     if (!userId) return
