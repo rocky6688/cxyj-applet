@@ -4,7 +4,7 @@
     <view class="brand-slogan">高效 · 精准 · 专业</view>
   </view>
 
-  <view class="hero-card">
+  <view class="hero-card" wx:if="{{canSeeHero}}">
     <view class="hero-title">装修报价系统</view>
     <view class="hero-sub">一站式管理报价模板与项目</view>
     <view class="hero-actions">
