@@ -44,12 +44,17 @@ Page({
    * - 从本地缓存读取当前用户与角色
    * - 仅允许 `ADMIN`、`STAFF`、`MANAGER` 访问
    * - 根据角色初始化门店上下文（员工/店长定向门店，管理员可切换）
+   * - 进入页面即显示全局 Loading（数据准备完成后关闭）
    */
   onShow() {
+    // 进入页面显示加载中（遮罩防误操作）
+    wx.showLoading({ title: '加载中', mask: true })
     const u = wx.getStorageSync('current_user') || {}
     const role = u.role || 'USER'
     if (role !== 'ADMIN' && role !== 'STAFF' && role !== 'MANAGER') {
       wx.showToast({ title: '仅员工/店长/管理员可访问', icon: 'none' })
+      // 无权限时关闭 Loading，避免卡住
+      wx.hideLoading()
       setTimeout(() => wx.switchTab({ url: '/pages/my/my' }), 600)
       return
     }
@@ -73,7 +78,7 @@ Page({
         const r = res && res.result ? res.result : {}
         const m = (r && r.data && r.data[0]) || null
         const sid = (m && m.storeId) || ''
-        if (!sid) return
+        if (!sid) { wx.hideLoading(); return }
         this.setData({ storeId: sid, isManagerForCurrentStore: true })
         return wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'stores', where: [{ field: 'id', op: 'eq', value: sid }], limit: 1 } })
       })
@@ -97,7 +102,7 @@ Page({
         const r = res && res.result ? res.result : {}
         const m = (r && r.data && r.data[0]) || null
         const sid = (m && m.storeId) || ''
-        if (!sid) return
+        if (!sid) { wx.hideLoading(); return }
         this.setData({ storeId: sid })
         return wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'stores', where: [{ field: 'id', op: 'eq', value: sid }], limit: 1 } })
       })
@@ -173,9 +178,18 @@ Page({
     this.setData({ entries: [], lastUpdatedAt: '', hasMore: true })
     this.fetchEntries(false)
   },
+  /**
+   * 拉取客户录入列表（含 Loading 控制）📥
+   * 入参：isLoadMore:any 是否为滚动加载
+   * 行为：
+   * - 设置 `isLoading=true` 与显示全局 Loading
+   * - 调用云函数查询数据，合并到列表
+   * - 在 finally 中关闭 Loading 并复位 `isLoading=false`
+   */
   fetchEntries(isLoadMore) {
     if (!this.data.storeId || this.data.isLoading || (!this.data.hasMore && isLoadMore)) return
     this.setData({ isLoading: true })
+    wx.showLoading({ title: '加载中', mask: true })
     const q = this.buildWhere(isLoadMore)
     wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'customerEntries', where: q.where, orderBy: q.orderBy, limit: this.data.pageSize } })
       .then((res) => {
@@ -185,7 +199,7 @@ Page({
         const last = list[list.length - 1]
         this.setData({ entries: merged, lastUpdatedAt: last ? last.updatedAt : this.data.lastUpdatedAt, hasMore: list.length === this.data.pageSize })
       })
-      .finally(() => { this.setData({ isLoading: false }) })
+      .finally(() => { this.setData({ isLoading: false }); wx.hideLoading() })
   },
   onReachBottom() { this.fetchEntries(true) },
   onDecorationTimeFilterChange(e) { this.setData({ decorationTimeFilterIndex: Number(e.detail.value) }); this.resetAndFetch() },
