@@ -37,18 +37,59 @@ Page({
     currentUserId: '',
     isManagerForCurrentStore: false
   },
+  /**
+   * 页面展示时进行权限与上下文初始化 🛂
+   * 入参：无
+   * 行为：
+   * - 从本地缓存读取当前用户与角色
+   * - 仅允许 `ADMIN`、`STAFF`、`MANAGER` 访问
+   * - 根据角色初始化门店上下文（员工/店长定向门店，管理员可切换）
+   */
   onShow() {
     const u = wx.getStorageSync('current_user') || {}
     const role = u.role || 'USER'
-    if (role !== 'ADMIN' && role !== 'STAFF') {
-      wx.showToast({ title: '仅员工/管理员可访问', icon: 'none' })
+    if (role !== 'ADMIN' && role !== 'STAFF' && role !== 'MANAGER') {
+      wx.showToast({ title: '仅员工/店长/管理员可访问', icon: 'none' })
       setTimeout(() => wx.switchTab({ url: '/pages/my/my' }), 600)
       return
     }
     this.setData({ role, currentUserId: u.id || u._id || '' })
     const uid = u.id || u._id
     if (role === 'STAFF') this.initStaffStore(uid)
+    else if (role === 'MANAGER') this.initManagerStore(uid)
     else this.initAdminStores()
+  },
+  /**
+   * 店长初始化门店（限定为其管理的门店）🏪
+   * 入参：userId:any 当前用户标识
+   * 行为：
+   * - 查询 `storeMembers` 中该用户的店长记录（role='MANAGER'）
+   * - 设置 `storeId` 与 `storeName`，并标记 `isManagerForCurrentStore=true`
+   * - 拉取该门店的客户录入列表
+   */
+  initManagerStore(userId) {
+    wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'storeMembers', where: [{ field: 'userId', op: 'eq', value: userId }, { field: 'role', op: 'eq', value: 'MANAGER' }], limit: 1 } })
+      .then((res) => {
+        const r = res && res.result ? res.result : {}
+        const m = (r && r.data && r.data[0]) || null
+        const sid = (m && m.storeId) || ''
+        if (!sid) return
+        this.setData({ storeId: sid, isManagerForCurrentStore: true })
+        return wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'stores', where: [{ field: 'id', op: 'eq', value: sid }], limit: 1 } })
+      })
+      .then((res2) => {
+        if (!res2) { this.resetAndFetch(); return }
+        const r2 = res2 && res2.result ? res2.result : {}
+        const s = (r2 && r2.data && r2.data[0]) || null
+        const name = (s && s.name) || ''
+        this.setData({
+          storeName: name,
+          storeIds: [this.data.storeId],
+          storeNames: [name],
+          storeIndex: 0
+        })
+        this.resetAndFetch()
+      })
   },
   initStaffStore(userId) {
     wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'storeMembers', where: [{ field: 'userId', op: 'eq', value: userId }, { field: 'role', op: 'eq', value: 'STAFF' }], limit: 1 } })

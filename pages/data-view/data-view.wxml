@@ -1,7 +1,7 @@
 <view class="page">
   <view class="title">数据查看</view>
 
-  <block wx:if="{{role === 'ADMIN'}}">
+  <block wx:if="{{role === 'ADMIN' || role === 'MANAGER'}}">
     <view class="store-bar">
       <picker mode="selector" range="{{storeNames}}" value="{{storeIndex}}" bindchange="onStoreChange">
         <view class="picker-inner">当前门店：{{storeNames[storeIndex] || '请选择门店'}} </view>
@@ -71,7 +71,7 @@
   </block>
 
   <block wx:else>
-    <view class="card">仅管理员可查看</view>
+    <view class="card">仅店长和管理员可查看</view>
   </block>
 
 </view>

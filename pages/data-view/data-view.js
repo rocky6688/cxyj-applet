@@ -15,23 +15,55 @@ Page({
     rawEntries: []
   },
   onShow() {
+    /**
+     * 页面显示：根据角色加载可见门店
+     * - 管理员：可见全部门店
+     * - 店长：仅可见自己管理的门店
+     * - 其他：不可查看
+     */
     const u = wx.getStorageSync('current_user') || {}
     const role = u.role || 'USER'
+    const uid = u.id || u._id || ''
     this.setData({ role })
-    if (role !== 'ADMIN') return
     const today = new Date()
     const s = this.formatDate(this.getStartOfMonth(today))
     const e = this.formatDate(this.getEndOfMonth(today))
     this.setData({ startDate: s, endDate: e })
-    wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'stores', orderBy: [{ field: 'updatedAt', order: 'desc' }], limit: 200 } })
-      .then((res) => {
-        const r = res && res.result ? res.result : {}
-        const list = (r && r.data) || []
-        const ids = list.map((s) => s.id || s._id)
-        const names = list.map((s) => s.name)
-        this.setData({ storeIds: ids, storeNames: names, storeIndex: 0 })
-        if (ids.length > 0) this.fetchStats(ids[0])
-      })
+    if (role === 'ADMIN') {
+      wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'stores', orderBy: [{ field: 'updatedAt', order: 'desc' }], limit: 200 } })
+        .then((res) => {
+          const r = res && res.result ? res.result : {}
+          const list = (r && r.data) || []
+          const ids = list.map((s) => s.id || s._id)
+          const names = list.map((s) => s.name)
+          this.setData({ storeIds: ids, storeNames: names, storeIndex: 0 })
+          if (ids.length > 0) this.fetchStats(ids[0])
+        })
+      return
+    }
+    if (role === 'MANAGER') {
+      // 先取全部门店，再根据当前用户的店长成员关系过滤
+      let allStores = []
+      wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'stores', orderBy: [{ field: 'updatedAt', order: 'desc' }], limit: 200 } })
+        .then((res) => {
+          const r = res && res.result ? res.result : {}
+          allStores = (r && r.data) || []
+          return wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'storeMembers', where: [{ field: 'userId', op: 'eq', value: uid }, { field: 'role', op: 'eq', value: 'MANAGER' }], limit: 200 } })
+        })
+        .then((res2) => {
+          const rr = res2 && res2.result ? res2.result : {}
+          const mems = (rr && rr.data) || []
+          const allowed = mems.map((m) => m.storeId)
+          const filtered = allStores.filter((s) => allowed.indexOf((s.id || s._id)) >= 0)
+          const ids = filtered.map((s) => s.id || s._id)
+          const names = filtered.map((s) => s.name)
+          this.setData({ storeIds: ids, storeNames: names, storeIndex: 0 })
+          if (ids.length > 0) this.fetchStats(ids[0])
+        })
+      return
+    }
+    // 其他角色无权限
+    return
   },
   onStoreChange(e) {
     const i = Number(e.detail.value)

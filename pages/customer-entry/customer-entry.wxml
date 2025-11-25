@@ -4,6 +4,11 @@
   <view class="store-bar">
     <view class="store-left">
       <view wx:if="{{role === 'STAFF'}}" class="store-info">所属门店：{{storeName || '未设置'}} </view>
+      <view wx:if="{{role === 'MANAGER'}}" class="store-picker">
+        <picker mode="selector" range="{{storeNames}}" value="{{storeIndex}}" bindchange="onStoreChange">
+          <view class="picker-inner">当前门店：{{storeNames[storeIndex] || storeName || '未设置'}} </view>
+        </picker>
+      </view>
       <view wx:if="{{role === 'ADMIN'}}" class="store-picker">
         <picker mode="selector" range="{{storeNames}}" value="{{storeIndex}}" bindchange="onStoreChange">
           <view class="picker-inner">当前门店：{{storeNames[storeIndex] || '请选择门店'}} </view>

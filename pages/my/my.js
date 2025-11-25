@@ -14,24 +14,31 @@ Page({
     lastProfileTs: 0,
     staffStoreName: '',
     isManagerOfStaffStore: false,
-    roleLabel: ''
+    roleLabel: '',
+    // 入口控制：仅管理员与店长可见数据查看入口
+    canViewDataView: false
   },
 
   /**
    * 页面显示：判断是否已登录并加载用户信息
    * 说明：通过 storage 的 current_user 判断登录状态
    */
+  /**
+   * 页面显示：刷新用户与角色信息，并控制数据查看入口
+   * @param {any} e 无
+   */
   onShow() {
     try {
       const user = wx.getStorageSync('current_user')
       if (user && (user.id || user._id)) {
-        const roleMap = { ADMIN: '管理员', STAFF: '员工', USER: '用户' }
+        const roleMap = { ADMIN: '管理员', STAFF: '员工', USER: '用户', MANAGER: '店长', DESIGNER: '设计师' }
         const roleLabel = roleMap[user.role] || ''
-        this.setData({ loggedIn: true, user, avatarUrl: user.avatarUrl || this.data.avatarUrl, nickname: user.nickName || this.data.nickname, roleLabel })
+        const canViewDataView = user.role === 'ADMIN' || user.role === 'MANAGER'
+        this.setData({ loggedIn: true, user, avatarUrl: user.avatarUrl || this.data.avatarUrl, nickname: user.nickName || this.data.nickname, roleLabel, canViewDataView })
         const uid = user.id || user._id
         this.fetchStaffStore(uid)
       } else {
-        this.setData({ loggedIn: false, user: {}, staffStoreName: '', isManagerOfStaffStore: false, roleLabel: '' })
+        this.setData({ loggedIn: false, user: {}, staffStoreName: '', isManagerOfStaffStore: false, roleLabel: '', canViewDataView: false })
       }
     } catch (e) { this.setData({ loggedIn: false }) }
   },
@@ -181,8 +188,27 @@ Page({
       this.onWechatLoginTap()
     }
   },
-  goToCustomerEntry() { wx.navigateTo({ url: '/pages/customer-entry/customer-entry' }) },
-  goToDataView() { wx.navigateTo({ url: '/pages/data-view/data-view' }) }
+  /**
+   * 进入客户录入管理：管理员/员工/店长可进入，其它角色提示无权限
+   * @param {any} e 无
+   */
+  goToCustomerEntry(e) {
+    const role = (this.data && this.data.user && this.data.user.role) || 'USER'
+    if (role !== 'ADMIN' && role !== 'STAFF' && role !== 'MANAGER') {
+      wx.showToast({ title: '仅管理员/店长/员工可进入', icon: 'none' })
+      return
+    }
+    wx.navigateTo({ url: '/pages/customer-entry/customer-entry' })
+  },
+  /**
+   * 进入数据查看：入口判断仅管理员与店长可进入
+   * @param {any} e 无
+   */
+  goToDataView() {
+    const role = (this.data && this.data.user && this.data.user.role) || 'USER'
+    if (role !== 'ADMIN' && role !== 'MANAGER') { wx.showToast({ title: '仅店长与管理员可查看', icon: 'none' }); return }
+    wx.navigateTo({ url: '/pages/data-view/data-view' })
+  }
   ,goToProfileEdit() { wx.navigateTo({ url: '/pages/profile-edit/profile-edit' }) }
   ,goToAdmin() { wx.navigateTo({ url: '/pages/admin/index' }) }
   /**
