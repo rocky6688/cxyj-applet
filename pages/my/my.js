@@ -198,21 +198,25 @@ Page({
     wx.cloud.callFunction({ name: 'userLogin', data: {} })
       .then((res) => {
         const data = (res && res.result) || {}
+        if (data && data.error === 'USER_INACTIVE') { try { wx.hideLoading() } catch (e) {} ; wx.showToast({ title: data.message || '账号已停用，请联系管理员', icon: 'none', duration: 2000 }); return }
         if (data && data.user) {
           const status = String(data.user.status || 'ACTIVE')
-          if (status !== 'ACTIVE') { wx.showToast({ title: '账号已停用，请联系管理员', icon: 'none' }); return }
+          if (status !== 'ACTIVE') { try { wx.hideLoading() } catch (e) {} ; wx.showToast({ title: '账号已停用，请联系管理员', icon: 'none', duration: 2000 }); return }
           try { wx.setStorageSync('current_user', data.user) } catch (e) {}
           if (data.token) { try { wx.setStorageSync('access_token', data.token) } catch (e) {} }
           this.setData({ loggedIn: true, user: data.user })
-          wx.showToast({ title: '登录成功', icon: 'success' })
-          wx.switchTab({ url: '/pages/my/my' })
+          try { wx.hideLoading() } catch (e) {}
+          wx.showToast({ title: '登录成功', icon: 'success', duration: 1500 })
+          setTimeout(() => { wx.switchTab({ url: '/pages/my/my' }) }, 1500)
         } else {
-          wx.showToast({ title: '登录失败', icon: 'none' })
+          try { wx.hideLoading() } catch (e) {}
+          wx.showToast({ title: '登录失败', icon: 'none', duration: 2000 })
         }
       })
       .catch((err) => {
         const msg = (err && (err.errMsg || err.message)) || '登录失败'
-        wx.showToast({ title: msg, icon: 'none' })
+        try { wx.hideLoading() } catch (e) {}
+        wx.showToast({ title: msg, icon: 'none', duration: 2000 })
       })
       .finally(() => { try { wx.hideLoading() } catch (e) {} })
   },

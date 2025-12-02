@@ -1,7 +1,7 @@
 const { DBQUERY_FUNCTION } = require('../../utils/config.js')
 
 Page({
-  data: { users: [], deleteDialogVisible: false, deleteSource: null, deleteEntryCount: 0, transferUsers: [], transferIndex: 0, deleting: false },
+  data: { users: [], deleteDialogVisible: false, deleteSource: null, deleteEntryCount: 0, transferUsers: [], transferIndex: 0, deleting: false, transferDialogVisible: false, transferSource: null, transferEntryCount: 0, transferring: false },
   onShow() { this.fetchUsers() },
   fetchUsers() {
     wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'users', field: { _id: true, id: true, username: true, nickName: true, role: true, status: true }, orderBy: [{ field: 'updatedAt', order: 'desc' }], limit: 200 } })
@@ -16,6 +16,24 @@ Page({
   },
   goToCreate() { wx.navigateTo({ url: '/pages/admin-user-edit/admin-user-edit' }) },
   startEdit(e) { const id = e.currentTarget.dataset.id; wx.navigateTo({ url: `/pages/admin-user-edit/admin-user-edit?id=${id}` }) },
+  openTransfer(e) {
+    const docId = e.currentTarget.dataset.id
+    const src = (this.data.users || []).find(u => u._id === docId)
+    if (!src) return wx.showToast({ title: '用户不存在', icon: 'none' })
+    const uid = src.id || src._id
+    const name = src.nickName || src.username || '微信用户'
+    Promise.all([
+      wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'customerEntries', where: [{ field: 'createdBy', op: 'eq', value: uid }], field: { _id: true }, limit: 2000 } }),
+      wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'users', field: { _id: true, id: true, username: true, nickName: true, status: true }, limit: 500 } })
+    ]).then(([ceRes, uRes]) => {
+      const ceR = ceRes && ceRes.result ? ceRes.result : {}
+      const ceList = (ceR && ceR.data) || []
+      const uR = uRes && uRes.result ? uRes.result : {}
+      const allUsers = (uR && uR.data) || []
+      const options = allUsers.filter(x => (x.id || x._id) !== uid && (x.status || 'ACTIVE') === 'ACTIVE').map(x => ({ id: x.id || x._id, name: x.nickName || x.username || '微信用户' }))
+      this.setData({ transferDialogVisible: true, transferSource: { docId, uid, name }, transferEntryCount: ceList.length, transferUsers: options, transferIndex: 0 })
+    })
+  },
   removeUser(e) {
     const docId = e.currentTarget.dataset.id
     const src = (this.data.users || []).find(u => u._id === docId)
@@ -36,6 +54,28 @@ Page({
   },
   cancelDeleteDialog() { this.setData({ deleteDialogVisible: false, deleteSource: null, deleteEntryCount: 0, transferUsers: [], transferIndex: 0, deleting: false }) },
   onTransferChange(e) { const i = Number(e.detail.value); this.setData({ transferIndex: i }) },
+  cancelTransferDialog() { this.setData({ transferDialogVisible: false, transferSource: null, transferEntryCount: 0, transferUsers: [], transferIndex: 0, transferring: false }) },
+  confirmTransfer() {
+    if (this.data.transferring) return
+    const src = this.data.transferSource
+    if (!src) return this.cancelTransferDialog()
+    const count = this.data.transferEntryCount
+    const target = this.data.transferUsers[this.data.transferIndex]
+    if (count <= 0) { wx.showToast({ title: '无可转移数据', icon: 'none' }); return }
+    if (!target) { wx.showToast({ title: '请选择转移的用户', icon: 'none' }); return }
+    this.setData({ transferring: true })
+    const now = new Date()
+    const nowStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}.${String(now.getMilliseconds()).padStart(3,'0')}`
+    wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'customerEntries', where: [{ field: 'createdBy', op: 'eq', value: src.uid }], field: { _id: true }, limit: 2000 } })
+      .then((res) => {
+        const r = res && res.result ? res.result : {}
+        const list = (r && r.data) || []
+        const updates = list.map(it => wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { action: 'update', collection: 'customerEntries', docId: it._id, data: { createdBy: target.id, createdByName: target.name, updatedAt: nowStr } } }))
+        return Promise.all(updates)
+      })
+      .then(() => { wx.showToast({ title: '转移成功', icon: 'success' }); this.cancelTransferDialog(); this.fetchUsers() })
+      .catch((err) => { wx.showToast({ title: (err && (err.errMsg || err.message)) || '操作失败', icon: 'none' }); this.setData({ transferring: false }) })
+  },
   confirmSoftDelete() {
     if (this.data.deleting) return
     const src = this.data.deleteSource

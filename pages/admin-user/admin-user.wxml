@@ -12,6 +12,7 @@
         </view>
         <view class="item-actions">
           <button size="mini" bindtap="startEdit" data-id="{{item._id}}">编辑</button>
+          <button size="mini" bindtap="openTransfer" data-id="{{item._id}}">转移录入</button>
           <button size="mini" type="warn" bindtap="removeUser" data-id="{{item._id}}">删除</button>
         </view>
       </view>
@@ -31,6 +32,23 @@
       <view class="dialog-actions">
         <button size="mini" bindtap="cancelDeleteDialog">取消</button>
         <button size="mini" class="primary" loading="{{deleting}}" disabled="{{deleting}}" bindtap="confirmSoftDelete">确认停用</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="dialog-mask" wx:if="{{transferDialogVisible}}" catchtap="cancelTransferDialog">
+    <view class="dialog-card" catchtap="noop">
+      <view class="dialog-title">转移客户录入</view>
+      <view class="dialog-content">
+        <view>来源用户：{{transferSource.name}}</view>
+        <view wx:if="{{transferEntryCount > 0}}" class="dialog-tip">该用户名下有 {{transferEntryCount}} 条客户录入数据，请选择转移目标：</view>
+        <picker wx:if="{{transferEntryCount > 0}}" class="dialog-picker" mode="selector" range="{{transferUsers}}" range-key="name" value="{{transferIndex}}" bindchange="onTransferChange">
+          <view class="picker-inner">{{(transferUsers[transferIndex] && transferUsers[transferIndex].name) || '请选择转移用户'}}</view>
+        </picker>
+      </view>
+      <view class="dialog-actions">
+        <button size="mini" bindtap="cancelTransferDialog">取消</button>
+        <button size="mini" class="primary" loading="{{transferring}}" disabled="{{transferring}}" bindtap="confirmTransfer">确认转移</button>
       </view>
     </view>
   </view>

@@ -33,6 +33,11 @@ Page({
       data: { nickName: info.nickName, avatarUrl: info.avatarUrl },
       success: (res) => {
         const data = (res && res.result) || {}
+        if (data && data.error === 'USER_INACTIVE') {
+          const msg = data.message || '账号已停用，请联系管理员'
+          wx.showToast({ title: msg, icon: 'none' })
+          return
+        }
         if (data && data.user) {
           const status = String(data.user.status || 'ACTIVE')
           if (status !== 'ACTIVE') { wx.showToast({ title: '账号已停用，请联系管理员', icon: 'none' }); return }
