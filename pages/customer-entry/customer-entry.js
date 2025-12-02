@@ -35,7 +35,10 @@ Page({
     sortOptions: ['最新优先','最早优先'],
     sortIndex: 0,
     currentUserId: '',
-    isManagerForCurrentStore: false
+    isManagerForCurrentStore: false,
+    creatorFilterOptions: ['全部'],
+    creatorFilterIds: [''],
+    creatorFilterIndex: 0
   },
   /**
    * 页面展示时进行权限与上下文初始化 🛂
@@ -93,7 +96,7 @@ Page({
           storeNames: [name],
           storeIndex: 0
         })
-        this.resetAndFetch()
+        this.initCreatorFilter().then(() => this.resetAndFetch())
       })
   },
   initStaffStore(userId) {
@@ -144,7 +147,7 @@ Page({
           storeId: ids[useIndex] || '',
           storeName: names[useIndex] || ''
         })
-        this.resetAndFetch()
+        this.initCreatorFilter().then(() => this.resetAndFetch())
       })
   },
   onStoreChange(e) {
@@ -152,12 +155,71 @@ Page({
     const sid = this.data.storeIds[i]
     // 记录用户选择，便于返回页时保持一致
     this.setData({ storeIndex: i, storeId: sid, storeName: this.data.storeNames[i] })
-    this.resetAndFetch()
+    this.initCreatorFilter().then(() => this.resetAndFetch())
+  },
+  /**
+   * 初始化录入人筛选项（管理员：当前门店的所有录入人；店长：当前门店的员工）
+   */
+  initCreatorFilter() {
+    if (!(this.data.role === 'ADMIN' || this.data.isManagerForCurrentStore)) {
+      this.setData({ creatorFilterOptions: ['全部'], creatorFilterIds: [''], creatorFilterIndex: 0 })
+      return Promise.resolve()
+    }
+    const sid = this.data.storeId
+    if (!sid) {
+      this.setData({ creatorFilterOptions: ['全部'], creatorFilterIds: [''], creatorFilterIndex: 0 })
+      return Promise.resolve()
+    }
+    if (this.data.role === 'ADMIN') {
+      // 管理员：从当前门店的录入记录中提取录入人去重
+      return wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'customerEntries', where: [{ field: 'storeId', op: 'eq', value: sid }], field: { createdBy: true, createdByName: true }, limit: 2000 } })
+        .then((res) => {
+          const r = res && res.result ? res.result : {}
+          const list = (r && r.data) || []
+          const map = {}
+          list.forEach((it) => { const id = it.createdBy || ''; if (!id) return; if (!map[id]) map[id] = it.createdByName || '未知' })
+          const ids = ['']
+          const names = ['全部']
+          Object.keys(map).forEach((id) => { ids.push(id); names.push(map[id]) })
+          this.setData({ creatorFilterOptions: names, creatorFilterIds: ids, creatorFilterIndex: 0 })
+        })
+    }
+    // 店长：当前门店员工列表
+    return wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'storeMembers', where: [{ field: 'storeId', op: 'eq', value: sid }, { field: 'role', op: 'eq', value: 'STAFF' }], field: { userId: true }, limit: 500 } })
+      .then((res) => {
+        const r = res && res.result ? res.result : {}
+        const mems = (r && r.data) || []
+        const ids = mems.map(m => m.userId).filter(Boolean)
+        if (!ids.length) { this.setData({ creatorFilterOptions: ['全部'], creatorFilterIds: [''], creatorFilterIndex: 0 }); return }
+        // 兼容 users.id 与 users._id 两种存储
+        return wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'users', where: [{ field: 'id', op: 'in', value: ids }], field: { id: true, _id: true, username: true, nickName: true, status: true }, limit: 500 } })
+          .then((res2) => {
+            const r2 = res2 && res2.result ? res2.result : {}
+            let users = (r2 && r2.data) || []
+            // 如果按 id 未取到完整，则尝试 _id
+            const gotIds = new Set(users.map(u => u.id || u._id))
+            const missing = ids.filter(x => !gotIds.has(x))
+            const fetchMore = missing.length ? wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'users', where: [{ field: '_id', op: 'in', value: missing }], field: { id: true, _id: true, username: true, nickName: true, status: true }, limit: 500 } }) : Promise.resolve(null)
+            return Promise.resolve(fetchMore).then((res3) => {
+              const r3 = res3 && res3.result ? res3.result : {}
+              const more = (r3 && r3.data) || []
+              users = users.concat(more)
+              const opts = ['全部']
+              const ids2 = ['']
+              users.filter(u => (u.status || 'ACTIVE') === 'ACTIVE').forEach(u => { const id = u.id || u._id; const name = u.nickName || u.username || '微信用户'; ids2.push(id); opts.push(name) })
+              this.setData({ creatorFilterOptions: opts, creatorFilterIds: ids2, creatorFilterIndex: 0 })
+            })
+          })
+      })
   },
   buildWhere(isLoadMore) {
     const base = [{ field: 'storeId', op: 'eq', value: this.data.storeId }]
     if (!(this.data.role === 'ADMIN' || this.data.isManagerForCurrentStore)) {
       base.push({ field: 'createdBy', op: 'eq', value: this.data.currentUserId })
+    }
+    if ((this.data.role === 'ADMIN' || this.data.isManagerForCurrentStore) && this.data.creatorFilterIndex > 0) {
+      const id = this.data.creatorFilterIds[this.data.creatorFilterIndex]
+      if (id) base.push({ field: 'createdBy', op: 'eq', value: id })
     }
     const dt = this.data.decorationTimeFilterOptions[this.data.decorationTimeFilterIndex]
     const ht = this.data.houseTypeFilterOptions[this.data.houseTypeFilterIndex]
@@ -207,6 +269,7 @@ Page({
   onRenovationTypeFilterChange(e) { this.setData({ renovationTypeFilterIndex: Number(e.detail.value) }); this.resetAndFetch() },
   onFollowStatusFilterChange(e) { this.setData({ followStatusFilterIndex: Number(e.detail.value) }); this.resetAndFetch() },
   onSortChange(e) { this.setData({ sortIndex: Number(e.detail.value) }); this.resetAndFetch() },
+  onCreatorFilterChange(e) { this.setData({ creatorFilterIndex: Number(e.detail.value) }); this.resetAndFetch() },
   openCreate() {
     if (!this.data.storeId) return wx.showToast({ title: '请选择门店', icon: 'none' })
     this.setData({ showForm: true, editingId: '', form: { community: '', name: '', contact: '', ownerStatus: '', followContent: '' }, decorationTimeIndex: 0, houseTypeIndex: 0, renovationTypeIndex: 0, followStatusIndex: 0 })

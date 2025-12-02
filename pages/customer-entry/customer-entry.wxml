@@ -34,6 +34,9 @@
     <picker class="filter-picker" mode="selector" range="{{sortOptions}}" value="{{sortIndex}}" bindchange="onSortChange">
       <view class="filter-inner">排序：{{sortOptions[sortIndex]}}</view>
     </picker>
+    <picker wx:if="{{role === 'ADMIN' || isManagerForCurrentStore}}" class="filter-picker" mode="selector" range="{{creatorFilterOptions}}" value="{{creatorFilterIndex}}" bindchange="onCreatorFilterChange">
+      <view class="filter-inner">录入人：{{creatorFilterOptions[creatorFilterIndex]}}</view>
+    </picker>
   </view>
 
   <view class="list">

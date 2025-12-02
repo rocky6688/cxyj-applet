@@ -62,6 +62,10 @@ exports.main = async (event, context) => {
     user = newDoc.data
   }
 
+  if (String(user.status || 'ACTIVE') !== 'ACTIVE') {
+    return { ok: false, error: 'USER_INACTIVE', message: '账号已停用，请联系管理员' }
+  }
+
   const token = `${OPENID}_${Date.now()}_${Math.random().toString(36).slice(2,8)}`
   return { ok: true, user, token, expiresIn: 86400 }
 }
