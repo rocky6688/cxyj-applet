@@ -1,4 +1,6 @@
-.page { padding: 32rpx; background-color: #f7f8fa; min-height: 100vh }
+.page { padding: 0 32rpx 32rpx; background-color: #f7f8fa; min-height: 100vh }
+.fixed-header { position: fixed; top: 0; left: 0; right: 0; background: #f7f8fa; padding: 32rpx 32rpx 12rpx; box-sizing: border-box;z-index: 9999;margin-top: -2px; }
+.list-scroll { margin-top: 0 }
 .title { font-size: 36rpx; font-weight: 700; margin-bottom: 20rpx; color: #1f2d3d }
 .store-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16rpx }
 .store-left { display: flex; align-items: center; gap: 16rpx }
@@ -30,6 +32,9 @@
 .filter-bar { display: flex; flex-wrap: wrap; gap: 12rpx; margin: 12rpx 0 }
 .filter-picker .filter-inner { font-size: 24rpx; color: #606266; border: 1rpx solid #eaeaea; border-radius: 12rpx; padding: 10rpx 12rpx; background: #fff }
 .list { display: flex; flex-direction: column; gap: 16rpx }
+.pager { display: flex; align-items: center; gap: 12rpx; padding: 12rpx 0 }
+.pager-info { color: #606266; font-size: 26rpx }
+.pager-input { width: 160rpx; border: 1rpx solid #e5e5e5; border-radius: 12rpx; padding: 8rpx 12rpx; background: #fff }
 .empty { padding: 60rpx 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #909399 }
 .empty-img { width: 360rpx }
 .empty-text { margin-top: 16rpx; font-size: 26rpx }

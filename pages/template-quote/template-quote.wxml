@@ -28,7 +28,7 @@
             <input class="area-input" type="text" placeholder="面积" 
                    value="{{selectedItems[item.id].areaText}}"
                    bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
-                   wx:if="{{item.unit === '每平' && selectedItems[item.id] && item.slug !== 'garbage_transport'}}"/>
+                   wx:if="{{(item.unit === '每平' || item.unit === '米') && selectedItems[item.id] && item.slug !== 'garbage_transport'}}"/>
             <input class="area-input" type="text" placeholder="4方车起" 
                    value="{{selectedItems[item.id].areaText}}"
                    bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
@@ -36,7 +36,7 @@
             <input class="quantity-input" type="number" placeholder="数量" 
                    value="{{quantities[item.id]}}"
                    bindinput="onQuantityInput" bindfocus="onQuantityFocus" bindblur="onQuantityBlur" data-item-id="{{item.id}}"
-                   wx:if="{{(item.unit === '个' || item.unit === '米' || item.unit === '套' || item.unit === '单扇' || item.unit === '方车' || item.unit === '项') && selectedItems[item.id]}}"/>
+                   wx:if="{{(item.unit === '个' || item.unit === '套' || item.unit === '单扇' || item.unit === '方车' || item.unit === '项') && selectedItems[item.id]}}"/>
             <input class="manual-price-input" type="number" placeholder="输入金额" 
                    value="{{manualPrices[item.id]}}"
                    bindinput="onManualPriceInput" bindfocus="onManualPriceFocus" data-item-id="{{item.id}}"

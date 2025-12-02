@@ -415,8 +415,8 @@ Page({
           // 按面积计算
           itemTotal = item.price * area;
         } else if (item.unit === '米') {
-          // 按米数计算
-          itemTotal = item.price * quantity;
+          // 按米数计算（支持两位小数，使用 area）
+          itemTotal = item.price * area;
         } else {
           // 按数量计算（个、套、单扇等）
           itemTotal = item.price * quantity;

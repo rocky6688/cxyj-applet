@@ -9,7 +9,10 @@ Page({
     storeNames: [],
     storeIds: [],
     entries: [],
-    pageSize: 20,
+    pageSize: 10,
+    pageIndex: 1,
+    jumpInput: '',
+    scrollHeight: 600,
     hasMore: true,
     isLoading: false,
     lastUpdatedAt: '',
@@ -38,7 +41,10 @@ Page({
     isManagerForCurrentStore: false,
     creatorFilterOptions: ['全部'],
     creatorFilterIds: [''],
-    creatorFilterIndex: 0
+    creatorFilterIndex: 0,
+    totalCount: 0,
+    totalPages: 1,
+    listMarginTop: 0
   },
   /**
    * 页面展示时进行权限与上下文初始化 🛂
@@ -66,6 +72,18 @@ Page({
     if (role === 'STAFF') this.initStaffStore(uid)
     else if (role === 'MANAGER') this.initManagerStore(uid)
     else this.initAdminStores()
+    this.calcScrollHeight()
+  },
+  calcScrollHeight() {
+    try {
+      const sys = wx.getSystemInfoSync()
+      const wh = sys.windowHeight || 600
+      wx.createSelectorQuery().select('#fixedHeader').boundingClientRect((rect) => {
+        const hh = (rect && rect.height) || 0
+        const h = Math.max(200, Math.floor(wh - hh))
+        this.setData({ scrollHeight: h, listMarginTop: hh })
+      }).exec()
+    } catch (e) { /* ignore */ }
   },
   /**
    * 店长初始化门店（限定为其管理的门店）🏪
@@ -236,8 +254,20 @@ Page({
     }
     return { where: base, orderBy }
   },
+  fetchTotalCount() {
+    const q = this.buildWhere(false)
+    wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'customerEntries', where: q.where, count: true } })
+      .then((res) => {
+        const r = res && res.result ? res.result : {}
+        const total = (r && r.data && r.data.total) || 0
+        const pages = Math.ceil(total / this.data.pageSize) || 1
+        this.setData({ totalCount: total, totalPages: pages })
+      })
+      .catch(() => this.setData({ totalCount: 0, totalPages: 1 }))
+  },
   resetAndFetch() {
-    this.setData({ entries: [], lastUpdatedAt: '', hasMore: true })
+    this.setData({ entries: [], lastUpdatedAt: '', hasMore: true, pageIndex: 1 })
+    this.fetchTotalCount()
     this.fetchEntries(false)
   },
   /**
@@ -252,18 +282,36 @@ Page({
     if (!this.data.storeId || this.data.isLoading || (!this.data.hasMore && isLoadMore)) return
     this.setData({ isLoading: true })
     wx.showLoading({ title: '加载中', mask: true })
-    const q = this.buildWhere(isLoadMore)
-    wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'customerEntries', where: q.where, orderBy: q.orderBy, limit: this.data.pageSize } })
+    const q = this.buildWhere(false)
+    const skip = (this.data.pageIndex - 1) * this.data.pageSize
+    wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'customerEntries', where: q.where, orderBy: q.orderBy, skip, limit: this.data.pageSize } })
       .then((res) => {
         const r = res && res.result ? res.result : {}
         const list = (r && r.data) || []
-        const merged = isLoadMore ? this.data.entries.concat(list) : list
         const last = list[list.length - 1]
-        this.setData({ entries: merged, lastUpdatedAt: last ? last.updatedAt : this.data.lastUpdatedAt, hasMore: list.length === this.data.pageSize })
+        this.setData({ entries: list, lastUpdatedAt: last ? last.updatedAt : this.data.lastUpdatedAt, hasMore: list.length === this.data.pageSize })
       })
       .finally(() => { this.setData({ isLoading: false }); wx.hideLoading() })
   },
-  onReachBottom() { this.fetchEntries(true) },
+  onReachBottom() {},
+  prevPage() {
+    if (this.data.pageIndex <= 1) return
+    this.setData({ pageIndex: this.data.pageIndex - 1 })
+    this.fetchEntries(false)
+  },
+  nextPage() {
+    if (!this.data.hasMore) return
+    this.setData({ pageIndex: this.data.pageIndex + 1 })
+    this.fetchEntries(false)
+  },
+  onJumpInput(e) { this.setData({ jumpInput: String(e.detail.value || '') }) },
+  jumpPage() {
+    const p = Number(this.data.jumpInput)
+    if (!p || p < 1) { wx.showToast({ title: '请输入正确页码', icon: 'none' }); return }
+    if (p > this.data.totalPages) { wx.showToast({ title: '超过最大页码', icon: 'none' }); return }
+    this.setData({ pageIndex: p })
+    this.fetchEntries(false)
+  },
   onDecorationTimeFilterChange(e) { this.setData({ decorationTimeFilterIndex: Number(e.detail.value) }); this.resetAndFetch() },
   onHouseTypeFilterChange(e) { this.setData({ houseTypeFilterIndex: Number(e.detail.value) }); this.resetAndFetch() },
   onRenovationTypeFilterChange(e) { this.setData({ renovationTypeFilterIndex: Number(e.detail.value) }); this.resetAndFetch() },

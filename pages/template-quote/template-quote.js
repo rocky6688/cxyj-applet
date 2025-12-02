@@ -315,7 +315,7 @@ Page({
         } else if (item.unit === '每平') {
           itemTotal = item.price * area
         } else if (item.unit === '米') {
-          itemTotal = item.price * quantity
+          itemTotal = item.price * area
         } else {
           itemTotal = item.price * quantity
         }

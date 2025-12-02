@@ -27,11 +27,11 @@
             </view>
           </view>
           
-          <!-- 面积输入（每平项目） -->
+          <!-- 面积输入（每平/米） -->
           <input class="area-input" type="text" placeholder="面积" 
                  value="{{selectedItems[item.id].areaText}}"
                  bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
-                 wx:if="{{item.unit === '每平' && selectedItems[item.id] && item.id !== 'garbage_transport'}}"/>
+                 wx:if="{{(item.unit === '每平' || item.unit === '米') && selectedItems[item.id] && item.id !== 'garbage_transport'}}"/>
           
           <!-- 垃圾外运特殊输入（4方车，4平方起步） -->
           <input class="area-input" type="text" placeholder="4方车起" 
@@ -39,11 +39,11 @@
                  bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
                  wx:if="{{item.id === 'garbage_transport' && selectedItems[item.id]}}"/>
           
-          <!-- 数量输入（个、米、套等项目） -->
+          <!-- 数量输入（个、套、单扇等项目） -->
           <input class="quantity-input" type="number" placeholder="数量" 
                  value="{{quantities[item.id]}}"
                  bindinput="onQuantityInput" bindfocus="onQuantityFocus" data-item-id="{{item.id}}"
-                 wx:if="{{(item.unit === '个' || item.unit === '米' || item.unit === '套' || item.unit === '单扇') && selectedItems[item.id]}}"/>
+                 wx:if="{{(item.unit === '个' || item.unit === '套' || item.unit === '单扇') && selectedItems[item.id]}}"/>
           
           <!-- 手动价格输入（面议项目） -->
           <input class="manual-price-input" type="number" placeholder="输入金额" 
@@ -81,7 +81,7 @@
           <input class="area-input" type="text" placeholder="面积" 
                  value="{{selectedItems[item.id].areaText}}"
                  bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
-                 wx:if="{{item.unit === '每平' && selectedItems[item.id]}}"/>
+                 wx:if="{{(item.unit === '每平' || item.unit === '米') && selectedItems[item.id]}}"/>
         </view>
       </view>
     </view>
@@ -113,12 +113,7 @@
           <input class="area-input" type="text" placeholder="面积" 
                  value="{{selectedItems[item.id].areaText}}"
                  bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
-                 wx:if="{{item.unit === '每平' && selectedItems[item.id]}}"/>
-          
-          <input class="quantity-input" type="number" placeholder="数量" 
-                 value="{{quantities[item.id]}}"
-                 bindinput="onQuantityInput" data-item-id="{{item.id}}"
-                 wx:if="{{item.unit === '米' && selectedItems[item.id]}}"/>
+                 wx:if="{{(item.unit === '每平' || item.unit === '米') && selectedItems[item.id]}}"/>
         </view>
       </view>
     </view>
@@ -150,7 +145,7 @@
           <input class="area-input" type="text" placeholder="面积" 
                  value="{{selectedItems[item.id].areaText}}"
                  bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
-                 wx:if="{{item.unit === '每平' && selectedItems[item.id]}}"/>
+                 wx:if="{{(item.unit === '每平' || item.unit === '米') && selectedItems[item.id]}}"/>
         </view>
       </view>
     </view>
@@ -184,17 +179,14 @@
           <input class="area-input" type="text" placeholder="面积" 
                  value="{{selectedItems[item.id].areaText}}"
                  bindinput="onAreaInput" bindfocus="onAreaFocus" bindblur="onAreaBlur" data-item-id="{{item.id}}"
-                 wx:if="{{item.unit === '每平' && selectedItems[item.id]}}"/>
+                 wx:if="{{(item.unit === '每平' || item.unit === '米') && selectedItems[item.id]}}"/>
           
           <input class="quantity-input" type="number" placeholder="数量" 
                  value="{{quantities[item.id]}}"
                  bindinput="onQuantityInput" bindfocus="onQuantityFocus" data-item-id="{{item.id}}"
                  wx:if="{{(item.unit === '个' || item.unit === '套' || item.unit === '单扇') && selectedItems[item.id]}}"/>
           
-          <input class="quantity-input" type="number" placeholder="米数" 
-                 value="{{quantities[item.id]}}"
-                 bindinput="onQuantityInput" bindfocus="onQuantityFocus" data-item-id="{{item.id}}"
-                 wx:if="{{item.unit === '米' && selectedItems[item.id]}}"/>
+          
           
           <input class="manual-price-input" type="number" placeholder="输入金额" 
                  value="{{manualPrices[item.id]}}"

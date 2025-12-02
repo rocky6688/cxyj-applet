@@ -1,63 +1,74 @@
 <view class="page">
-  <view class="title">客户录入管理</view>
+  <view id="fixedHeader" class="fixed-header">
+    <view class="title">客户录入管理</view>
 
-  <view class="store-bar">
-    <view class="store-left">
-      <view wx:if="{{role === 'STAFF'}}" class="store-info">所属门店：{{storeName || '未设置'}} </view>
-      <view wx:if="{{role === 'MANAGER'}}" class="store-picker">
-        <picker mode="selector" range="{{storeNames}}" value="{{storeIndex}}" bindchange="onStoreChange">
-          <view class="picker-inner">当前门店：{{storeNames[storeIndex] || storeName || '未设置'}} </view>
-        </picker>
-      </view>
-      <view wx:if="{{role === 'ADMIN'}}" class="store-picker">
-        <picker mode="selector" range="{{storeNames}}" value="{{storeIndex}}" bindchange="onStoreChange">
-          <view class="picker-inner">当前门店：{{storeNames[storeIndex] || '请选择门店'}} </view>
-        </picker>
-      </view>
-    </view>
-    <button class="primary" bindtap="openCreate" size="mini">新增录入</button>
-  </view>
-
-  <view class="filter-bar">
-    <picker class="filter-picker" mode="selector" range="{{decorationTimeFilterOptions}}" value="{{decorationTimeFilterIndex}}" bindchange="onDecorationTimeFilterChange">
-      <view class="filter-inner">装修时间：{{decorationTimeFilterOptions[decorationTimeFilterIndex]}}</view>
-    </picker>
-    <picker class="filter-picker" mode="selector" range="{{houseTypeFilterOptions}}" value="{{houseTypeFilterIndex}}" bindchange="onHouseTypeFilterChange">
-      <view class="filter-inner">居室：{{houseTypeFilterOptions[houseTypeFilterIndex]}}</view>
-    </picker>
-    <picker class="filter-picker" mode="selector" range="{{renovationTypeFilterOptions}}" value="{{renovationTypeFilterIndex}}" bindchange="onRenovationTypeFilterChange">
-      <view class="filter-inner">装修类型：{{renovationTypeFilterOptions[renovationTypeFilterIndex]}}</view>
-    </picker>
-    <picker class="filter-picker" mode="selector" range="{{followStatusFilterOptions}}" value="{{followStatusFilterIndex}}" bindchange="onFollowStatusFilterChange">
-      <view class="filter-inner">跟进反馈：{{followStatusFilterOptions[followStatusFilterIndex]}}</view>
-    </picker>
-    <picker class="filter-picker" mode="selector" range="{{sortOptions}}" value="{{sortIndex}}" bindchange="onSortChange">
-      <view class="filter-inner">排序：{{sortOptions[sortIndex]}}</view>
-    </picker>
-    <picker wx:if="{{role === 'ADMIN' || isManagerForCurrentStore}}" class="filter-picker" mode="selector" range="{{creatorFilterOptions}}" value="{{creatorFilterIndex}}" bindchange="onCreatorFilterChange">
-      <view class="filter-inner">录入人：{{creatorFilterOptions[creatorFilterIndex]}}</view>
-    </picker>
-  </view>
-
-  <view class="list">
-    <view wx:if="{{!isLoading && entries.length === 0}}" class="empty">
-      <view class="empty-text">暂无数据</view>
-    </view>
-    <block wx:for="{{entries}}" wx:key="_id">
-      <view class="item" data-id="{{item._id}}" bindtap="goToDetail">
-        <view class="item-header">
-          <text class="item-title">{{item.community}}｜{{item.name}}｜{{item.contact}}</text>
-          <text class="item-sub">装修时间：{{item.decorationTime}}｜居室：{{item.houseType}}｜类型：{{item.renovationType}}</text>
-          <text wx:if="{{role === 'ADMIN' || isManagerForCurrentStore}}" class="item-sub">录入人：{{item.createdByName || '未知'}}</text>
+    <view class="store-bar">
+      <view class="store-left">
+        <view wx:if="{{role === 'STAFF'}}" class="store-info">所属门店：{{storeName || '未设置'}} </view>
+        <view wx:if="{{role === 'MANAGER'}}" class="store-picker">
+          <picker mode="selector" range="{{storeNames}}" value="{{storeIndex}}" bindchange="onStoreChange">
+            <view class="picker-inner">当前门店：{{storeNames[storeIndex] || storeName || '未设置'}} </view>
+          </picker>
         </view>
-        <view class="item-actions">
-          <button size="mini" class="edit-btn" catchtap="startEdit" data-id="{{item._id}}">编辑</button>
-          <button size="mini" class="delete-btn" catchtap="removeEntry" data-id="{{item._id}}">删除</button>
-          <button size="mini" class="phone-btn" catchtap="callPhone" data-phone="{{item.contact}}">联系客户</button>
+        <view wx:if="{{role === 'ADMIN'}}" class="store-picker">
+          <picker mode="selector" range="{{storeNames}}" value="{{storeIndex}}" bindchange="onStoreChange">
+            <view class="picker-inner">当前门店：{{storeNames[storeIndex] || '请选择门店'}} </view>
+          </picker>
         </view>
       </view>
-    </block>
+      <button class="primary" bindtap="openCreate" size="mini">新增录入</button>
+    </view>
+
+    <view class="filter-bar">
+      <picker class="filter-picker" mode="selector" range="{{decorationTimeFilterOptions}}" value="{{decorationTimeFilterIndex}}" bindchange="onDecorationTimeFilterChange">
+        <view class="filter-inner">装修时间：{{decorationTimeFilterOptions[decorationTimeFilterIndex]}}</view>
+      </picker>
+      <picker class="filter-picker" mode="selector" range="{{houseTypeFilterOptions}}" value="{{houseTypeFilterIndex}}" bindchange="onHouseTypeFilterChange">
+        <view class="filter-inner">居室：{{houseTypeFilterOptions[houseTypeFilterIndex]}}</view>
+      </picker>
+      <picker class="filter-picker" mode="selector" range="{{renovationTypeFilterOptions}}" value="{{renovationTypeFilterIndex}}" bindchange="onRenovationTypeFilterChange">
+        <view class="filter-inner">装修类型：{{renovationTypeFilterOptions[renovationTypeFilterIndex]}}</view>
+      </picker>
+      <picker class="filter-picker" mode="selector" range="{{followStatusFilterOptions}}" value="{{followStatusFilterIndex}}" bindchange="onFollowStatusFilterChange">
+        <view class="filter-inner">跟进反馈：{{followStatusFilterOptions[followStatusFilterIndex]}}</view>
+      </picker>
+      <picker class="filter-picker" mode="selector" range="{{sortOptions}}" value="{{sortIndex}}" bindchange="onSortChange">
+        <view class="filter-inner">排序：{{sortOptions[sortIndex]}}</view>
+      </picker>
+      <picker wx:if="{{role === 'ADMIN' || isManagerForCurrentStore}}" class="filter-picker" mode="selector" range="{{creatorFilterOptions}}" value="{{creatorFilterIndex}}" bindchange="onCreatorFilterChange">
+        <view class="filter-inner">录入人：{{creatorFilterOptions[creatorFilterIndex]}}</view>
+      </picker>
+    </view>
   </view>
+
+  <scroll-view scroll-y class="list-scroll" style="height: {{scrollHeight}}px; margin-top: {{listMarginTop}}px">
+    <view class="list">
+      <view wx:if="{{!isLoading && entries.length === 0}}" class="empty">
+        <view class="empty-text">暂无数据</view>
+      </view>
+      <block wx:for="{{entries}}" wx:key="_id">
+        <view class="item" data-id="{{item._id}}" bindtap="goToDetail">
+          <view class="item-header">
+            <text class="item-title">{{item.community}}｜{{item.name}}｜{{item.contact}}</text>
+            <text class="item-sub">装修时间：{{item.decorationTime}}｜居室：{{item.houseType}}｜类型：{{item.renovationType}}</text>
+            <text wx:if="{{role === 'ADMIN' || isManagerForCurrentStore}}" class="item-sub">录入人：{{item.createdByName || '未知'}}</text>
+          </view>
+          <view class="item-actions">
+            <button size="mini" class="edit-btn" catchtap="startEdit" data-id="{{item._id}}">编辑</button>
+            <button size="mini" class="delete-btn" catchtap="removeEntry" data-id="{{item._id}}">删除</button>
+            <button size="mini" class="phone-btn" catchtap="callPhone" data-phone="{{item.contact}}">联系客户</button>
+          </view>
+        </view>
+      </block>
+      <view class="pager">
+        <button size="mini" bindtap="prevPage" disabled="{{pageIndex <= 1}}">上一页</button>
+        <view class="pager-info">第 {{pageIndex}} 页</view>
+        <button size="mini" bindtap="nextPage" disabled="{{!hasMore}}">下一页</button>
+        <input class="pager-input" type="number" placeholder="跳转页码" value="{{jumpInput}}" bindinput="onJumpInput" />
+        <button size="mini" bindtap="jumpPage">跳转</button>
+      </view>
+    </view>
+  </scroll-view>
 
   <view class="dialog-mask" wx:if="{{showForm}}" bindtap="closeForm">
     <view class="dialog-card" catchtap="noop">

@@ -53,7 +53,7 @@ exports.main = async (event, context) => {
  * 功能：保留原 where/field/orderBy/skip/limit/docId 能力
  */
 async function handleQuery(event) {
-  const { collection, where = [], field = null, orderBy = [], skip = 0, limit = 20, docId = '' } = event || {}
+  const { collection, where = [], field = null, orderBy = [], skip = 0, limit = 20, docId = '', count = false } = event || {}
   if (!collection) return { error: true, message: 'collection required', status: 400 }
   const _ = db.command
   let ref = db.collection(collection)
@@ -74,6 +74,10 @@ async function handleQuery(event) {
       whereObj[f] = fn ? fn(val) : val
     }
     ref = ref.where(whereObj)
+  }
+  if (count) {
+    const c = await ref.count()
+    return { status: 200, data: { total: c.total } }
   }
   if (field && typeof field === 'object') ref = ref.field(field)
   if (Array.isArray(orderBy) && orderBy.length > 0) {
