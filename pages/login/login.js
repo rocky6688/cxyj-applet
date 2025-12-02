@@ -34,6 +34,8 @@ Page({
       success: (res) => {
         const data = (res && res.result) || {}
         if (data && data.user) {
+          const status = String(data.user.status || 'ACTIVE')
+          if (status !== 'ACTIVE') { wx.showToast({ title: '账号已停用，请联系管理员', icon: 'none' }); return }
           try { wx.setStorageSync('current_user', data.user); wx.removeStorageSync('pending_user_info') } catch (e) {}
           wx.reLaunch({ url: '/pages/index/index' })
         } else {

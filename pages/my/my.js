@@ -199,6 +199,8 @@ Page({
       .then((res) => {
         const data = (res && res.result) || {}
         if (data && data.user) {
+          const status = String(data.user.status || 'ACTIVE')
+          if (status !== 'ACTIVE') { wx.showToast({ title: '账号已停用，请联系管理员', icon: 'none' }); return }
           try { wx.setStorageSync('current_user', data.user) } catch (e) {}
           if (data.token) { try { wx.setStorageSync('access_token', data.token) } catch (e) {} }
           this.setData({ loggedIn: true, user: data.user })
