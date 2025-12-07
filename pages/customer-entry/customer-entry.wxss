@@ -1,6 +1,6 @@
-.page { padding: 0 32rpx 32rpx; background-color: #f7f8fa; min-height: 100vh }
-.fixed-header { position: fixed; top: 0; left: 0; right: 0; background: #f7f8fa; padding: 32rpx 32rpx 12rpx; box-sizing: border-box;z-index: 9999;margin-top: -2px; }
-.list-scroll { margin-top: 0 }
+.page { padding: 0 32rpx 0 32rpx;min-height: 100vh }
+.fixed-header { position: fixed; top: 0; left: 0; right: 0; background: #fff; padding: 32rpx 32rpx 12rpx; box-sizing: border-box;z-index: 999;margin-top: -2px;box-shadow: 0 0 12rpx rgba(0,0,0,0.1); }
+.list-scroll { margin-top: -1px }
 .title { font-size: 36rpx; font-weight: 700; margin-bottom: 20rpx; color: #1f2d3d }
 .store-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16rpx }
 .store-left { display: flex; align-items: center; gap: 16rpx }
@@ -43,9 +43,9 @@
 .item-title { font-size: 30rpx; color: #222 }
 .item-sub { font-size: 24rpx; color: #909399 }
 .item-actions { display: flex; width: 100%;gap: 12rpx; margin-top: 12rpx;position: relative;}
-.phone-btn { margin-left: auto;color:#ff6b35;border: 1px solid #ff6b35;position: absolute;right: 0;z-index: 999;}
+.phone-btn { margin-left: auto;color:#ff6b35;border: 1px solid #ff6b35;position: absolute;right: 0;z-index: 100;}
 .dialog-mask { position: fixed; left: 0; right: 0; top: 0; bottom: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 999 }
-.dialog-card { width: 86%; max-width: 700rpx; background: #fff; border-radius: 20rpx; box-shadow: 0 16rpx 40rpx rgba(255,107,53,0.15); padding: 24rpx }
+.dialog-card { width: 86%; max-width: 700rpx; background: #fff; border-radius: 20rpx; box-shadow: 0 16rpx 40rpx rgba(255,107,53,0.15); padding: 24rpx;z-index: 9999; }
 .dialog-title { font-size: 30rpx; color: #333; margin-bottom: 12rpx }
 .dialog-scroll { height: 900rpx }
 .dialog-label { font-size: 26rpx; color: #666; margin: 6rpx 0 }

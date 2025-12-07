@@ -1,49 +1,56 @@
 {
-  "libVersion": "3.11.2",
-  "projectname": "renovation-quote-system",
-  "setting": {
-    "urlCheck": false,
-    "coverView": false,
-    "lazyloadPlaceholderEnable": false,
-    "skylineRenderEnable": false,
-    "preloadBackgroundData": false,
-    "autoAudits": false,
-    "useApiHook": true,
-    "useApiHostProcess": true,
-    "showShadowRootInWxmlPanel": false,
-    "useStaticServer": false,
-    "useLanDebug": false,
-    "showES6CompileOption": false,
-    "compileHotReLoad": true,
-    "checkInvalidKey": true,
-    "ignoreDevUnusedFiles": true,
-    "bigPackageSizeSupport": false
-  },
-  "condition": {
-    "miniprogram": {
-      "list": [
-        {
-          "name": "pages/my/my",
-          "pathName": "pages/my/my",
-          "query": "",
-          "scene": null,
-          "launchMode": "default"
-        },
-        {
-          "name": "pages/admin/index",
-          "pathName": "pages/admin/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "pages/admin-template-edit/admin-template-edit",
-          "pathName": "pages/admin-template-edit/admin-template-edit",
-          "query": "id=cmi8g0266004y8iwf6p9eljmg",
-          "launchMode": "default",
-          "scene": null
+    "libVersion": "3.11.2",
+    "projectname": "renovation-quote-system",
+    "setting": {
+        "urlCheck": false,
+        "coverView": false,
+        "lazyloadPlaceholderEnable": false,
+        "skylineRenderEnable": false,
+        "preloadBackgroundData": false,
+        "autoAudits": false,
+        "useApiHook": true,
+        "useApiHostProcess": true,
+        "showShadowRootInWxmlPanel": false,
+        "useStaticServer": false,
+        "useLanDebug": false,
+        "showES6CompileOption": false,
+        "compileHotReLoad": true,
+        "checkInvalidKey": true,
+        "ignoreDevUnusedFiles": true,
+        "bigPackageSizeSupport": false
+    },
+    "condition": {
+        "miniprogram": {
+            "list": [
+                {
+                    "name": "pages/customer-entry/customer-entry",
+                    "pathName": "pages/customer-entry/customer-entry",
+                    "query": "",
+                    "scene": null,
+                    "launchMode": "default"
+                },
+                {
+                    "name": "pages/my/my",
+                    "pathName": "pages/my/my",
+                    "query": "",
+                    "launchMode": "default",
+                    "scene": null
+                },
+                {
+                    "name": "pages/admin/index",
+                    "pathName": "pages/admin/index",
+                    "query": "",
+                    "launchMode": "default",
+                    "scene": null
+                },
+                {
+                    "name": "pages/admin-template-edit/admin-template-edit",
+                    "pathName": "pages/admin-template-edit/admin-template-edit",
+                    "query": "id=cmi8g0266004y8iwf6p9eljmg",
+                    "launchMode": "default",
+                    "scene": null
+                }
+            ]
         }
-      ]
     }
-  }
 }
