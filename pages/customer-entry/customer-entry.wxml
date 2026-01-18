@@ -41,7 +41,7 @@
     </view>
   </view>
 
-  <scroll-view scroll-y class="list-scroll" style="height: {{scrollHeight}}px; margin-top: {{listMarginTop}}px">
+  <scroll-view scroll-y show-scrollbar="{{false}}" class="list-scroll" style="height: {{scrollHeight}}px; margin-top: {{listMarginTop}}px">
     <view class="list">
       <view wx:if="{{!isLoading && entries.length === 0}}" class="empty">
         <view class="empty-text">暂无数据</view>
@@ -73,7 +73,7 @@
   <view class="dialog-mask" wx:if="{{showForm}}" bindtap="closeForm">
     <view class="dialog-card" catchtap="noop">
       <view class="dialog-title">{{editingId ? '编辑录入' : '新增录入'}}（{{storeName}}）</view>
-      <scroll-view scroll-y class="dialog-scroll">
+      <scroll-view scroll-y show-scrollbar="{{false}}" class="dialog-scroll">
         <view class="dialog-label">小区</view>
         <input class="dialog-input" placeholder="小区" value="{{form.community}}" bindinput="onCommunityInput" />
 
