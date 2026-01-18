@@ -32,9 +32,10 @@
 .filter-bar { display: flex; flex-wrap: wrap; gap: 12rpx; margin: 12rpx 0 }
 .filter-picker .filter-inner { font-size: 24rpx; color: #606266; border: 1rpx solid #eaeaea; border-radius: 12rpx; padding: 10rpx 12rpx; background: #fff }
 .list { display: flex; flex-direction: column; gap: 16rpx }
-.pager { display: flex; align-items: center; gap: 12rpx; padding: 12rpx 0;padding-bottom:70rpx}
-.pager-info { color: #606266; font-size: 26rpx }
-.pager-input { width: 160rpx; border: 1rpx solid #e5e5e5; border-radius: 12rpx; padding: 8rpx 12rpx; background: #fff }
+.pager { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 16rpx; padding: 24rpx 0; padding-bottom: 70rpx; margin-top: 16rpx; }
+.pager button { min-width: 120rpx; height: 60rpx; line-height: 60rpx; padding: 0 24rpx; border-radius: 12rpx; font-size: 26rpx; }
+.pager-info { color: #606266; font-size: 26rpx; min-width: 100rpx; text-align: center; }
+.pager-input { width: 120rpx; height: 60rpx; border: 1rpx solid #e5e5e5; border-radius: 12rpx; padding: 0 12rpx; background: #fff; text-align: center; font-size: 26rpx; }
 .empty { padding: 60rpx 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #909399 }
 .empty-img { width: 360rpx }
 .empty-text { margin-top: 16rpx; font-size: 26rpx }
