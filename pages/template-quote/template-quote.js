@@ -59,7 +59,9 @@ Page({
     const manualPrices = {}
     ;(this.data.sections || []).forEach(section => {
       (section.items || []).forEach(item => {
-        selectedItems[item.id] = { item, area: 1, areaText: '1.00', checked: true }
+        const isGarbageTransport = item.slug === 'garbage_transport'
+        const area = isGarbageTransport ? (item.minQuantity || 1) : 1
+        selectedItems[item.id] = { item, area, areaText: area.toFixed(2), checked: true }
         quantities[item.id] = item.minQuantity || 1
         if (item.price === 0 || item.unit === '面议') manualPrices[item.id] = 0
       })
@@ -114,7 +116,9 @@ Page({
     const quantities = { ...this.data.quantities }
     const manualPrices = { ...this.data.manualPrices }
     if (isChecked) {
-      selectedItems[item.id] = { item, area: 1, areaText: '1.00', checked: true }
+      const isGarbageTransport = item.slug === 'garbage_transport'
+      const area = isGarbageTransport ? (item.minQuantity || 1) : 1
+      selectedItems[item.id] = { item, area, areaText: area.toFixed(2), checked: true }
       if (!quantities[item.id]) quantities[item.id] = 1
       if ((item.price === 0 || item.unit === '面议') && !manualPrices[item.id]) manualPrices[item.id] = 0
     } else {
@@ -158,7 +162,9 @@ Page({
     const itemId = e.currentTarget.dataset.itemId
     const selectedItems = { ...this.data.selectedItems }
     if (selectedItems[itemId]) {
-      const area = parseFloat(selectedItems[itemId].area)
+      const item = selectedItems[itemId].item
+      const minQty = item && item.slug === 'garbage_transport' ? (item.minQuantity || 1) : 0
+      let area = parseFloat(selectedItems[itemId].area)
       const num = isNaN(area) ? 0 : area
       if (num === 0) {
         const sectionId = this.getSectionIdByItemId(itemId)
@@ -166,6 +172,10 @@ Page({
         const sectionSelectAll = { ...this.data.sectionSelectAll }
         if (sectionId) sectionSelectAll[sectionId] = false
         this.setData({ selectedItems, sectionSelectAll })
+      } else if (minQty > 0 && num < minQty) {
+        selectedItems[itemId].area = minQty
+        selectedItems[itemId].areaText = minQty.toFixed(2)
+        this.setData({ selectedItems })
       } else {
         selectedItems[itemId].area = num
         selectedItems[itemId].areaText = num.toFixed(2)
@@ -305,9 +315,9 @@ Page({
         const quantity = quantities[itemId] || 1
         let itemTotal = 0
         if ((item.slug || '') === 'garbage_transport') {
-          const baseArea = 4
-          const basePrice = 260
-          const additionalPrice = 65
+          const baseArea = item.minQuantity || 4
+          const basePrice = (item.price || 300) * baseArea
+          const additionalPrice = item.price || 300
           if (area <= baseArea) itemTotal = basePrice
           else itemTotal = basePrice + ((area - baseArea) * additionalPrice)
         } else if (item.price === 0 || item.unit === '面议') {
