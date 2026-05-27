@@ -1,4 +1,4 @@
-const STAIRS_FEE_RATE = 0.02
+const STAIRS_FEE_RATE = 0.1
 const PERCENT_FEE_RATE = 0.02
 
 module.exports = {

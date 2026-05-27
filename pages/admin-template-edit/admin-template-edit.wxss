@@ -40,3 +40,9 @@
 .dialog-title { font-size: 30rpx; color: #333; margin-bottom: 16rpx }
 .dialog-input { border: 1rpx solid #ddd; border-radius: 8rpx; padding: 16rpx; background: #f8f8f8; margin-bottom: 16rpx }
 .dialog-actions { display: flex; gap: 12rpx; justify-content:space-around;width: 100%;}
+.tpl-stairs-rate { margin-top: 24rpx; padding: 20rpx; background: linear-gradient(135deg, #f8f9ff 0%, #eef0ff 100%); border-radius: 10rpx; border: 1rpx solid #e0e4ff; }
+.tpl-stairs-label { font-size: 26rpx; color: #667eea; font-weight: 600; margin-bottom: 16rpx; }
+.tpl-stairs-input-row { display: flex; align-items: center; gap: 12rpx; }
+.tpl-stairs-input { flex: 1; border: 1rpx solid #c0c5ff; border-radius: 8rpx; padding: 14rpx 16rpx; background-color: #fff; font-size: 28rpx; }
+.tpl-stairs-percent { font-size: 28rpx; color: #667eea; font-weight: 600; }
+.tpl-stairs-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border-radius: 8rpx; font-size: 24rpx; padding: 0 24rpx; height: 56rpx; line-height: 56rpx; margin: 0; }

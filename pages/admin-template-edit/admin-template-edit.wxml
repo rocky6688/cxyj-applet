@@ -6,6 +6,14 @@
         <input class="tpl-input" placeholder="新大类名称" bindinput="onGroupName" />
         <button class="tpl-btn-primary" bindtap="addGroup">新增大类</button>
       </view>
+      <view class="tpl-stairs-rate">
+        <view class="tpl-stairs-label">楼梯房上楼费率</view>
+        <view class="tpl-stairs-input-row">
+          <input class="tpl-stairs-input" type="number" placeholder="默认10%" value="{{stairsFeeRate}}" bindinput="onStairsFeeRateInput" />
+          <text class="tpl-stairs-percent">%</text>
+          <button class="tpl-stairs-btn" bindtap="saveStairsFeeRate">保存</button>
+        </view>
+      </view>
     </view>
 
     <block wx:for="{{tpl.groups}}" wx:key="id">

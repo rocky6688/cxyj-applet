@@ -146,6 +146,13 @@ function request({ url, method = 'GET', data, header = {}, success, fail, comple
       wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { action: 'reorder', collection: 'template_items', items: Array.isArray(data) ? data : [] } })
         .then((res) => { const r = res && res.result ? res.result : {}; if (r && !r.error) success && success({ statusCode: r.status || 200, data: r.data, header: {} }); else { showErrorMessage(r.message || 'reorder items failed'); fail && fail({ errMsg: r.message || 'reorder items failed', statusCode: r.status || 500 }) } })
         .catch((err) => { showErrorMessage((err && (err.errMsg || err.message)) || '请求失败'); fail && fail(err) }).finally(() => { if (loading) { try { wx.hideLoading() } catch (e) {} } complete && complete() })
+    // 12) 管理页：保存楼梯房上楼费率
+    } else if (method === 'PUT' && /^\/api\/templates\/[^/]+$/.test(url)) {
+      const m = url.match(/^\/api\/templates\/([^/]+)$/)
+      const templateId = m && m[1]
+      wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { action: 'saveStairsFeeRate', templateId, stairsFeeRate: data && data.stairsFeeRate } })
+        .then((res) => { const r = res && res.result ? res.result : {}; if (r && !r.error) success && success({ statusCode: r.status || 200, data: r.data, header: {} }); else { showErrorMessage(r.message || 'save stairs fee rate failed'); fail && fail({ errMsg: r.message || 'save stairs fee rate failed', statusCode: r.status || 500 }) } })
+        .catch((err) => { showErrorMessage((err && (err.errMsg || err.message)) || '请求失败'); fail && fail(err) }).finally(() => { if (loading) { try { wx.hideLoading() } catch (e) {} } complete && complete() })
     } else {
       // 2) 其他请求通过云函数代理到后端（适用于云开发，无需配置业务域名）
       wx.cloud.callFunction({

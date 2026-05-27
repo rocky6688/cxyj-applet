@@ -2,7 +2,7 @@ const req = require('../../utils/request.js')
 const request = typeof req === 'function' ? req : req.request
 
 Page({
-  data: { id: '', tpl: { groups: [] }, newGroupName: '', newItemNames: {}, renameGroupMap: {}, renameItemMap: {}, expanded: {}, itemEdit: {}, units: ['每平','项','米','套','个','方车','面议'], unitMap: {}, priceMap: {}, minQtyMap: {}, renameGroupDialog: false, renameGroupId: '', renameGroupValue: '', itemRenameDialog: false, itemRenameId: '', itemRenameValue: '' },
+  data: { id: '', tpl: { groups: [] }, newGroupName: '', newItemNames: {}, renameGroupMap: {}, renameItemMap: {}, expanded: {}, itemEdit: {}, units: ['每平','项','米','套','个','方车','面议'], unitMap: {}, priceMap: {}, minQtyMap: {}, renameGroupDialog: false, renameGroupId: '', renameGroupValue: '', itemRenameDialog: false, itemRenameId: '', itemRenameValue: '', stairsFeeRate: '' },
   onLoad(query) { this.setData({ id: query.id }); this.fetchDetail() },
   fetchDetail() {
     request({ url: `/api/templates/${this.data.id}/detail`, method: 'GET', success: (r) => {
@@ -24,7 +24,8 @@ Page({
           minQtyMap[it.id] = typeof (it.item && it.item.minQuantity) === 'number' ? it.item.minQuantity : 1
         })
       })
-      this.setData({ tpl: normalized, expanded, unitMap, priceMap, minQtyMap })
+      const stairsFeeRate = typeof tpl.stairsFeeRate === 'number' ? tpl.stairsFeeRate * 100 : ''
+      this.setData({ tpl: normalized, expanded, unitMap, priceMap, minQtyMap, stairsFeeRate })
     } })
   },
   openItemRenameDialog(e) {
@@ -191,5 +192,14 @@ Page({
     items[target] = tmp
     const payload = items.map((it, i) => ({ id: it.id, orderIndex: i }))
     request({ url: `/api/templates/${this.data.id}/items/reorder`, method: 'POST', data: payload, success: () => { this.fetchDetail() } })
+  },
+  onStairsFeeRateInput(e) {
+    this.setData({ stairsFeeRate: e.detail.value })
+  },
+  saveStairsFeeRate() {
+    const raw = this.data.stairsFeeRate
+    const n = Number(raw)
+    const stairsFeeRate = !isNaN(n) && n >= 0 ? n / 100 : 0.1
+    request({ url: `/api/templates/${this.data.id}`, method: 'PUT', data: { stairsFeeRate }, success: () => { wx.showToast({ title: '已保存', icon: 'success' }); this.fetchDetail() } })
   }
 })

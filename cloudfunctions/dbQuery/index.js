@@ -22,6 +22,7 @@ const db = cloud.database()
  *   - { action:'removeGroup', templateGroupId }
  *   - { action:'removeItem', templateItemId }
  *   - { action:'saveItemMeta', templateItemId, unit, price, minQuantity }
+ *   - { action:'saveStairsFeeRate', templateId, stairsFeeRate }
  * 返回：{ status, data } 或 { error:true, status, message }
  */
 exports.main = async (event, context) => {
@@ -41,6 +42,7 @@ exports.main = async (event, context) => {
       case 'removeGroup': return await removeGroup(event)
       case 'removeItem': return await removeItem(event)
       case 'saveItemMeta': return await saveItemMeta(event)
+      case 'saveStairsFeeRate': return await saveStairsFeeRate(event)
       default: return await handleQuery(event)
     }
   } catch (err) {
@@ -142,7 +144,7 @@ async function handleReorder(event) {
 /**
  * 聚合：模板详情
  * 参数：{ templateId }
- * 返回：{ id, name, isDefault, groups:[{ id, orderIndex, group, items:[{ id, orderIndex, item }] }] }
+ * 返回：{ id, name, isDefault, stairsFeeRate, groups:[{ id, orderIndex, group, items:[{ id, orderIndex, item }] }] }
  */
 async function handleTemplateDetail(event) {
   const { templateId } = event || {}
@@ -190,7 +192,7 @@ async function handleTemplateDetail(event) {
     }
     groups.push({ id: (tg._id || tg.id), orderIndex: tg.orderIndex, group: showGroup, items })
   }
-  return { status: 200, data: { id: (tpl.id || tpl._id), name: tpl.name, isDefault: tpl.isDefault, groups } }
+  return { status: 200, data: { id: (tpl.id || tpl._id), name: tpl.name, isDefault: tpl.isDefault, stairsFeeRate: tpl.stairsFeeRate, groups } }
 }
 
 async function cloneFromDefault(event) {
@@ -318,5 +320,29 @@ async function saveItemMeta(event) {
   if (typeof price !== 'undefined') data.price = price
   if (typeof minQuantity !== 'undefined') data.minQuantity = minQuantity
   await db.collection('template_items').doc(templateItemId).update({ data })
+  return { status: 200, data: true }
+}
+
+/**
+ * 便捷：保存模板楼梯房上楼费率
+ * 参数：{ templateId, stairsFeeRate }
+ */
+async function saveStairsFeeRate(event) {
+  const { templateId, stairsFeeRate } = event || {}
+  if (!templateId) return { error: true, status: 400, message: 'templateId required' }
+  // 查找模板（兼容两种 ID）
+  let tpl = null
+  let docId = null
+  try {
+    const tplRes = await db.collection('templates').doc(templateId).get()
+    tpl = tplRes.data || null
+    docId = tplRes._id || (tpl && tpl._id) || null
+  } catch (e) {
+    const byBiz = await db.collection('templates').where({ id: templateId }).limit(1).get()
+    tpl = (byBiz.data && byBiz.data[0]) || null
+    docId = tpl && tpl._id
+  }
+  if (!tpl) return { error: true, status: 404, message: 'template not found' }
+  await db.collection('templates').doc(docId).update({ data: { stairsFeeRate, updatedAt: new Date().toISOString() } })
   return { status: 200, data: true }
 }

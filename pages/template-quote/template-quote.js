@@ -17,7 +17,9 @@ Page({
     finalTotal: 0,
     baseTotalText: '0.00',
     finalTotalText: '0.00',
-    categorySelectAll: { demolition: true, wall: true, ceiling: true, floor: true, comprehensive: true }
+    categorySelectAll: { demolition: true, wall: true, ceiling: true, floor: true, comprehensive: true },
+    stairsFeeRate: STAIRS_FEE_RATE,
+    stairsFeeRateText: '10%'
   },
 
   onLoad(query) {
@@ -48,7 +50,9 @@ Page({
       const expandedSections = {}
       const sectionSelectAll = {}
       sections.forEach(s => { expandedSections[s.id] = true; sectionSelectAll[s.id] = true })
-      this.setData({ sections, expandedSections, sectionSelectAll })
+      const stairsFeeRate = typeof tpl.stairsFeeRate === 'number' ? tpl.stairsFeeRate : STAIRS_FEE_RATE
+      const stairsFeeRateText = (stairsFeeRate * 100).toFixed(0) + '%'
+      this.setData({ sections, expandedSections, sectionSelectAll, stairsFeeRate, stairsFeeRateText })
       this.initializeDefaultSelection()
     } })
   },
@@ -284,7 +288,7 @@ Page({
     const designFee = baseTotal * PERCENT_FEE_RATE
     const transportFee = baseTotal * PERCENT_FEE_RATE
     const managementFee = baseTotal * PERCENT_FEE_RATE
-    const stairsFee = this.data.stairsEnabled ? baseTotal * STAIRS_FEE_RATE : 0
+    const stairsFee = this.data.stairsEnabled ? baseTotal * this.data.stairsFeeRate : 0
     const fees = {
       designFee,
       transportFee,

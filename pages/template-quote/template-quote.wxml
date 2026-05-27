@@ -72,7 +72,7 @@
       <text>¥{{fees.managementFeeText}}</text>
     </view>
     <view class="total-item fee" wx:if="{{stairsEnabled}}">
-      <text>楼梯房上楼费（2%）：</text>
+      <text>楼梯房上楼费（{{stairsFeeRateText}}）：</text>
       <text>¥{{fees.stairsFeeText}}</text>
     </view>
     <view class="total-item final">
