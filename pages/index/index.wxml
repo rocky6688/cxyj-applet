@@ -1,17 +1,21 @@
-<view class="home-page">
+<view class="home-page tech-bg">
   <view class="brand-area">
-    <view class="brand-name">橙心友家</view>
+    <view class="brand-mark">
+      <view class="brand-dot"></view>
+      <view class="brand-name">橙心友家</view>
+    </view>
     <view class="brand-slogan">高效 · 精准 · 专业</view>
   </view>
 
-  <view class="hero-card" wx:if="{{canSeeHero}}">
+  <view class="hero-card glass-card" wx:if="{{canSeeHero}}">
+    <view class="hero-glow"></view>
     <view class="hero-title">装修报价系统</view>
     <view class="hero-sub">一站式管理报价模板与项目</view>
     <view class="hero-actions">
-      <button class="primary-btn" bindtap="goToQuote">开始报价</button>
-      <button class="ghost-btn" bindtap="goToTemplateList">模板报价</button>
+      <button class="btn-brand hero-btn" hover-class="press" bindtap="goToQuote">开始报价</button>
+      <button class="btn-ghost hero-btn" hover-class="press" bindtap="goToTemplateList">模板报价</button>
     </view>
   </view>
 
-  <view class="admin-entry" wx:if="{{!loggedAsAdmin}}" bindtap="goToAdminLogin">后台登录</view>
+  <view class="admin-entry" hover-class="press" wx:if="{{!loggedAsAdmin}}" bindtap="goToAdminLogin">后台登录</view>
 </view>

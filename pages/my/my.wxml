@@ -1,55 +1,70 @@
-<view class="my-page">
+<view class="my-page tech-bg">
   <view class="my-header">
     <view class="brand">橙心友家</view>
     <view class="slogan">让装修管理更简单</view>
   </view>
   <!-- 未登录状态 -->
   <block wx:if="{{!loggedIn}}">
-    <view class="card">
+    <view class="card glass-card">
       <view class="title">微信登录</view>
       <view class="avatar-wrap">
         <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
           <image class="avatar-main" src="{{avatarUrl || defaultAvatar}}" mode="aspectFill"></image>
         </button>
       </view>
-      <button class="primary-btn" bindtap="onOneTapLogin">一键微信登录</button>
+      <button class="btn-brand login-btn" hover-class="press" bindtap="onOneTapLogin">一键微信登录</button>
       <view class="privacy-tip">登录即表示同意相关服务协议与隐私政策</view>
     </view>
   </block>
   <!-- 已登录状态 -->
   <block wx:else>
-    <view class="profile-card">
+    <view class="profile-card glass-card">
       <view class="profile-top">
         <image class="profile-avatar" src="{{user.avatarUrl || defaultAvatar}}" mode="aspectFill"></image>
         <view class="profile-name">{{user.nickName || '匿名用户'}}</view>
         <view class="profile-role-wrap">
-          <view class="profile-role">{{roleLabel}}</view>
+          <view class="tag tag-brand">{{roleLabel}}</view>
           <view wx:if="{{staffStoreName}}" class="profile-sub">
             所属门店：{{staffStoreName}}{{isManagerOfStaffStore ? '（店长）' : ''}}
           </view>
         </view>
       </view>
     </view>
-    <view class="menu-list">
-      <view class="menu-item" wx:if="{{user.role === 'ADMIN'}}" bindtap="goToAdmin">
-        <view class="menu-title">后台管理</view>
-        <text class="chevron">›</text>
+    <view class="group-list menu-list">
+      <view class="group-row" hover-class="press" wx:if="{{user.role === 'ADMIN'}}" bindtap="goToAdmin">
+        <view class="menu-left">
+          <view class="icon icon-template"></view>
+          <view class="menu-title">后台管理</view>
+        </view>
+        <view class="chevron"></view>
       </view>
-      <view class="menu-item" bindtap="goToProfileEdit">
-        <view class="menu-title">个人资料设置</view>
-        <text class="chevron">›</text>
+      <view class="group-row" hover-class="press" bindtap="goToProfileEdit">
+        <view class="menu-left">
+          <view class="icon icon-user"></view>
+          <view class="menu-title">个人资料设置</view>
+        </view>
+        <view class="chevron"></view>
       </view>
-      <view class="menu-item" wx:if="{{user.role === 'ADMIN' || user.role === 'STAFF' || user.role === 'MANAGER'}}" bindtap="goToCustomerEntry">
-        <view class="menu-title">客户录入管理</view>
-        <text class="chevron">›</text>
+      <view class="group-row" hover-class="press" wx:if="{{user.role === 'ADMIN' || user.role === 'STAFF' || user.role === 'MANAGER'}}" bindtap="goToCustomerEntry">
+        <view class="menu-left">
+          <view class="icon icon-plus"></view>
+          <view class="menu-title">客户录入管理</view>
+        </view>
+        <view class="chevron"></view>
       </view>
-      <view class="menu-item" wx:if="{{canViewDataView}}" bindtap="goToDataView">
-        <view class="menu-title">数据查看</view>
-        <text class="chevron">›</text>
+      <view class="group-row" hover-class="press" wx:if="{{canViewDataView}}" bindtap="goToDataView">
+        <view class="menu-left">
+          <view class="icon icon-chart"></view>
+          <view class="menu-title">数据查看</view>
+        </view>
+        <view class="chevron"></view>
       </view>
-      <view class="menu-item" bindtap="logout">
-        <view class="menu-title danger">退出登录</view>
-        <text class="chevron">›</text>
+      <view class="group-row" hover-class="press" bindtap="logout">
+        <view class="menu-left">
+          <view class="icon icon-user icon-mute"></view>
+          <view class="menu-title danger">退出登录</view>
+        </view>
+        <view class="chevron"></view>
       </view>
     </view>
   </block>
