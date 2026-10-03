@@ -41,13 +41,16 @@ Page({
   },
   /**
    * 返回列表页 ⬅️
-   * 行为：调用内置返回，若失败则跳转到列表页
+   * 行为：优先调用内置返回（返回后列表页会保留原来的分页与位置）；
+   *       仅当没有可返回的页面时才跳转到列表页，避免返回成功后又被重定向导致列表重置到第一页
    */
   backToList() {
-    try { wx.navigateBack({ delta: 1 }) } catch (e) {}
-    // 兜底：无法返回时跳转到列表页
-    setTimeout(() => {
-      wx.redirectTo({ url: '/pages/customer-entry/customer-entry' })
-    }, 200)
+    const stack = (typeof getCurrentPages === 'function' && getCurrentPages()) || []
+    if (stack.length > 1) {
+      wx.navigateBack({ delta: 1 })
+      return
+    }
+    // 兜底：详细页是唯一页面（如直接编译该页面）时跳转到列表页
+    wx.redirectTo({ url: '/pages/customer-entry/customer-entry' })
   }
 })

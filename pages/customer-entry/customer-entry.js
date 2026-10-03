@@ -56,6 +56,15 @@ Page({
    * - 进入页面即显示全局 Loading（数据准备完成后关闭）
    */
   onShow() {
+    // 从详情页返回：页面实例未被销毁，数据与滚动位置都还在，
+    // 直接复用即可（重新拉第一页会导致回到第 1 页）♻️
+    if (this._returningFromDetail) {
+      this._returningFromDetail = false
+      wx.hideLoading()
+      // 正常情况门店上下文仍在，直接展示原有列表
+      if (this.data.storeId) return
+      // 兜底：页面被回收（数据丢失）时走下面的完整初始化
+    }
     // 进入页面显示加载中（遮罩防误操作）
     wx.showLoading({ title: '加载中', mask: true })
     const u = wx.getStorageSync('current_user') || {}
@@ -390,7 +399,12 @@ Page({
   goToDetail(e) {
     const id = (e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.id) || ''
     if (!id) { wx.showToast({ title: '未找到记录ID', icon: 'none' }); return }
-    wx.navigateTo({ url: `/pages/customer-entry-detail/customer-entry-detail?id=${id}` })
+    // 标记本次跳转，返回时保留列表状态（分页/筛选/滚动位置）
+    this._returningFromDetail = true
+    wx.navigateTo({
+      url: `/pages/customer-entry-detail/customer-entry-detail?id=${id}`,
+      fail: () => { this._returningFromDetail = false }
+    })
   },
   /**
    * 拨打联系电话（支持多个号码选择）☎️
