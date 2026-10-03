@@ -112,6 +112,37 @@ button::after {
   box-shadow: none;
 }
 
+/* 小号文字按钮（工具栏/列表内操作） */
+.btn-mini {
+  font-size: 26rpx;
+  font-weight: 500;
+  line-height: 1.2;
+  padding: 12rpx 24rpx;
+  border-radius: var(--r-pill);
+  background: var(--surface-solid);
+  color: var(--brand-deep);
+  border: 1rpx solid rgba(255, 107, 53, 0.3);
+}
+
+/* ==================== 胶囊筛选 ==================== */
+.chip {
+  flex: none;
+  padding: 14rpx 26rpx;
+  border-radius: var(--r-pill);
+  background: var(--surface-solid);
+  border: 1rpx solid var(--hairline);
+  font-size: 25rpx;
+  color: var(--text-2);
+  line-height: 1.2;
+}
+
+.chip-active {
+  background: var(--brand-soft);
+  border-color: rgba(255, 107, 53, 0.35);
+  color: var(--brand-deep);
+  font-weight: 600;
+}
+
 /* ==================== 状态标签 ==================== */
 .tag {
   display: inline-flex;
@@ -125,6 +156,43 @@ button::after {
 .tag-brand {
   background: var(--brand-soft);
   color: var(--brand-deep);
+}
+
+/* ==================== 数字 ==================== */
+.stat-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  font-weight: 700;
+  color: var(--brand);
+}
+
+/* ==================== 空状态 ==================== */
+.empty-state {
+  padding: 72rpx 0;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 26rpx;
+}
+
+.empty-state .empty-mark {
+  width: 96rpx;
+  height: 96rpx;
+  margin: 0 auto 20rpx;
+  border-radius: var(--r-card);
+  background: var(--surface-sunken);
+  position: relative;
+}
+
+.empty-state .empty-mark::before {
+  content: '';
+  position: absolute;
+  left: 30rpx;
+  top: 34rpx;
+  width: 36rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: var(--text-3);
+  box-shadow: 0 20rpx 0 0 var(--text-3);
 }
 
 /* ==================== 纯 CSS 图标 ==================== */

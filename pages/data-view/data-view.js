@@ -12,7 +12,16 @@ Page({
     dateIndex: 1,
     startDate: '',
     endDate: '',
-    rawEntries: []
+    rawEntries: [],
+    // 日期选择抽屉
+    showDatePicker: false,
+    pickerTarget: 'start',
+    calYear: 0,
+    calMonth: 0,
+    yearMin: 0,
+    yearMax: 0,
+    calDays: [],
+    weekLabels: ['日', '一', '二', '三', '四', '五', '六']
   },
   onShow() {
     /**
@@ -24,11 +33,11 @@ Page({
     const u = wx.getStorageSync('current_user') || {}
     const role = u.role || 'USER'
     const uid = u.id || u._id || ''
-    this.setData({ role })
     const today = new Date()
     const s = this.formatDate(this.getStartOfMonth(today))
     const e = this.formatDate(this.getEndOfMonth(today))
-    this.setData({ startDate: s, endDate: e })
+    // 每次进入页面都按「本月」重置，同时把区间选择器一起归位，避免显示与实际区间不一致
+    this.setData({ role, dateIndex: 1, startDate: s, endDate: e })
     if (role === 'ADMIN') {
       wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'stores', orderBy: [{ field: 'updatedAt', order: 'desc' }], limit: 200 } })
         .then((res) => {
@@ -83,15 +92,131 @@ Page({
     const sid = this.data.storeIds[this.data.storeIndex]
     if (sid) this.fetchStats(sid)
   },
-  onStartDateChange(e) {
-    const v = String(e.detail.value || '')
-    this.setData({ startDate: v })
+  /**
+   * 打开日期选择抽屉 📅
+   * 参数：e:any，data-target = 'start' | 'end'
+   * 行为：以该字段当前值为默认展示月份，并生成带禁用状态的日历网格
+   */
+  openDatePicker(e) {
+    const target = (e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.target) || 'start'
+    const baseStr = target === 'start' ? this.data.startDate : this.data.endDate
+    let base = new Date()
+    if (baseStr) {
+      const parts = String(baseStr).split('-').map(Number)
+      if (parts.length === 3 && !parts.some((n) => isNaN(n))) base = new Date(parts[0], parts[1] - 1, parts[2])
+    }
+    const year = base.getFullYear()
+    const month = base.getMonth() + 1
+    // 年份快捷跳转的可达范围（默认今天前后各 10 年）
+    const thisYear = new Date().getFullYear()
+    this.setData({
+      showDatePicker: true,
+      pickerTarget: target,
+      calYear: year,
+      calMonth: month,
+      yearMin: thisYear - 10,
+      yearMax: thisYear + 10,
+      calDays: this.buildCalendar(target, year, month)
+    })
+  },
+  closeDatePicker() {
+    this.setData({ showDatePicker: false })
+  },
+  noop() {},
+  /**
+   * 生成日历网格（周日开头）🗓️
+   * 参数：target:'start'|'end'，year/month: 展示月份
+   * 行为：超出可选范围的日期标记为 disabled —— 开始日期不能晚于结束日期，结束日期不能早于开始日期
+   */
+  buildCalendar(target, year, month) {
+    const firstWeekday = new Date(year, month - 1, 1).getDay()
+    const daysInMonth = new Date(year, month, 0).getDate()
+    const todayStr = this.formatDate(new Date())
+    const cells = []
+    for (let i = 0; i < firstWeekday; i++) cells.push({ key: `empty-${i}`, day: '', date: '', disabled: false, selected: false, today: false })
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+      let disabled = false
+      if (target === 'start' && this.data.endDate) disabled = dateStr > this.data.endDate
+      if (target === 'end' && this.data.startDate) disabled = dateStr < this.data.startDate
+      const selected = target === 'start' ? dateStr === this.data.startDate : dateStr === this.data.endDate
+      cells.push({ key: dateStr, day: d, date: dateStr, disabled, selected, today: dateStr === todayStr })
+    }
+    return cells
+  },
+  prevMonth() {
+    let year = this.data.calYear
+    let month = this.data.calMonth - 1
+    if (month < 1) { month = 12; year -= 1 }
+    if (year < this.data.yearMin) return
+    this.jumpTo(year, month)
+  },
+  nextMonth() {
+    let year = this.data.calYear
+    let month = this.data.calMonth + 1
+    if (month > 12) { month = 1; year += 1 }
+    if (year > this.data.yearMax) return
+    this.jumpTo(year, month)
+  },
+  /** 快速切换年份：一次跳一年 📆 */
+  prevYear() {
+    const year = this.data.calYear - 1
+    if (year < this.data.yearMin) return
+    this.jumpTo(year, this.data.calMonth)
+  },
+  nextYear() {
+    const year = this.data.calYear + 1
+    if (year > this.data.yearMax) return
+    this.jumpTo(year, this.data.calMonth)
+  },
+  /** 跳到指定年月并重建网格 */
+  jumpTo(year, month) {
+    this.setData({ calYear: year, calMonth: month, calDays: this.buildCalendar(this.data.pickerTarget, year, month) })
+  },
+  /**
+   * 选择某一天 ✅
+   * 参数：e:any，data-date = 'YYYY-MM-DD'，data-disabled = 是否超出可选范围
+   */
+  pickDay(e) {
+    const ds = (e && e.currentTarget && e.currentTarget.dataset) || {}
+    const date = ds.date || ''
+    if (!date) return
+    // dataset 在不同基础库下可能是布尔或字符串，这里两种都兼容
+    if (ds.disabled === true || ds.disabled === 'true') {
+      wx.showToast({ title: this.data.pickerTarget === 'start' ? '不能晚于结束日期' : '不能早于开始日期', icon: 'none' })
+      return
+    }
+    if (this.data.pickerTarget === 'start') {
+      if (this.data.endDate && date > this.data.endDate) {
+        wx.showToast({ title: '开始日期不能晚于结束日期', icon: 'none' })
+        return
+      }
+      this.setData({ startDate: date, showDatePicker: false })
+    } else {
+      if (this.data.startDate && date < this.data.startDate) {
+        wx.showToast({ title: '结束日期不能早于开始日期', icon: 'none' })
+        return
+      }
+      this.setData({ endDate: date, showDatePicker: false })
+    }
     const sid = this.data.storeIds[this.data.storeIndex]
     if (sid) this.fetchStats(sid)
   },
-  onEndDateChange(e) {
-    const v = String(e.detail.value || '')
-    this.setData({ endDate: v })
+  /**
+   * 快捷选择「今日」⚡
+   * 行为：把当前正在选择的字段设为今天；若与另一端的日期冲突，则把另一端一起收敛到今天，保证区间始终合法
+   */
+  pickToday() {
+    const today = this.formatDate(new Date())
+    const patch = { showDatePicker: false }
+    if (this.data.pickerTarget === 'start') {
+      patch.startDate = today
+      if (this.data.endDate && this.data.endDate < today) patch.endDate = today
+    } else {
+      patch.endDate = today
+      if (this.data.startDate && this.data.startDate > today) patch.startDate = today
+    }
+    this.setData(patch)
     const sid = this.data.storeIds[this.data.storeIndex]
     if (sid) this.fetchStats(sid)
   },

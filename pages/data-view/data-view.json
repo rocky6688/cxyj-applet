@@ -1,4 +1,7 @@
 {
   "navigationBarTitleText": "数据查看",
+  "navigationBarBackgroundColor": "#f2f2f7",
+  "navigationBarTextStyle": "black",
+  "backgroundTextStyle": "dark",
   "usingComponents": {}
 }

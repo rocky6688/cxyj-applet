@@ -73,7 +73,12 @@ async function handleQuery(event) {
       const val = cond && cond.value
       if (!f || !op) continue
       const fn = ops[op]
-      whereObj[f] = fn ? fn(val) : val
+      const cmd = fn ? fn(val) : val
+      // 同一字段出现多个条件时必须用 and 合并（如 createdAt 的起止区间），
+      // 否则后一个条件会覆盖前一个，导致区间过滤只剩单边、数据看起来没变化
+      whereObj[f] = Object.prototype.hasOwnProperty.call(whereObj, f)
+        ? _.and(whereObj[f], cmd)
+        : cmd
     }
     ref = ref.where(whereObj)
   }

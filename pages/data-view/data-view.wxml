@@ -1,50 +1,47 @@
-<view class="page">
+<view class="page tech-bg">
   <view class="title">数据查看</view>
 
   <block wx:if="{{role === 'ADMIN' || role === 'MANAGER'}}">
-    <view class="store-bar">
-      <picker mode="selector" range="{{storeNames}}" value="{{storeIndex}}" bindchange="onStoreChange">
-        <view class="picker-inner">当前门店：{{storeNames[storeIndex] || '请选择门店'}} </view>
-      </picker>
-    </view>
-
-    <view class="date-bar">
-      <picker mode="selector" range="{{dateOptions}}" value="{{dateIndex}}" bindchange="onDateOptionChange">
-        <view class="picker-inner">时间区间：{{dateOptions[dateIndex]}}</view>
-      </picker>
-      <view wx:if="{{dateOptions[dateIndex] === '自定义'}}" class="date-range">
-        <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
-          <view class="picker-inner">开始：{{startDate}}</view>
-        </picker>
-        <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
-          <view class="picker-inner">结束：{{endDate}}</view>
-        </picker>
-      </view>
-      <button class="primary" size="mini" bindtap="exportExcel">导出Excel</button>
+    <view class="toolbar">
+      <scroll-view class="toolbar-scroll" scroll-x="{{true}}" show-scrollbar="{{false}}">
+        <view class="toolbar-row">
+          <picker mode="selector" range="{{storeNames}}" value="{{storeIndex}}" bindchange="onStoreChange">
+            <view class="chip">门店 · {{storeNames[storeIndex] || '请选择'}}</view>
+          </picker>
+          <picker mode="selector" range="{{dateOptions}}" value="{{dateIndex}}" bindchange="onDateOptionChange">
+            <view class="chip chip-active">区间 · {{dateOptions[dateIndex]}}</view>
+          </picker>
+          <view wx:if="{{dateOptions[dateIndex] === '自定义'}}" class="chip" hover-class="press" data-target="start" bindtap="openDatePicker">开始 · {{startDate}}</view>
+          <view wx:if="{{dateOptions[dateIndex] === '自定义'}}" class="chip" hover-class="press" data-target="end" bindtap="openDatePicker">结束 · {{endDate}}</view>
+          <button class="btn-mini export-btn" hover-class="press" bindtap="exportExcel">导出 Excel</button>
+        </view>
+      </scroll-view>
     </view>
 
     <view class="metrics">
-      <view class="metric">
+      <view class="metric glass-card">
         <view class="metric-label">新增</view>
-        <view class="metric-value">{{metrics.created}}</view>
+        <view class="metric-value stat-num">{{metrics.created}}</view>
       </view>
-      <view class="metric">
+      <view class="metric glass-card">
         <view class="metric-label">量房</view>
-        <view class="metric-value">{{metrics.measured}}</view>
+        <view class="metric-value stat-num">{{metrics.measured}}</view>
       </view>
-      <view class="metric">
+      <view class="metric glass-card">
         <view class="metric-label">进店</view>
-        <view class="metric-value">{{metrics.inStore}}</view>
+        <view class="metric-value stat-num">{{metrics.inStore}}</view>
       </view>
-      <view class="metric">
+      <view class="metric glass-card">
         <view class="metric-label">签约</view>
-        <view class="metric-value">{{metrics.signed}}</view>
+        <view class="metric-value stat-num">{{metrics.signed}}</view>
       </view>
     </view>
 
-    <canvas canvas-id="metricsChart" class="chart"></canvas>
+    <view class="chart-card glass-card">
+      <canvas canvas-id="metricsChart" class="chart"></canvas>
+    </view>
 
-    <view class="card">
+    <view class="card glass-card">
       <view class="section-title">按业务员统计</view>
       <view class="staff-grid">
         <view class="staff-row staff-header">
@@ -57,21 +54,59 @@
         <block wx:for="{{staffStats}}" wx:key="name">
           <view class="staff-row">
             <view class="c1">{{item.name}}</view>
-            <view class="c2">{{item.created}}</view>
-            <view class="c2">{{item.measured}}</view>
-            <view class="c2">{{item.inStore}}</view>
-            <view class="c2">{{item.signed}}</view>
+            <view class="c2 stat-num">{{item.created}}</view>
+            <view class="c2 stat-num">{{item.measured}}</view>
+            <view class="c2 stat-num">{{item.inStore}}</view>
+            <view class="c2 stat-num">{{item.signed}}</view>
           </view>
         </block>
-        <view wx:if="{{staffStats.length === 0}}" class="empty">
-          <view class="empty-text">暂无数据</view>
+        <view wx:if="{{staffStats.length === 0}}" class="empty-state">
+          <view class="empty-mark"></view>
+          <view>暂无数据</view>
         </view>
       </view>
     </view>
   </block>
 
   <block wx:else>
-    <view class="card">仅店长和管理员可查看</view>
+    <view class="card glass-card">
+      <view class="empty-state">
+        <view class="empty-mark"></view>
+        <view>仅店长和管理员可查看</view>
+      </view>
+    </view>
   </block>
 
+  <!-- 日期选择抽屉：日历里直接禁掉非法日期，并提供「今日」快捷选择 -->
+  <view class="sheet-mask" wx:if="{{showDatePicker}}" bindtap="closeDatePicker">
+    <view class="sheet-card" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <view class="sheet-title">{{pickerTarget === 'start' ? '选择开始日期' : '选择结束日期'}}</view>
+      <view class="sheet-sub">{{pickerTarget === 'start' ? '不能晚于结束日期' : '不能早于开始日期'}}</view>
+
+      <view class="cal-head">
+        <view class="cal-nav cal-nav-year {{calYear <= yearMin ? 'cal-nav-off' : ''}}" hover-class="press" bindtap="prevYear">«</view>
+        <view class="cal-nav" hover-class="press" bindtap="prevMonth">‹</view>
+        <view class="cal-title">{{calYear}}年{{calMonth}}月</view>
+        <view class="cal-nav" hover-class="press" bindtap="nextMonth">›</view>
+        <view class="cal-nav cal-nav-year {{calYear >= yearMax ? 'cal-nav-off' : ''}}" hover-class="press" bindtap="nextYear">»</view>
+      </view>
+
+      <view class="cal-week">
+        <view class="cal-week-item" wx:for="{{weekLabels}}" wx:key="*this">{{item}}</view>
+      </view>
+
+      <view class="cal-grid">
+        <view class="cal-cell {{item.selected ? 'cal-cell-selected' : ''}} {{item.disabled ? 'cal-cell-disabled' : ''}} {{item.today ? 'cal-cell-today' : ''}}"
+              wx:for="{{calDays}}" wx:key="key"
+              data-date="{{item.date}}" data-disabled="{{item.disabled}}"
+              bindtap="pickDay">{{item.day}}</view>
+      </view>
+
+      <view class="sheet-actions">
+        <button class="btn-ghost" hover-class="press" bindtap="closeDatePicker">取消</button>
+        <button class="btn-brand" hover-class="press" bindtap="pickToday">今日</button>
+      </view>
+    </view>
+  </view>
 </view>
