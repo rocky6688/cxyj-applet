@@ -38,7 +38,9 @@
     </view>
 
     <view class="chart-card glass-card">
-      <canvas canvas-id="metricsChart" class="chart"></canvas>
+      <!-- canvas 在真机上是原生组件，层级高于普通 view，弹窗打开时必须移除，否则会盖住弹窗 -->
+      <canvas wx:if="{{!showDatePicker}}" canvas-id="metricsChart" class="chart"></canvas>
+      <view wx:else class="chart-placeholder"></view>
     </view>
 
     <view class="card glass-card">

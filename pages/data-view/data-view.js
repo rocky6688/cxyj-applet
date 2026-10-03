@@ -91,6 +91,7 @@ Page({
     this.setData({ dateIndex: i, startDate: s, endDate: en })
     const sid = this.data.storeIds[this.data.storeIndex]
     if (sid) this.fetchStats(sid)
+    else this.drawChartSafe(this.data.metrics)
   },
   /**
    * 打开日期选择抽屉 📅
@@ -120,7 +121,7 @@ Page({
     })
   },
   closeDatePicker() {
-    this.setData({ showDatePicker: false })
+    this.setData({ showDatePicker: false }, () => this.drawChartSafe(this.data.metrics))
   },
   noop() {},
   /**
@@ -201,6 +202,7 @@ Page({
     }
     const sid = this.data.storeIds[this.data.storeIndex]
     if (sid) this.fetchStats(sid)
+    else this.drawChartSafe(this.data.metrics)
   },
   /**
    * 快捷选择「今日」⚡
@@ -219,6 +221,7 @@ Page({
     this.setData(patch)
     const sid = this.data.storeIds[this.data.storeIndex]
     if (sid) this.fetchStats(sid)
+    else this.drawChartSafe(this.data.metrics)
   },
   fetchStats(storeId) {
     const sdt = this.data.startDate ? `${this.data.startDate} 00:00:00.000` : ''
@@ -241,9 +244,19 @@ Page({
           if (it.followStatus === '已经签约') { metrics.signed += 1; byStaff[name].signed += 1 }
         })
         const staffStats = Object.values(byStaff)
-        this.setData({ metrics, staffStats, rawEntries: list })
-        this.drawChart(metrics)
+        // 先让画布挂载完成（弹窗关闭后画布会重新创建），再绘制
+        this.setData({ metrics, staffStats, rawEntries: list }, () => this.drawChartSafe(metrics))
       })
+  },
+  /**
+   * 安全重绘图表 🔁
+   * 说明：真机上 canvas 是原生组件，日期弹窗打开期间会被移除，
+   *      关闭后画布重新挂载需要一点时间，延迟绘制避免画到不存在的画布上
+   */
+  drawChartSafe(metrics) {
+    const run = () => { try { this.drawChart(metrics || this.data.metrics) } catch (e) { /* ignore */ } }
+    if (typeof wx.nextTick === 'function') wx.nextTick(() => setTimeout(run, 50))
+    else setTimeout(run, 80)
   },
   formatDate(d) {
     const y = d.getFullYear()

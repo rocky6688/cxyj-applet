@@ -79,6 +79,11 @@
   height: 300rpx;
 }
 
+.chart-placeholder {
+  width: 100%;
+  height: 300rpx;
+}
+
 /* ===== 业务员统计 ===== */
 .card {
   margin-top: 24rpx;
