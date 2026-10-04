@@ -17,5 +17,5 @@
     </view>
   </view>
 
-  <view class="admin-entry" hover-class="press" wx:if="{{!loggedAsAdmin}}" bindtap="goToAdminLogin">后台登录</view>
+  <view class="admin-entry" hover-class="press" wx:if="{{false}}" bindtap="goToAdminLogin">后台登录</view>
 </view>

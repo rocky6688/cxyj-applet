@@ -84,6 +84,42 @@
   height: 300rpx;
 }
 
+/* ===== 图表空状态（纯 CSS 图标） ===== */
+.chart-empty {
+  padding: 44rpx 0 48rpx;
+}
+
+.chart-empty-icon {
+  position: relative;
+  width: 140rpx;
+  height: 140rpx;
+  margin: 0 auto 20rpx;
+  border-radius: 28rpx;
+  background: var(--brand-soft);
+}
+
+.chart-empty-bar {
+  position: absolute;
+  bottom: 34rpx;
+  width: 16rpx;
+  border-radius: 8rpx 8rpx 4rpx 4rpx;
+  background: rgba(255, 107, 53, 0.35);
+}
+
+.chart-empty-bar.bar-a { left: 24rpx; height: 30rpx; }
+.chart-empty-bar.bar-b { left: 50rpx; height: 52rpx; }
+.chart-empty-bar.bar-c { left: 76rpx; height: 40rpx; }
+.chart-empty-bar.bar-d { left: 100rpx; height: 66rpx; }
+
+.chart-empty-axis {
+  position: absolute;
+  left: 20rpx;
+  right: 20rpx;
+  bottom: 26rpx;
+  height: 0;
+  border-top: 2rpx dashed rgba(255, 107, 53, 0.45);
+}
+
 /* ===== 业务员统计 ===== */
 .card {
   margin-top: 24rpx;

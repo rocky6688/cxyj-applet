@@ -8,6 +8,8 @@ Page({
     storeIndex: 0,
     metrics: { created: 0, measured: 0, inStore: 0, signed: 0 },
     staffStats: [],
+    // 图表是否有数据：为 false 时展示「暂无数据」空状态，不绘制 canvas
+    hasChartData: false,
     dateOptions: ['本周','本月','自定义'],
     dateIndex: 1,
     startDate: '',
@@ -37,7 +39,8 @@ Page({
     const s = this.formatDate(this.getStartOfMonth(today))
     const e = this.formatDate(this.getEndOfMonth(today))
     // 每次进入页面都按「本月」重置，同时把区间选择器一起归位，避免显示与实际区间不一致
-    this.setData({ role, dateIndex: 1, startDate: s, endDate: e })
+    // hasChartData 先归位，避免再次进入页面时残留上一次的图表状态
+    this.setData({ role, dateIndex: 1, startDate: s, endDate: e, hasChartData: false })
     if (role === 'ADMIN') {
       wx.cloud.callFunction({ name: DBQUERY_FUNCTION, data: { collection: 'stores', orderBy: [{ field: 'updatedAt', order: 'desc' }], limit: 200 } })
         .then((res) => {
@@ -244,8 +247,11 @@ Page({
           if (it.followStatus === '已经签约') { metrics.signed += 1; byStaff[name].signed += 1 }
         })
         const staffStats = Object.values(byStaff)
+        const hasChartData = list.length > 0
         // 先让画布挂载完成（弹窗关闭后画布会重新创建），再绘制
-        this.setData({ metrics, staffStats, rawEntries: list }, () => this.drawChartSafe(metrics))
+        this.setData({ metrics, staffStats, rawEntries: list, hasChartData }, () => {
+          if (hasChartData) this.drawChartSafe(metrics)
+        })
       })
   },
   /**
@@ -254,6 +260,7 @@ Page({
    *      关闭后画布重新挂载需要一点时间，延迟绘制避免画到不存在的画布上
    */
   drawChartSafe(metrics) {
+    if (!this.data.hasChartData) return
     const run = () => { try { this.drawChart(metrics || this.data.metrics) } catch (e) { /* ignore */ } }
     if (typeof wx.nextTick === 'function') wx.nextTick(() => setTimeout(run, 50))
     else setTimeout(run, 80)
